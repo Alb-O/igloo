@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(ldd:*)",
+      "Bash(nix log:*)",
+      "Bash(nix-store:*)",
+      "mcp__nixos__nixos_search",
+      "mcp__nixos__home_manager_search",
+      "mcp__nixos__nixos_info",
+      "mcp__nixos__home_manager_options_by_prefix",
+      "mcp__nixos__nixos_flakes_search",
+      "mcp__nixos__nixhub_package_versions",
+      "WebFetch(domain:nixos.wiki)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:gitlab.com)",
+      "WebFetch(domain:ampcode.com)"
+    ]
+  },
+  "enableAllProjectMcpServers": true
+}

@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+# Generic configuration sync tool
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+readonly BLUE='\033[0;34m'
+readonly GREEN='\033[0;32m'
+readonly RED='\033[0;31m'
+readonly YELLOW='\033[0;33m'
+readonly NC='\033[0m'
+
+info() { echo -e "${BLUE}→${NC} $1"; }
+success() { echo -e "${GREEN}✓${NC} $1"; }
+error() { echo -e "${RED}✗${NC} $1" >&2; }
+warn() { echo -e "${YELLOW}⚠${NC} $1"; }
+
+show_help() {
+    echo "Generic Configuration Sync Tool"
+    echo "==============================="
+    echo
+    echo "Usage: $0 <plugin> [operation|bundle] [options]"
+    echo
+    echo "Available Plugins:"
+    echo "  wsl        WSL configuration sync (Firefox, VSCode, Git)"
+    echo "  dotfiles   Dotfiles management (shell, editor, terminal configs)"
+    echo
+    echo "Plugin-specific Options:"
+    echo "  sync wsl firefox           # Sync Firefox from WSL to Windows"
+    echo "  sync wsl --dev             # Sync development tools bundle"
+    echo "  sync wsl --list            # List WSL sync options"
+    echo
+    echo "  sync dotfiles nvim-config  # Sync Neovim configuration"
+    echo "  sync dotfiles --shell      # Sync shell configurations bundle"
+    echo "  sync dotfiles --list       # List dotfiles sync options"
+    echo
+    echo "General Options:"
+    echo "  --help, -h                 # Show this help"
+    echo "  --list-plugins             # List available plugins"
+    echo
+    echo "Examples:"
+    echo "  sync wsl firefox           # WSL Firefox sync"
+    echo "  sync dotfiles --minimal    # Minimal dotfiles setup"
+    echo "  sync wsl --all             # Complete WSL setup"
+    echo
+}
+
+list_plugins() {
+    echo "Available Sync Plugins:"
+    echo "======================"
+    echo
+    echo "• wsl - Cross-platform configuration sync for WSL environments"
+    echo "  Categories: browser, development"
+    echo "  Bundles: dev, browser, all"
+    echo
+    echo "• dotfiles - Personal configuration file management"
+    echo "  Categories: shell, editor, terminal, devtools"
+    echo "  Bundles: shell, editor, terminal, minimal, full"
+    echo
+    echo "Usage: sync <plugin> --list"
+}
+
+if [[ $# -eq 0 ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    show_help
+    exit 0
+fi
+
+if [[ "$1" == "--list-plugins" ]]; then
+    list_plugins
+    exit 0
+fi
+
+PLUGIN="$1"
+shift
+
+case "$PLUGIN" in
+    "wsl")
+        # Delegate to existing WSL sync tool with all remaining arguments
+        exec "$SCRIPT_DIR/bin/wsl-sync" "$@"
+        ;;
+        
+    "dotfiles")
+        # Parse dotfiles arguments
+        CONFIG=""
+        HELP=false
+        LIST=false
+        BUNDLE=""
+
+        while [[ $# -gt 0 ]]; do
+            case $1 in
+                --list|-l) LIST=true; shift ;;
+                --help|-h) HELP=true; shift ;;
+                
+                # Bundles
+                --shell) BUNDLE="shell"; shift ;;
+                --editor) BUNDLE="editor"; shift ;;
+                --terminal) BUNDLE="terminal"; shift ;;
+                --minimal) BUNDLE="minimal"; shift ;;
+                --full) BUNDLE="full"; shift ;;
+                
+                # Configs
+                --*) 
+                    error "Unknown dotfiles option: $1"
+                    HELP=true
+                    shift
+                    ;;
+                *) 
+                    if [[ -z "$CONFIG" && -z "$BUNDLE" ]]; then
+                        CONFIG="$1"
+                    else
+                        error "Multiple configurations specified"
+                        HELP=true
+                    fi
+                    shift 
+                    ;;
+            esac
+        done
+
+        if [[ "$HELP" == "true" ]]; then
+            echo "Dotfiles Configuration Sync"
+            echo "==========================="
+            echo
+            echo "Usage: sync dotfiles [config|bundle] [options]"
+            echo
+            echo "Bundles:"
+            echo "  --shell      Shell configurations (zsh, bash, fish)"
+            echo "  --editor     Editor configurations (vim, neovim)"
+            echo "  --terminal   Terminal configurations (alacritty, kitty, tmux)"
+            echo "  --minimal    Essential dotfiles (bash, vim, tmux)"
+            echo "  --full       All available configurations"
+            echo
+            echo "Individual Configs:"
+            echo "  zshrc, bashrc, fish-config, vimrc, nvim-config,"
+            echo "  alacritty, kitty, tmux, gitignore-global, etc."
+            echo
+            echo "Options:"
+            echo "  --list, -l   List all available configurations"
+            echo "  --help, -h   Show this help"
+            echo
+            exit 0
+        fi
+
+        if [[ "$LIST" == "true" ]]; then
+            info "Building dotfiles application list..."
+            LIST_SCRIPT=$(nix-build --no-out-link --show-trace \
+                -E "(import $SCRIPT_DIR/lib/plugins/dotfiles.nix).listApplications" 2>/dev/null)
+            
+            if [[ $? -ne 0 ]]; then
+                error "Failed to build dotfiles application list"
+                exit 1
+            fi
+            
+            exec "$LIST_SCRIPT/bin/list-dotfiles-apps"
+        fi
+
+        # Handle bundles
+        if [[ -n "$BUNDLE" ]]; then
+            info "Building dotfiles bundle: $BUNDLE"
+            SYNC_SCRIPT=$(nix-build --no-out-link --show-trace \
+                -E "(import $SCRIPT_DIR/lib/plugins/dotfiles.nix).bundles.$BUNDLE" 2>/dev/null)
+        else
+            # Handle individual configs
+            if [[ -z "$CONFIG" ]]; then
+                CONFIG="bashrc"
+                info "No configuration specified, defaulting to bashrc"
+            fi
+
+            info "Building dotfiles sync tool for: $CONFIG"
+            SYNC_SCRIPT=$(nix-build --no-out-link --show-trace \
+                -E "(import $SCRIPT_DIR/lib/plugins/dotfiles.nix).getSyncUtility \"$CONFIG\"" 2>/dev/null)
+        fi
+
+        if [[ $? -ne 0 ]]; then
+            error "Failed to build sync script for: ${CONFIG:-$BUNDLE}"
+            echo "Run 'sync dotfiles --list' to see available options"
+            exit 1
+        fi
+
+        # Find and execute
+        EXECUTABLE=$(find "$SYNC_SCRIPT/bin" -type f -executable | head -1)
+
+        if [[ -x "$EXECUTABLE" ]]; then
+            exec "$EXECUTABLE"
+        else
+            error "Sync executable not found: $EXECUTABLE"
+            exit 1
+        fi
+        ;;
+        
+    *)
+        error "Unknown plugin: $PLUGIN"
+        echo "Available plugins: wsl, dotfiles"
+        echo "Run 'sync --list-plugins' for more information"
+        exit 1
+        ;;
+esac

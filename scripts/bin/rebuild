@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+# Unified rebuild entry point - replaces old rebuild.sh
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CACHE_DIR="$HOME/.cache/nix-rebuild"
+mkdir -p "$CACHE_DIR"
+
+# Colors for consistent output
+readonly BLUE='\033[0;34m'
+readonly GREEN='\033[0;32m'
+readonly RED='\033[0;31m'
+readonly NC='\033[0m'
+
+info() { echo -e "${BLUE}→${NC} $1"; }
+success() { echo -e "${GREEN}✓${NC} $1"; }
+error() { echo -e "${RED}✗${NC} $1" >&2; }
+
+# Function to get cached rebuild utilities
+get_rebuild_utils() {
+    local lib_hash
+    lib_hash=$(find "$SCRIPT_DIR/lib" -name "*.nix" -exec nix-hash --type sha256 {} \; | sort | nix-hash --type sha256)
+    local cache_file="$CACHE_DIR/rebuild-utils-$lib_hash"
+    
+    if [[ ! -f "$cache_file" ]]; then
+        info "Building rebuild utilities (one-time setup)..."
+        nix-build --no-out-link --show-trace \
+            -E "import $SCRIPT_DIR/lib/rebuild.nix" > "$cache_file"
+    fi
+    
+    cat "$cache_file"
+}
+
+# Parse arguments
+HOSTNAME=""
+MODE="quick"
+USERNAME=""
+VERBOSE=false
+AUTO_COMMIT=false
+UPDATE_FLAKES=false
+HELP=false
+
+# Parse all arguments first
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --user) USERNAME="$2"; shift 2 ;;
+        --quick|--home) MODE="quick"; shift ;;
+        --full|--system) MODE="full"; shift ;;
+        --dev|--fast) MODE="dev"; shift ;;
+        --multi) MODE="multi"; shift ;;
+        --interactive|--i) MODE="interactive"; shift ;;
+        --verbose|-v) VERBOSE=true; shift ;;
+        --auto-commit) AUTO_COMMIT=true; shift ;;
+        --update|-u) UPDATE_FLAKES=true; shift ;;
+        --help|-h) HELP=true; shift ;;
+        --*) error "Unknown option: $1"; HELP=true; break ;;
+        *) 
+            if [[ -z "$HOSTNAME" ]]; then
+                HOSTNAME="$1"
+            else
+                error "Multiple hostnames provided: $HOSTNAME and $1"
+                HELP=true
+            fi
+            shift 
+            ;;
+    esac
+done
+
+# Auto-detect hostname if not provided
+if [[ -z "$HOSTNAME" ]]; then
+    HOSTNAME="$(hostname)"
+fi
+
+# Auto-detect username if not specified
+if [[ -z "$USERNAME" ]]; then
+    USERNAME="$(whoami)"
+fi
+
+
+if [[ "$HELP" == "true" ]]; then
+    echo "NixOS Rebuild Tool"
+    echo
+    echo "Usage: $0 [hostname] [options]"
+    echo
+    echo "Modes:"
+    echo "  --quick, --home      Home Manager rebuild (default)"
+    echo "  --full, --system     Full NixOS system rebuild"
+    echo "  --dev, --fast        Fast development rebuild"
+    echo "  --interactive, --i   Interactive mode"
+    echo "  --multi              Multi-target rebuild"
+    echo
+    echo "Options:"
+    echo "  --user <username>    Specify username (default: current user)"
+    echo "  --verbose, -v        Show detailed output"
+    echo "  --auto-commit        Automatically commit changes"
+    echo "  --update, -u         Update flake inputs and run full validation"
+    echo "  --help, -h           Show this help"
+    echo
+    echo "Examples:"
+    echo "  $0                          # Auto-detect hostname, quick home rebuild"
+    echo "  $0 --full --verbose         # Auto-detect hostname, full system rebuild"
+    echo "  $0 nixos --dev              # Specific hostname, fast development rebuild"
+    echo "  $0 --user alice             # Auto-detect hostname, specific user"
+    echo
+    echo "Note: First run builds utilities, subsequent runs are faster"
+    exit 0
+fi
+
+# Validate we're in the right directory
+if [[ ! -f "flake.nix" ]]; then
+    error "Must run from the root of nix-config (where flake.nix exists)"
+    exit 1
+fi
+
+# Show detected configuration
+info "Using configuration: $USERNAME@$HOSTNAME (mode: $MODE)"
+
+# Get cached utilities
+UTILS_PATH="$(get_rebuild_utils)"
+
+# Build the appropriate command
+case "$MODE" in
+    "quick")
+        if [[ -n "$USERNAME" ]]; then
+            BUILDER="(import $SCRIPT_DIR/lib/rebuild.nix).rebuildPipeline { hostname = \"$HOSTNAME\"; username = \"$USERNAME\"; homeOnly = true; verbose = $VERBOSE; autoCommit = $AUTO_COMMIT; updateFlakes = $UPDATE_FLAKES; }"
+        else
+            BUILDER="(import $SCRIPT_DIR/lib/rebuild.nix).rebuildPipeline { hostname = \"$HOSTNAME\"; username = \"$USERNAME\"; homeOnly = true; verbose = $VERBOSE; autoCommit = $AUTO_COMMIT; updateFlakes = $UPDATE_FLAKES; }"
+        fi
+        ;;
+    "full")
+        BUILDER="(import $SCRIPT_DIR/lib/rebuild.nix).rebuildPipeline { hostname = \"$HOSTNAME\"; homeOnly = false; verbose = $VERBOSE; autoCommit = $AUTO_COMMIT; updateFlakes = $UPDATE_FLAKES; }"
+        ;;
+    "dev")
+        BUILDER="(import $SCRIPT_DIR/lib/rebuild.nix).workflows.dev \"$HOSTNAME\""
+        ;;
+    "interactive")
+        BUILDER="(import $SCRIPT_DIR/lib/rebuild.nix).interactive"
+        ;;
+    "multi")
+        BUILDER="(import $SCRIPT_DIR/lib/rebuild.nix).workflows.testAll [\"$HOSTNAME\"]"
+        ;;
+esac
+
+# Execute the rebuild
+REBUILD_SCRIPT=$(nix-build --no-out-link --show-trace -E "$BUILDER" 2>/dev/null)
+
+if [[ $? -ne 0 ]]; then
+    error "Failed to build rebuild script"
+    exit 1
+fi
+
+# Find the actual executable
+EXECUTABLE=$(find "$REBUILD_SCRIPT/bin" -type f -executable | head -1)
+
+if [[ -n "$EXECUTABLE" ]]; then
+    exec "$EXECUTABLE"
+else
+    error "No executable found in $REBUILD_SCRIPT/bin/"
+    exit 1
+fi

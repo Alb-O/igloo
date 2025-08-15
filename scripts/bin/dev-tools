@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+# Development utilities and shortcuts
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Colors
+readonly BLUE='\033[0;34m'
+readonly GREEN='\033[0;32m' 
+readonly YELLOW='\033[1;33m'
+readonly NC='\033[0m'
+
+info() { echo -e "${BLUE}→${NC} $1"; }
+success() { echo -e "${GREEN}✓${NC} $1"; }
+warn() { echo -e "${YELLOW}⚠${NC} $1"; }
+
+# Parse command
+COMMAND="${1:-help}"
+shift 2>/dev/null || true
+
+case "$COMMAND" in
+    "validate"|"check")
+        info "Validating flake configuration..."
+        if [[ -f flake.nix ]]; then
+            cd nix 2>/dev/null || true
+        fi
+        nix flake check --impure
+        success "Validation complete"
+        ;;
+        
+    "format"|"fmt")
+        info "Formatting Nix files..."
+        find . -name "*.nix" -exec nixpkgs-fmt {} \;
+        success "Formatting complete"
+        ;;
+        
+    "clean"|"gc")
+        info "Cleaning up old generations and Nix store..."
+        nix-collect-garbage -d
+        success "Cleanup complete"
+        ;;
+        
+    "update"|"up")
+        info "Updating flake inputs..."
+        nix flake update
+        success "Flake inputs updated"
+        ;;
+        
+    "shell")
+        SHELL_TYPE="${1:-default}"
+        case "$SHELL_TYPE" in
+            "dev"|"development")
+                info "Starting development shell..."
+                nix develop
+                ;;
+            "build")
+                info "Starting build shell..."
+                nix-shell -p nixpkgs-fmt git nix home-manager
+                ;;
+            *)
+                info "Starting default shell..."
+                nix-shell
+                ;;
+        esac
+        ;;
+        
+    "status"|"st")
+        info "System status:"
+        echo
+        echo "Git status:"
+        git status --short
+        echo
+        echo "Nix generations:"
+        if command -v home-manager &>/dev/null; then
+            home-manager generations | head -5
+        fi
+        echo
+        echo "Available hosts:"
+        if [[ -f flake.nix ]]; then
+            nix eval --raw .#nixosConfigurations --apply builtins.attrNames 2>/dev/null | \
+                tr '[]",' '\n   ' | grep -v '^$' || echo "  (none found)"
+        fi
+        ;;
+        
+    "edit")
+        TARGET="${1:-flake.nix}"
+        if [[ -f "$TARGET" ]]; then
+            ${EDITOR:-nano} "$TARGET"
+        elif [[ -f "nix/$TARGET" ]]; then
+            ${EDITOR:-nano} "nix/$TARGET"
+        else
+            warn "File not found: $TARGET"
+            info "Available files:"
+            find . -name "*.nix" -type f | head -10
+        fi
+        ;;
+        
+    "switch")
+        HOSTNAME="${1:-}"
+        if [[ -z "$HOSTNAME" ]]; then
+            warn "No hostname provided, detecting from system..."
+            HOSTNAME=$(hostname)
+        fi
+        
+        info "Quick switch to $HOSTNAME configuration..."
+        "$SCRIPT_DIR/bin/rebuild" "$HOSTNAME" --dev
+        ;;
+        
+    "benchmark"|"bench")
+        info "Running rebuild benchmark..."
+        if [[ -f "$SCRIPT_DIR/benchmark.sh" ]]; then
+            "$SCRIPT_DIR/benchmark.sh"
+        else
+            warn "Benchmark script not found"
+        fi
+        ;;
+        
+    "cache")
+        ACTION="${1:-status}"
+        case "$ACTION" in
+            "clear")
+                info "Clearing script caches..."
+                rm -rf "$HOME/.cache/nix-rebuild" "$HOME/.cache/nix-bootstrap"
+                success "Caches cleared"
+                ;;
+            "status")
+                info "Cache status:"
+                echo "Rebuild cache: $(du -sh "$HOME/.cache/nix-rebuild" 2>/dev/null || echo "empty")"
+                echo "Bootstrap cache: $(du -sh "$HOME/.cache/nix-bootstrap" 2>/dev/null || echo "empty")"
+                ;;
+        esac
+        ;;
+        
+    "help"|*)
+        echo "Development Tools"
+        echo
+        echo "Usage: $0 <command> [args...]"
+        echo
+        echo "Commands:"
+        echo "  validate, check     Validate flake configuration"
+        echo "  format, fmt         Format all Nix files"
+        echo "  clean, gc           Clean old generations and Nix store"
+        echo "  update, up          Update flake inputs"
+        echo "  shell [type]        Start development shell (dev|build|default)"
+        echo "  status, st          Show system and git status"
+        echo "  edit <file>         Edit configuration files"
+        echo "  switch [hostname]   Quick configuration switch"
+        echo "  benchmark, bench    Run performance benchmark"
+        echo "  cache [clear|status] Manage script caches"
+        echo "  help                Show this help"
+        echo
+        echo "Examples:"
+        echo "  $0 validate         # Check configuration"
+        echo "  $0 format           # Format all Nix files"
+        echo "  $0 switch nixos     # Quick rebuild"
+        echo "  $0 shell dev        # Development environment"
+        ;;
+esac

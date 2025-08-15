@@ -1,0 +1,4 @@
+/.env
+*.local.*
+.last_flake_update
+/secrets/
