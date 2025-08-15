@@ -15,20 +15,22 @@
     };
     "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
       # BitWarden
-      # Correct slug is bitwarden-password-manager and pattern is /downloads/latest/<slug>/latest.xpi
       install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
       installation_mode = "force_installed";
     };
     "sponsorBlocker@ajay.app" = {
       # SponsorBlock
-      # Remove erroneous /file/ segment
       install_url = "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi";
       installation_mode = "force_installed";
     };
     "clipper@obsidian.md" = {
       # Obsidian Clipper
-      # Correct slug is obsidian-web-clipper
       install_url = "https://addons.mozilla.org/firefox/downloads/latest/obsidian-web-clipper/latest.xpi";
+      installation_mode = "force_installed";
+    };
+    "{5003e502-f361-4bf6-b09e-41a844d36d33}" = {
+      # Redlib
+      install_url = "https://addons.mozilla.org/firefox/downloads/latest/redlib/latest.xpi";
       installation_mode = "force_installed";
     };
   };
