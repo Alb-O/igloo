@@ -14,6 +14,7 @@
     ./git.nix
     ./neovim
     ./codex.nix
+    ./geminicommit.nix
   ]
   ++ (
     if globals.system.isGraphical then

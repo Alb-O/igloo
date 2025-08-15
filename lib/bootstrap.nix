@@ -17,21 +17,27 @@ let
   loadEnvVars =
     let
       currentDir = builtins.getEnv "PWD";
+      # Check for .env in both current directory and project root
       envFileInPwd = "${currentDir}/.env";
+      envFileInProject = "${projectRoot}/.env";
       pwdExists = builtins.pathExists envFileInPwd;
-      isFlakeCheck = currentDir == "/" || currentDir == "";
+      projectExists = builtins.pathExists envFileInProject;
+      # Only consider it a flake check if we're in / or empty AND no .env file exists in project root
+      isFlakeCheck = (currentDir == "/" || currentDir == "") && !projectExists;
       defaultEnv = {
         USERNAME = "flake-check-user";
         NAME = "Flake Check User";
         EMAIL = "user@example.com";
         HOSTNAME = "flake-check-host";
       };
+      # Prefer .env in current directory, fall back to project root
+      envFile = if pwdExists then envFileInPwd else envFileInProject;
     in
     if isFlakeCheck then
       defaultEnv
-    else if pwdExists then
+    else if pwdExists || projectExists then
       let
-        envContent = builtins.readFile envFileInPwd;
+        envContent = builtins.readFile envFile;
         parseEnvFile =
           content:
           let
@@ -83,7 +89,7 @@ let
       in
       parseEnvFile envContent
     else
-      throw "Required .env file not found at ${envFileInPwd}. Please create it with USERNAME, NAME, EMAIL, HOSTNAME variables.";
+      throw "Required .env file not found at ${envFileInPwd} or ${envFileInProject}. Please create it with USERNAME, NAME, EMAIL, HOSTNAME variables.";
 
   envVars = loadEnvVars;
   validateEnv =

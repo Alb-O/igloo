@@ -173,11 +173,11 @@
           nixos = nixpkgs.lib.nixosSystem {
             specialArgs = {
               inherit inputs outputs;
-              # Use globals.nix directly with hardcoded nixos values to avoid bootstrap dependency
+              # Use bootstrap values for consistent configuration
               globals = import ./lib/globals.nix {
                 username = "nixos";
-                name = "NixOS User";
-                email = "nixos@example.com";
+                name = bootstrap.env.NAME;
+                email = bootstrap.env.EMAIL;
                 hostname = "nixos";
                 stateVersion = "24.11";
                 isGraphical = false; # WSL environment

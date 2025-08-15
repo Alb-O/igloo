@@ -48,8 +48,6 @@
       chawan
       poppler-utils
       ungoogled-chromium
-      # AI
-      geminicommit
       # Development
       nodejs
       gcc
