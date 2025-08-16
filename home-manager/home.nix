@@ -42,6 +42,7 @@
       unison
       zoxide
       bat
+      imagemagick
       rucola
       meowpdf
       chawan

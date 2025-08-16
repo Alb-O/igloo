@@ -327,7 +327,27 @@ require("lazy").setup({
     {
       'MeanderingProgrammer/render-markdown.nvim',
       dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-      opts = {},
+      opts = {
+        file_types = { 'markdown', 'vimwiki' },
+        heading = {
+          icons = '',
+          sign = false,
+          border = true,
+          width = {'full','block'},
+          right_pad = {0, 2},
+          left_pad = {0.5, 2},
+          position = 'inline'
+        },
+      },
+    },
+    {
+      "iamcco/markdown-preview.nvim",
+      cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+      build = "cd app && npm install",
+      init = function()
+        vim.g.mkdp_filetypes = { "markdown" }
+      end,
+      ft = { "markdown" },
     },
 
     -- ===== TERMINAL MANAGEMENT =====
