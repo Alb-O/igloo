@@ -24,7 +24,7 @@
       # Core settings
       init.defaultBranch = "main";
       core = {
-        editor = "nvim";
+        editor = globals.editor;
         autocrlf = false;
         safecrlf = true;
         filemode = true;

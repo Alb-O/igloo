@@ -57,4 +57,7 @@ in {
   };
 
   env = bootstrap.env;
+
+  editor = "hx";
+  terminal = "alacritty";
 }

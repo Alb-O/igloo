@@ -3,6 +3,7 @@
 {
   config,
   pkgs,
+  globals,
   ...
 }: let
   colors = import ../../../lib/themes;
@@ -12,8 +13,7 @@
   outputsConfig = import ./outputs.nix;
   layoutConfig = import ./layout.nix {inherit colors;};
   bindsConfig = import ./binds.nix {
-    inherit config;
-    inherit pkgs;
+    inherit config pkgs globals;
   };
   windowRulesConfig = import ./window-rules.nix;
   miscConfig = import ./misc.nix;

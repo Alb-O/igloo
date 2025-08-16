@@ -3,22 +3,23 @@
   inputs,
   globals,
   ...
-}: {
-  _module.args = {inherit inputs globals;};
-  imports =
-    [
-      ./xdg.nix
-      ./shell.nix
-      ./ssh.nix
-      ./broot
-      ./git.nix
-      ./neovim
-      ./codex.nix
-      ./geminicommit.nix
-    ]
-    ++ (
-      if globals.system.isGraphical
-      then [
+}:
+{
+  _module.args = { inherit inputs globals; };
+  imports = [
+    ./xdg.nix
+    ./shell.nix
+    ./ssh.nix
+    ./broot
+    ./git.nix
+    #./neovim/nightly.nix
+    ./codex.nix
+    ./geminicommit.nix
+    ./helix.nix
+  ]
+  ++ (
+    if globals.system.isGraphical then
+      [
         ./niri
         ./fuzzel.nix
         ./swww.nix
@@ -27,14 +28,15 @@
         ./firefox
         ./vscode.nix
         ./sillytavern.nix
-        ./kitty.nix
+        ./alacritty.nix
         ./polkit.nix
         ./clipboard.nix
       ]
-      else [
+    else
+      [
         ./firefox/wsl.nix
       ]
-    );
+  );
 
   programs.home-manager.enable = true;
 

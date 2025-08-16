@@ -30,6 +30,9 @@
     # NixOS-WSL for Windows Subsystem for Linux support
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Neovim nightly overlay
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
   outputs = {
@@ -41,6 +44,7 @@
     nix-colors,
     nix-userstyles,
     nixos-wsl,
+    neovim-nightly-overlay,
     ...
   } @ inputs: let
     inherit (self) outputs;
