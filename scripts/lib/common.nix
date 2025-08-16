@@ -101,13 +101,41 @@ with lib; rec {
 
           # Stage all changes
           git add -A
+          
+          # Identify important commits
+          last_true_commit=$(git log --grep '^(fixup!|squash!)|^baseline\(auto\):' -E --invert-grep -n 1 --pretty=%H 2>/dev/null || true)
+          last_baseline=$(git log -n 1 --grep '^baseline(auto):' --pretty=%H 2>/dev/null || true)
+          head_commit=$(git rev-parse HEAD 2>/dev/null || true)
 
-          # Find the last non-fixup/squash commit (the latest 'true' commit)
-          last_true_commit=$(git log --grep '^(fixup!|squash!)' -E --invert-grep -n 1 --pretty=%H 2>/dev/null || true)
+          target_commit=""
+          # Prefer a baseline that comes after the last true commit
+          if [[ -n "$last_true_commit" && -n "$last_baseline" ]]; then
+            if git merge-base --is-ancestor "$last_true_commit" "$last_baseline" >/dev/null 2>&1; then
+              target_commit="$last_baseline"
+            fi
+          fi
 
-          if [[ -n "$last_true_commit" ]]; then
-            info "Creating fixup for commit ''${last_true_commit:0:7}"
-            if git commit --no-verify --fixup "$last_true_commit" >/dev/null 2>&1; then
+          # If no suitable baseline, and last commit is a true commit, create a new empty baseline
+          if [[ -z "$target_commit" ]]; then
+            if [[ -n "$last_true_commit" && "$head_commit" == "$last_true_commit" ]] || [[ -z "$last_baseline" ]]; then
+              ts=$(date '+%Y-%m-%d %H:%M')
+              info "Creating baseline(auto) commit"
+              git commit --no-verify --allow-empty -m "baseline(auto): $ts" >/dev/null 2>&1 || true
+              target_commit=$(git rev-parse HEAD 2>/dev/null || true)
+            fi
+          fi
+
+          # Ensure we have a baseline target; create one if still missing
+          if [[ -z "$target_commit" ]]; then
+            ts=$(date '+%Y-%m-%d %H:%M')
+            info "Creating baseline(auto) commit"
+            git commit --no-verify --allow-empty -m "baseline(auto): $ts" >/dev/null 2>&1 || true
+            target_commit=$(git rev-parse HEAD 2>/dev/null || true)
+          fi
+
+          if [[ -n "$target_commit" ]]; then
+            info "Creating fixup for commit ''${target_commit:0:7}"
+            if git commit --no-verify --fixup "$target_commit" >/dev/null 2>&1; then
               success "Auto fixup commit created"
               exit 0
             else
@@ -115,7 +143,7 @@ with lib; rec {
             fi
           fi
 
-          # Fallback when no prior commit or --fixup failed
+          # Final fallback when no prior commit exists or --fixup failed
           host_part="''${1:-rebuild}"
           msg="chore(auto): autosave before ''${host_part}"
           if git commit --no-verify -m "$msg" >/dev/null 2>&1; then
@@ -177,18 +205,27 @@ with lib; rec {
             fi
           fi
 
-          # Find last true commit after potential fixup just created
-          last_true_commit=$(git log --grep '^(fixup!|squash!)' -E --invert-grep -n 1 --pretty=%H 2>/dev/null || true)
-          if [[ -z "$last_true_commit" ]]; then
-            error "Could not determine base commit to squash into"
-            exit 1
+          # Identify baseline and true commit
+          last_true_commit=$(git log --grep '^(fixup!|squash!)|^baseline\(auto\):' -E --invert-grep -n 1 --pretty=%H 2>/dev/null || true)
+          last_baseline=$(git log -n 1 --grep '^baseline(auto):' --pretty=%H 2>/dev/null || true)
+
+          # Ensure a baseline exists after the last true commit
+          if [[ -z "$last_baseline" ]] || ! git merge-base --is-ancestor "$last_true_commit" "$last_baseline" >/dev/null 2>&1; then
+            info "Creating baseline(auto) for this cycle"
+            git commit --no-verify --allow-empty -m "baseline(auto): $(date '+%Y-%m-%d %H:%M')" >/dev/null 2>&1 || true
+            last_baseline=$(git log -n 1 --grep '^baseline(auto):' --pretty=%H 2>/dev/null || true)
           fi
 
-          # Check if there are fixup/squash commits to process
-          if ! git log --pretty=%s "''${last_true_commit}..HEAD" | grep -E '^(fixup!|squash!)' >/dev/null 2>&1; then
+          # If there are uncommitted changes, include them as a fixup to the baseline
+          if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+            git add -A
+            git commit --no-verify --fixup "$last_baseline" >/dev/null 2>&1 || true
+          fi
+
+          # Check if there are fixups targeting baseline to process
+          range="''${last_baseline}..HEAD"
+          if ! git log --pretty=%s "$range" | grep -E '^(fixup!|squash!)' >/dev/null 2>&1; then
             info "No auto commits to squash; creating a new commit"
-            # nothing to squash; create a regular commit (fast-path)
-            # Use empty tree check to avoid failing when nothing to commit
             if git diff-index --quiet HEAD -- 2>/dev/null; then
               warn "Nothing to commit"
               exit 0
@@ -196,21 +233,25 @@ with lib; rec {
               git add -A
               git commit --no-verify -m "$MESSAGE"
               success "Committed: $MESSAGE"
+              # Create a new baseline for next cycle
+              git commit --no-verify --allow-empty -m "baseline(auto): $(date '+%Y-%m-%d %H:%M')" >/dev/null 2>&1 || true
               exit 0
             fi
           fi
 
-          info "Autosquashing fixups into ''${last_true_commit:0:7}"
+          info "Autosquashing fixups into baseline ''${last_baseline:0:7}"
           export GIT_SEQUENCE_EDITOR=:
-          if ! git rebase -i --autosquash "''${last_true_commit}^"; then
+          if ! git rebase -i --autosquash "''${last_baseline}^"; then
             error "Autosquash rebase failed; aborting"
             git rebase --abort || true
             exit 1
           fi
 
-          # After autosquash, we're on the squashed commit; reword it
+          # After autosquash, we're at the baseline commit; reword it to the provided message
           git commit --no-verify --amend -m "$MESSAGE"
           success "Committed (squashed): $MESSAGE"
+          # Add a new baseline commit for the next cycle
+          git commit --no-verify --allow-empty -m "baseline(auto): $(date '+%Y-%m-%d %H:%M')"
         '';
     };
   };

@@ -216,7 +216,8 @@ Ensure your locale settings in `.env` use supported locales. Check available loc
 
 ## Git Workflow
 
-- Auto-fixup commits: The rebuild tool now creates a small fixup commit before every rebuild to keep the working tree clean (prevents Nix from complaining about a dirty tree). These commits are marked for autosquash and will be folded into your next true commit.
+- Auto-fixup commits: The rebuild tool creates a small fixup commit before every rebuild to keep the working tree clean (prevents Nix complaining about a dirty tree). These commits target a temporary `baseline(auto)` commit and are autosquashed later.
 - True commit with autosquash:
   - `./scripts/bin/true-commit -m "Your message"` — squashes all auto fixups into the last non-fixup commit and replaces its message with the one you provide.
   - If there are uncommitted changes, they are included automatically as a fixup before squashing.
+  - A fresh `baseline(auto)` empty commit is created after each true commit, so future autosaves never overwrite previous true commits.
