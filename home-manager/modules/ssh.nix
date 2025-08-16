@@ -1,5 +1,4 @@
-{ globals, ... }:
-{
+{globals, ...}: {
   programs.ssh = {
     enable = true;
     # Basic SSH configuration without external identity agent

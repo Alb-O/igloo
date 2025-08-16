@@ -1,9 +1,7 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   colors = import ../../lib/themes;
   fonts = import ../../lib/fonts.nix pkgs;
-in
-{
+in {
   programs.kitty = {
     enable = true;
     font.name = fonts.mono.name;

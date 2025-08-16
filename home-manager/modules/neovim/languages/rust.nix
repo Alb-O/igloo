@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Rust development environment
   home.packages = with pkgs; [
     # Core Rust toolchain

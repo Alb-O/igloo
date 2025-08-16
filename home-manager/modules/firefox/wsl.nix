@@ -3,21 +3,21 @@
   lib,
   globals,
   ...
-}:
-let
+}: let
   # Import modular configurations (same as main firefox module)
-  policiesConfig = import ./policies.nix { };
-  extensionsConfig = import ./extensions.nix { };
-  profileConfig = import ./profile.nix { inherit lib; };
-in
-{
+  policiesConfig = import ./policies.nix {};
+  extensionsConfig = import ./extensions.nix {};
+  profileConfig = import ./profile.nix {inherit lib;};
+in {
   programs.firefox = {
     enable = true;
 
     # Security and extension policies (same as full configuration)
-    policies = policiesConfig.policies // {
-      ExtensionSettings = extensionsConfig.extensionSettings;
-    };
+    policies =
+      policiesConfig.policies
+      // {
+        ExtensionSettings = extensionsConfig.extensionSettings;
+      };
 
     # User profile configuration
     profiles.${globals.user.username} = {

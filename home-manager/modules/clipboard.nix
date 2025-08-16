@@ -1,13 +1,12 @@
 # Clipboard manager configuration for Wayland
 # Ensures clipboard content persists even after source application closes
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Enable cliphist service to manage clipboard history
   systemd.user.services.cliphist = {
     Unit = {
       Description = "Clipboard manager for Wayland";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
     };
 
     Service = {
@@ -18,7 +17,7 @@
     };
 
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = ["graphical-session.target"];
     };
   };
 

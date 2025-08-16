@@ -7,8 +7,7 @@
   pkgs,
   globals,
   ...
-}:
-{
+}: {
   imports = [
     inputs.home-manager.nixosModules.home-manager
   ];

@@ -11,8 +11,7 @@
   pkgs,
   globals,
   ...
-}:
-{
+}: {
   imports = [
     # Import our modular NixOS configuration
     ../../modules

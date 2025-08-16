@@ -3,19 +3,17 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   colors = import ../../lib/themes;
-in
-{
+in {
   # Include swww package in user environment
-  home.packages = [ pkgs.swww ];
+  home.packages = [pkgs.swww];
 
   # swww daemon service
   systemd.user.services.swww-daemon = {
     Unit = {
       Description = "swww wallpaper daemon";
-      After = [ "graphical-session.target" ];
+      After = ["graphical-session.target"];
       # Only start if WAYLAND_DISPLAY is set (i.e., Wayland session is running)
       ConditionEnvironment = "WAYLAND_DISPLAY";
     };
@@ -27,7 +25,7 @@ in
       RestartSec = "5s";
     };
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = ["graphical-session.target"];
     };
   };
 

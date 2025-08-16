@@ -3,8 +3,8 @@
   window-rules = [
     # WezTerm workaround
     {
-      matches = [ { app-id = "^org\\.wezfurlong\\.wezterm$"; } ];
-      default-column-width = { };
+      matches = [{app-id = "^org\\.wezfurlong\\.wezterm$";}];
+      default-column-width = {};
     }
 
     # Firefox picture-in-picture

@@ -3,8 +3,7 @@
   pkgs,
   globals,
   ...
-}:
-{
+}: {
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
@@ -20,7 +19,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.supportedFilesystems = [ "ntfs" ];
+  boot.supportedFilesystems = ["ntfs"];
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -76,7 +75,7 @@
   # Host-specific SDDM theme override
   services.displayManager.sddm = {
     package = pkgs.kdePackages.sddm;
-    extraPackages = with pkgs; [ sddm-astronaut ];
+    extraPackages = with pkgs; [sddm-astronaut];
     theme = "sddm-astronaut-theme";
   };
 

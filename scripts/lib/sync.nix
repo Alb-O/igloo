@@ -1,9 +1,7 @@
 # Generic cross-platform sync framework
-with import <nixpkgs> { };
+with import <nixpkgs> {};
 with import ./common.nix;
-with lib;
-
-rec {
+with lib; rec {
   # Base sync operation types
   syncTypes = {
     copy = "copy";
@@ -15,12 +13,13 @@ rec {
 
   # Platform detection utilities
   platformDetection = {
-    isWSL = runCommand "check-wsl" { buildInputs = [ coreutils ]; }
+    isWSL =
+      runCommand "check-wsl" {buildInputs = [coreutils];}
       # bash
       ''
-        if [[ -n "''${WSL_DISTRO_NAME:-}" ]] || 
-           grep -qi "microsoft.*wsl" /proc/version 2>/dev/null || 
-           [[ -d "/mnt/wsl" ]] || 
+        if [[ -n "''${WSL_DISTRO_NAME:-}" ]] ||
+           grep -qi "microsoft.*wsl" /proc/version 2>/dev/null ||
+           [[ -d "/mnt/wsl" ]] ||
            [[ -d "/mnt/c" ]]; then
           echo "true" > "$out"
         else
@@ -28,7 +27,8 @@ rec {
         fi
       '';
 
-    isNixOS = runCommand "check-nixos" { buildInputs = [ coreutils ]; }
+    isNixOS =
+      runCommand "check-nixos" {buildInputs = [coreutils];}
       # bash
       ''
         if [[ -f /etc/NIXOS ]]; then
@@ -61,165 +61,173 @@ rec {
 
     # Generic path expansion with variable substitution
     expandPath = path: variables:
-      # bash
-      ''
-        expanded_path="${path}"
-        ${concatStringsSep "\n" (
-          mapAttrsToList (var: value: ''
-            expanded_path="''${expanded_path//\$${var}/${value}}"
-          '') variables
-        )}
-      '';
+    # bash
+    ''
+      expanded_path="${path}"
+      ${concatStringsSep "\n" (
+        mapAttrsToList (var: value: ''
+          expanded_path="''${expanded_path//\$${var}/${value}}"
+        '')
+        variables
+      )}
+    '';
   };
 
   # Environment validation framework
-  createValidator =
-    {
-      name,
-      detection,
-      errorMsg ? "Environment validation failed",
-    }:
-    # bash
-    ''
-      # ${name} validation
-      ${detection}
-      if [[ $? -ne 0 ]]; then
-        error "${errorMsg}"
-        exit 1
-      fi
-      info "${name} environment detected"
-    '';
+  createValidator = {
+    name,
+    detection,
+    errorMsg ? "Environment validation failed",
+  }:
+  # bash
+  ''
+    # ${name} validation
+    ${detection}
+    if [[ $? -ne 0 ]]; then
+      error "${errorMsg}"
+      exit 1
+    fi
+    info "${name} environment detected"
+  '';
 
   # Generic sync operation builder
-  syncOperation =
-    {
-      name,
-      description ? "",
-      # Source and destination can contain variables like $USER, $WINDOWS_USER
-      source,
-      destination,
-      # Platform requirements
-      requiresWSL ? false,
-      requiresNixOS ? false,
-      # Sync configuration
-      syncType ? "copy",
-      excludePatterns ? [ ],
-      includePatterns ? [ ],
-      # Hooks
-      preValidation ? "",
-      postValidation ? "",
-      preSync ? "",
-      postSync ? "",
-      # Custom sync implementation (for syncType = "custom")
-      customSync ? "",
-      # Backup configuration
-      createBackup ? false,
-      backupLocation ? "",
-      # Permissions
-      preservePermissions ? true,
-      setPermissions ? { },
-      # Dependencies
-      additionalDeps ? [ ],
-    }:
-    let
-      # Build validation script
-      validationScript = concatStringsSep "\n" [
-        preValidation
-        (optionalString requiresWSL ''
-          if [[ -z "''${WSL_DISTRO_NAME:-}" ]] && 
-             ! grep -qi "microsoft.*wsl" /proc/version 2>/dev/null && 
-             [[ ! -d "/mnt/c" ]]; then
-            error "This operation requires WSL environment"
-            exit 1
+  syncOperation = {
+    name,
+    description ? "",
+    # Source and destination can contain variables like $USER, $WINDOWS_USER
+    source,
+    destination,
+    # Platform requirements
+    requiresWSL ? false,
+    requiresNixOS ? false,
+    # Sync configuration
+    syncType ? "copy",
+    excludePatterns ? [],
+    includePatterns ? [],
+    # Hooks
+    preValidation ? "",
+    postValidation ? "",
+    preSync ? "",
+    postSync ? "",
+    # Custom sync implementation (for syncType = "custom")
+    customSync ? "",
+    # Backup configuration
+    createBackup ? false,
+    backupLocation ? "",
+    # Permissions
+    preservePermissions ? true,
+    setPermissions ? {},
+    # Dependencies
+    additionalDeps ? [],
+  }: let
+    # Build validation script
+    validationScript = concatStringsSep "\n" [
+      preValidation
+      (optionalString requiresWSL ''
+        if [[ -z "''${WSL_DISTRO_NAME:-}" ]] &&
+           ! grep -qi "microsoft.*wsl" /proc/version 2>/dev/null &&
+           [[ ! -d "/mnt/c" ]]; then
+          error "This operation requires WSL environment"
+          exit 1
+        fi
+        info "WSL environment detected"
+      '')
+      (optionalString requiresNixOS ''
+        if [[ ! -f /etc/NIXOS ]]; then
+          error "This operation requires NixOS"
+          exit 1
+        fi
+        info "NixOS environment detected"
+      '')
+      (optionalString requiresWSL pathResolver.windowsUserScript)
+      postValidation
+    ];
+
+    # Build sync script based on type
+    syncScript =
+      if syncType == "copy"
+      then
+        # bash
+        ''
+          if [[ -d "$expanded_source" ]]; then
+            cp -r ${optionalString preservePermissions "-p"} "$expanded_source/"* "$expanded_destination/"
+          else
+            cp ${optionalString preservePermissions "-p"} "$expanded_source" "$expanded_destination"
           fi
-          info "WSL environment detected"
-        '')
-        (optionalString requiresNixOS ''
-          if [[ ! -f /etc/NIXOS ]]; then
-            error "This operation requires NixOS"
-            exit 1
+        ''
+      else if syncType == "rsync"
+      then
+        # bash
+        ''
+          rsync -av ${optionalString (!preservePermissions) "--no-perms --no-owner --no-group"} \
+            ${concatStringsSep " " (map (p: "--exclude='${p}'") excludePatterns)} \
+            ${concatStringsSep " " (map (p: "--include='${p}'") includePatterns)} \
+            ${
+            if includePatterns != []
+            then "--exclude='*'"
+            else ""
+          } \
+            ${
+            if hasSuffix "/" source
+            then ''"$expanded_source/" "$expanded_destination/"''
+            else ''"$expanded_source" "$expanded_destination"''
+          }
+        ''
+      else if syncType == "symlink"
+      then
+        # bash
+        ''
+          ln -sf "$expanded_source" "$expanded_destination"
+        ''
+      else if syncType == "merge"
+      then
+        # bash
+        ''
+          # Merge operation - copy files but don't overwrite destination structure
+          if [[ -d "$expanded_source" ]]; then
+            find "$expanded_source" -type f -exec bash -c '
+              rel_path="$1"
+              rel_path="''${rel_path#'"$expanded_source"'/}"
+              dest_file="'"$expanded_destination"'/$rel_path"
+              mkdir -p "$(dirname "$dest_file")"
+              cp ${optionalString preservePermissions "-p"} "$1" "$dest_file"
+            ' _ {} \;
+          else
+            cp ${optionalString preservePermissions "-p"} "$expanded_source" "$expanded_destination"
           fi
-          info "NixOS environment detected"
+        ''
+      else if syncType == "custom"
+      then customSync
+      else throw "Unknown sync type: ${syncType}";
+
+    # Build permissions script
+    permissionsScript = concatStringsSep "\n" (
+      mapAttrsToList (path: perm:
+        # bash
+        ''
+          if [[ -e "${path}" ]]; then
+            chmod ${perm} "${path}"
+          fi
         '')
-        (optionalString requiresWSL pathResolver.windowsUserScript)
-        postValidation
-      ];
+      setPermissions
+    );
 
-      # Build sync script based on type
-      syncScript =
-        if syncType == "copy" then
-          # bash
-          ''
-            if [[ -d "$expanded_source" ]]; then
-              cp -r ${optionalString preservePermissions "-p"} "$expanded_source/"* "$expanded_destination/"
-            else
-              cp ${optionalString preservePermissions "-p"} "$expanded_source" "$expanded_destination"
-            fi
-          ''
-        else if syncType == "rsync" then
-          # bash
-          ''
-            rsync -av ${optionalString (!preservePermissions) "--no-perms --no-owner --no-group"} \
-              ${concatStringsSep " " (map (p: "--exclude='${p}'") excludePatterns)} \
-              ${concatStringsSep " " (map (p: "--include='${p}'") includePatterns)} \
-              ${if includePatterns != [ ] then "--exclude='*'" else ""} \
-              ${
-                if hasSuffix "/" source then
-                  ''"$expanded_source/" "$expanded_destination/"''
-                else
-                  ''"$expanded_source" "$expanded_destination"''
-              }
-          ''
-        else if syncType == "symlink" then
-          # bash
-          ''
-            ln -sf "$expanded_source" "$expanded_destination"
-          ''
-        else if syncType == "merge" then
-          # bash
-          ''
-            # Merge operation - copy files but don't overwrite destination structure
-            if [[ -d "$expanded_source" ]]; then
-              find "$expanded_source" -type f -exec bash -c '
-                rel_path="$1"
-                rel_path="''${rel_path#'"$expanded_source"'/}"
-                dest_file="'"$expanded_destination"'/$rel_path"
-                mkdir -p "$(dirname "$dest_file")"
-                cp ${optionalString preservePermissions "-p"} "$1" "$dest_file"
-              ' _ {} \;
-            else
-              cp ${optionalString preservePermissions "-p"} "$expanded_source" "$expanded_destination"
-            fi
-          ''
-        else if syncType == "custom" then
-          customSync
-        else
-          throw "Unknown sync type: ${syncType}";
-
-      # Build permissions script
-      permissionsScript = concatStringsSep "\n" (
-        mapAttrsToList (path: perm:
-          # bash
-          ''
-            if [[ -e "${path}" ]]; then
-              chmod ${perm} "${path}"
-            fi
-          '') setPermissions
-      );
-
-      # All required packages
-      allDeps = [
+    # All required packages
+    allDeps =
+      [
         coreutils
         findutils
       ]
       ++ (optional (syncType == "rsync") rsync)
       ++ additionalDeps;
-
-    in
+  in
     wrap {
       name = "sync-${name}";
       paths = allDeps;
-      description = if description != "" then description else "Sync ${name} configuration";
+      description =
+        if description != ""
+        then description
+        else "Sync ${name} configuration";
       script =
         # bash
         ''
@@ -260,11 +268,10 @@ rec {
           ${optionalString createBackup ''
             if [[ -e "$expanded_destination" ]]; then
               backup_target="${
-                if backupLocation != "" then
-                  backupLocation
-                else
-                  "$expanded_destination.backup-$(date +%Y%m%d-%H%M%S)"
-              }"
+              if backupLocation != ""
+              then backupLocation
+              else "$expanded_destination.backup-$(date +%Y%m%d-%H%M%S)"
+            }"
               info "Creating backup at: $backup_target"
               cp -r "$expanded_destination" "$backup_target"
               success "Backup created"
@@ -297,33 +304,40 @@ rec {
     # List all apps in category
     list = wrap {
       name = "list-${name}-apps";
-      paths = [ coreutils ];
+      paths = [coreutils];
       description = "List ${name} sync applications";
       script =
         # bash
         ''
           echo "${name} Applications:"
-          echo "${strings.stringAsChars (c: if c == name then "=" else "=") name}============"
+          echo "${strings.stringAsChars (c:
+            if c == name
+            then "="
+            else "=")
+          name}============"
           ${concatStringsSep "\n" (
             mapAttrsToList (appName: appDesc: ''
               echo "  • ${appName} - ${appDesc}"
-            '') apps
+            '')
+            apps
           )}
         '';
     };
   };
 
   # Bundle creator for batch operations
-  createBundle =
-    {
-      name,
-      operations,
-      description ? "",
-    }:
+  createBundle = {
+    name,
+    operations,
+    description ? "",
+  }:
     wrap {
       name = "bundle-${name}";
-      paths = [ coreutils ];
-      description = if description != "" then description else "Execute ${name} bundle";
+      paths = [coreutils];
+      description =
+        if description != ""
+        then description
+        else "Execute ${name} bundle";
       script =
         # bash
         ''
@@ -331,67 +345,64 @@ rec {
           echo
 
           ${concatMapStringsSep "\n" (op: ''
-            info "Running ${op.name or "operation"}..."
-            ${op}/bin/*
-            echo
-          '') operations}
+              info "Running ${op.name or "operation"}..."
+              ${op}/bin/*
+              echo
+            '')
+            operations}
 
           success "${name} bundle complete!"
         '';
     };
 
   # Plugin system for extending sync capabilities
-  createPlugin =
-    {
-      name,
-      operations ? { },
-      categories ? { },
-      bundles ? { },
-      setup ? "",
-      teardown ? "",
-    }:
-    {
-      inherit
-        name
-        operations
-        categories
-        bundles
-        ;
+  createPlugin = {
+    name,
+    operations ? {},
+    categories ? {},
+    bundles ? {},
+    setup ? "",
+    teardown ? "",
+  }: {
+    inherit
+      name
+      operations
+      categories
+      bundles
+      ;
 
-      # Plugin initialization
-      init = wrap {
-        name = "init-${name}-plugin";
-        paths = [ coreutils ];
-        description = "Initialize ${name} sync plugin";
-        script =
-          # bash
-          ''
-            info "Initializing ${name} plugin..."
-            ${setup}
-            success "${name} plugin initialized"
-          '';
-      };
-
-      # Plugin cleanup
-      cleanup = wrap {
-        name = "cleanup-${name}-plugin";
-        paths = [ coreutils ];
-        description = "Cleanup ${name} sync plugin";
-        script =
-          # bash
-          ''
-            info "Cleaning up ${name} plugin..."
-            ${teardown}
-            success "${name} plugin cleaned up"
-          '';
-      };
-
-      # Get operation by name
-      getOperation =
-        name:
-        if hasAttr name operations then
-          getAttr name operations
-        else
-          throw "Unknown operation '${name}' in plugin '${name}'";
+    # Plugin initialization
+    init = wrap {
+      name = "init-${name}-plugin";
+      paths = [coreutils];
+      description = "Initialize ${name} sync plugin";
+      script =
+        # bash
+        ''
+          info "Initializing ${name} plugin..."
+          ${setup}
+          success "${name} plugin initialized"
+        '';
     };
+
+    # Plugin cleanup
+    cleanup = wrap {
+      name = "cleanup-${name}-plugin";
+      paths = [coreutils];
+      description = "Cleanup ${name} sync plugin";
+      script =
+        # bash
+        ''
+          info "Cleaning up ${name} plugin..."
+          ${teardown}
+          success "${name} plugin cleaned up"
+        '';
+    };
+
+    # Get operation by name
+    getOperation = name:
+      if hasAttr name operations
+      then getAttr name operations
+      else throw "Unknown operation '${name}' in plugin '${name}'";
+  };
 }

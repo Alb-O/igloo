@@ -1,9 +1,7 @@
 # Bootstrap system
-with import <nixpkgs> { };
+with import <nixpkgs> {};
 with import ./common.nix;
-with lib;
-
-rec {
+with lib; rec {
   # Nix installation checker and installer
   nixInstaller = wrap {
     name = "nix-installer";
@@ -44,47 +42,46 @@ rec {
   # Nix configuration setup
   nixConfigurator = wrap {
     name = "nix-configurator";
-    paths = [ coreutils ];
+    paths = [coreutils];
     description = "Configure Nix with flakes and trusted users";
     script =
       # bash
       ''
-        info "Configuring Nix with flakes support..."
-        
-        # User config
-        mkdir -p ~/.config/nix
-        cat > ~/.config/nix/nix.conf << 'EOF'
-experimental-features = nix-command flakes
-EOF
-        
-        # System config (requires sudo) - handle WSL differences
-        if ! grep -q "trusted-users.*$(whoami)" /etc/nix/nix.conf 2>/dev/null; then
-          info "Adding $(whoami) to trusted Nix users..."
-          if echo "trusted-users = root $(whoami)" | sudo tee -a /etc/nix/nix.conf >/dev/null 2>&1; then
-            # Restart nix-daemon if available (may not be on WSL)
-            if systemctl is-active nix-daemon &>/dev/null; then
-              sudo systemctl restart nix-daemon
-              success "Added $(whoami) as trusted Nix user and restarted daemon"
-            else
-              success "Added $(whoami) as trusted Nix user"
-              info "Note: nix-daemon not running (normal for WSL)"
-            fi
-          else
-            warn "Could not modify /etc/nix/nix.conf (read-only filesystem)"
-            warn "This is normal for NixOS - warnings about restricted settings can be ignored"
-          fi
-        fi
-        
-        success "Nix configured"
+                info "Configuring Nix with flakes support..."
+
+                # User config
+                mkdir -p ~/.config/nix
+                cat > ~/.config/nix/nix.conf << 'EOF'
+        experimental-features = nix-command flakes
+        EOF
+
+                # System config (requires sudo) - handle WSL differences
+                if ! grep -q "trusted-users.*$(whoami)" /etc/nix/nix.conf 2>/dev/null; then
+                  info "Adding $(whoami) to trusted Nix users..."
+                  if echo "trusted-users = root $(whoami)" | sudo tee -a /etc/nix/nix.conf >/dev/null 2>&1; then
+                    # Restart nix-daemon if available (may not be on WSL)
+                    if systemctl is-active nix-daemon &>/dev/null; then
+                      sudo systemctl restart nix-daemon
+                      success "Added $(whoami) as trusted Nix user and restarted daemon"
+                    else
+                      success "Added $(whoami) as trusted Nix user"
+                      info "Note: nix-daemon not running (normal for WSL)"
+                    fi
+                  else
+                    warn "Could not modify /etc/nix/nix.conf (read-only filesystem)"
+                    warn "This is normal for NixOS - warnings about restricted settings can be ignored"
+                  fi
+                fi
+
+                success "Nix configured"
       '';
   };
 
   # Repository setup with git configuration
-  repoSetup =
-    {
-      gitUrl ? null,
-      repoDir ? "nix-config",
-    }:
+  repoSetup = {
+    gitUrl ? null,
+    repoDir ? "nix-config",
+  }:
     wrap {
       name = "repo-setup";
       paths = [
@@ -100,31 +97,30 @@ EOF
         # bash
         ''
           ${
-            if gitUrl != null then
-              ''
-                if [[ -d "$REPO_DIR" ]]; then
-                  warn "Directory $REPO_DIR already exists, using existing repo"
-                  cd "$REPO_DIR"
-                else
-                  info "Cloning configuration from $GIT_URL..."
-                  git clone "$GIT_URL" "$REPO_DIR"
-                  cd "$REPO_DIR"
-                  success "Repository cloned"
-                fi
-              ''
-            else
-              ''
-                # Check if we're already inside the repo
-                if [[ -f "flake.nix" && -d "scripts" ]]; then
-                  info "Already inside repository"
-                elif [[ -d "$REPO_DIR" ]]; then
-                  info "Using existing $REPO_DIR directory"
-                  cd "$REPO_DIR"
-                else
-                  error "No git URL provided and not in a repository with flake.nix"
-                  exit 1
-                fi
-              ''
+            if gitUrl != null
+            then ''
+              if [[ -d "$REPO_DIR" ]]; then
+                warn "Directory $REPO_DIR already exists, using existing repo"
+                cd "$REPO_DIR"
+              else
+                info "Cloning configuration from $GIT_URL..."
+                git clone "$GIT_URL" "$REPO_DIR"
+                cd "$REPO_DIR"
+                success "Repository cloned"
+              fi
+            ''
+            else ''
+              # Check if we're already inside the repo
+              if [[ -f "flake.nix" && -d "scripts" ]]; then
+                info "Already inside repository"
+              elif [[ -d "$REPO_DIR" ]]; then
+                info "Using existing $REPO_DIR directory"
+                cd "$REPO_DIR"
+              else
+                error "No git URL provided and not in a repository with flake.nix"
+                exit 1
+              fi
+            ''
           }
 
           # Environment setup - ensure .env exists
@@ -188,7 +184,7 @@ EOF
   # Home Manager installer
   homeManagerInstaller = wrap {
     name = "home-manager-installer";
-    paths = [ nix ];
+    paths = [nix];
     description = "Install and verify Home Manager";
     script =
       # bash
@@ -232,14 +228,13 @@ EOF
   };
 
   # Bootstrap pipeline - combines all steps
-  bootstrapPipeline =
-    {
-      hostname,
-      gitUrl ? null,
-      repoDir ? "nix-config",
-      skipNixInstall ? false,
-      autoBootstrap ? false,
-    }:
+  bootstrapPipeline = {
+    hostname,
+    gitUrl ? null,
+    repoDir ? "nix-config",
+    skipNixInstall ? false,
+    autoBootstrap ? false,
+  }:
     wrap {
       name = "bootstrap-${hostname}";
       paths = [
@@ -249,7 +244,10 @@ EOF
       description = "Complete bootstrap pipeline for ${hostname}";
       vars = {
         HOSTNAME = hostname;
-        AUTO_BOOTSTRAP = if autoBootstrap then "true" else "false";
+        AUTO_BOOTSTRAP =
+          if autoBootstrap
+          then "true"
+          else "false";
       };
       script =
         # bash
@@ -261,7 +259,7 @@ EOF
           fi
 
           info "Bootstrapping NixOS configuration for $HOSTNAME"
-          
+
           # Detect environment
           if [[ -n "$WSL_DISTRO_NAME" ]] || grep -qi microsoft /proc/version 2>/dev/null; then
             info "WSL environment detected"
@@ -269,7 +267,7 @@ EOF
           else
             export WSL_ENV=false
           fi
-          
+
           echo
 
           ${optionalString (!skipNixInstall) ''
@@ -283,7 +281,7 @@ EOF
           echo
 
           # Step 3: Setup repository
-          ${repoSetup { inherit gitUrl repoDir; }}/bin/repo-setup
+          ${repoSetup {inherit gitUrl repoDir;}}/bin/repo-setup
           echo
 
           # Step 4: Install Home Manager
@@ -312,7 +310,7 @@ EOF
             fi
             read -p "Choice [1-3]: " -n 1 -r choice
             echo
-            
+
             case $choice in
               1)
                 info "Bootstrapping Home Manager configuration..."
@@ -346,5 +344,4 @@ EOF
           echo "  • Use './scripts/bin/rebuild $HOSTNAME --dev' for fast rebuilds"
         '';
     };
-
 }

@@ -1,7 +1,6 @@
 # Desktop environment configuration
 # Handles themes, fonts, and desktop-wide settings
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   fonts = import ../../lib/fonts.nix pkgs;
   #colors = import ../../lib/themes/default.nix;
   # Generate GTK CSS from theme colors
@@ -97,8 +96,7 @@ let
   #   @define-color secondary_sidebar_backdrop_color ${colors.ui.background.tertiary};
   #   @define-color secondary_sidebar_shade_color ${colors.ui.background.tertiary};
   # '';
-in
-{
+in {
   # Fontconfig for better font rendering
   fonts.fontconfig = {
     enable = true;
@@ -146,7 +144,7 @@ in
     };
 
     # GTK bookmarks file
-    gtk3.bookmarks = [ ];
+    gtk3.bookmarks = [];
 
     # Enable GTK4 features
     gtk3.extraConfig = {

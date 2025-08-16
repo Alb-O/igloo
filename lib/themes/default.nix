@@ -83,27 +83,25 @@ let
   # Generate colors for current theme
   colors = getSemanticColors currentTheme;
 in
-# Export colors directly
-colors
-// {
-  # Theme metadata
-  theme = {
-    name = currentTheme.name;
-    id = activeTheme;
-  };
+  # Export colors directly
+  colors
+  // {
+    # Theme metadata
+    theme = {
+      name = currentTheme.name;
+      id = activeTheme;
+    };
 
-  # Raw palette access
-  palette = currentTheme.palette;
+    # Raw palette access
+    palette = currentTheme.palette;
 
-  # Utils
-  utils = {
-    availableThemes = builtins.attrNames themes;
-    hasTheme = themeName: builtins.hasAttr themeName themes;
-    getThemeColors =
-      themeName:
-      if builtins.hasAttr themeName themes then
-        getSemanticColors themes.${themeName}
-      else
-        throw "Theme '${themeName}' not found";
-  };
-}
+    # Utils
+    utils = {
+      availableThemes = builtins.attrNames themes;
+      hasTheme = themeName: builtins.hasAttr themeName themes;
+      getThemeColors = themeName:
+        if builtins.hasAttr themeName themes
+        then getSemanticColors themes.${themeName}
+        else throw "Theme '${themeName}' not found";
+    };
+  }

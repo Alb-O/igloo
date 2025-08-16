@@ -1,6 +1,5 @@
 # System-wide packages configuration
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     # Essential tools
     wget

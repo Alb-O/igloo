@@ -2,12 +2,12 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   # XDG Base Directory Specification
   # Sets up proper XDG environment variables and directory structure
 
   # XDG base directories are enabled at the system level in NixOS configuration
+  # (use-xdg-base-directories is set in nixos/modules/xdg.nix)
   nix = {
     package = lib.mkDefault pkgs.nix;
   };
@@ -92,4 +92,7 @@
       videos = "$HOME/vids";
     };
   };
+
+  # Enable generic Linux target for proper session variable handling
+  targets.genericLinux.enable = true;
 }

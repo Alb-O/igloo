@@ -1,6 +1,5 @@
 # GNOME Keyring configuration without desktop dependencies
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # GNOME Keyring service - minimal keyring without GNOME desktop
   services.gnome.gnome-keyring.enable = true;
 

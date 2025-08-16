@@ -1,9 +1,7 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   colors = import ../../lib/themes;
   fonts = import ../../lib/fonts.nix pkgs;
-in
-{
+in {
   services.mako = {
     enable = true;
 

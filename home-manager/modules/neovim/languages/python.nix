@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Python development environment
   home.packages = with pkgs; [
     # Python runtime and package manager

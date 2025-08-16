@@ -1,10 +1,8 @@
 # WSL sync plugin using the generic sync framework
-with import <nixpkgs> { };
+with import <nixpkgs> {};
 with import ../common.nix;
 with import ../sync.nix;
-with lib;
-
-rec {
+with lib; rec {
   # Firefox operations
   firefoxOperations = {
     # Complete Firefox sync (WSL → Windows)
@@ -44,13 +42,13 @@ rec {
           if [[ -f "$nixos_user_js" ]] || [[ -L "$nixos_user_js" ]]; then
             target_nixos_profile="$expanded_destination/nixos"
             mkdir -p "$target_nixos_profile"
-            
+
             real_user_js=$(readlink -f "$nixos_user_js")
             if [[ -f "$real_user_js" ]]; then
               cp "$real_user_js" "$target_nixos_profile/user.js"
               success "Copied NixOS Firefox preferences"
             fi
-            
+
             # Copy essential files
             for file in places.sqlite bookmarks.html; do
               if [[ -f "$HOME/.mozilla/firefox/nixos/$file" ]]; then
@@ -84,7 +82,7 @@ rec {
             profile_path=$(dirname "$places_file")
             profile_name=$(basename "$profile_path")
             target_profile="$expanded_destination/Profiles/$profile_name"
-            
+
             mkdir -p "$target_profile"
             cp "$places_file" "$target_profile/"
             info "Synced bookmarks for profile: $profile_name"
@@ -155,7 +153,7 @@ rec {
       script =
         # bash
         ''
-          if [[ -z "''${WSL_DISTRO_NAME:-}" ]] && 
+          if [[ -z "''${WSL_DISTRO_NAME:-}" ]] &&
              ! grep -qi "microsoft.*wsl" /proc/version 2>/dev/null; then
             error "This operation requires WSL environment"
             exit 1
@@ -245,7 +243,7 @@ rec {
               chmod 600 "$expanded_destination/$key_file"
               success "Synced private key: $key_file"
             fi
-            
+
             if [[ -f "$expanded_source/$key_file.pub" ]]; then
               cp "$expanded_source/$key_file.pub" "$expanded_destination/"
               chmod 644 "$expanded_destination/$key_file.pub"
@@ -301,7 +299,7 @@ rec {
     browser = createBundle {
       name = "browser";
       description = "Browser configuration bundle";
-      operations = [ operations.firefox ];
+      operations = [operations.firefox];
     };
 
     all = createBundle {
@@ -339,16 +337,14 @@ rec {
   inherit operations categories bundles;
 
   # Helper functions for CLI compatibility
-  getSyncUtility =
-    name:
-    if hasAttr name operations then
-      getAttr name operations
-    else
-      throw "Unknown sync configuration: ${name}";
+  getSyncUtility = name:
+    if hasAttr name operations
+    then getAttr name operations
+    else throw "Unknown sync configuration: ${name}";
 
   listApplications = wrap {
     name = "list-wsl-apps";
-    paths = [ coreutils ];
+    paths = [coreutils];
     description = "List all available WSL sync applications";
     script =
       # bash
@@ -363,10 +359,12 @@ rec {
             ${concatStringsSep "\n" (
               mapAttrsToList (name: desc: ''
                 echo "  • ${name} - ${desc}"
-              '') category.apps
+              '')
+              category.apps
             )}
             echo
-          '') categories
+          '')
+          categories
         )}
 
         echo "Bundles:"

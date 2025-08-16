@@ -4,8 +4,7 @@
   inputs,
   pkgs,
   ...
-}:
-let
+}: let
   colors = import ../../../lib/themes;
 
   # Convert our colorscheme to nix-colors format (remove # from hex colors)
@@ -45,11 +44,9 @@ let
 
   # Generate userstyles using nix-userstyles (only if available)
   userStyles =
-    if inputs ? nix-userstyles && inputs.nix-userstyles ? packages.${pkgs.system}.mkUserStyles then
-      inputs.nix-userstyles.packages.${pkgs.system}.mkUserStyles nixColorsCompatiblePalette supportedSites
-    else
-      "";
-in
-{
+    if inputs ? nix-userstyles && inputs.nix-userstyles ? packages.${pkgs.system}.mkUserStyles
+    then inputs.nix-userstyles.packages.${pkgs.system}.mkUserStyles nixColorsCompatiblePalette supportedSites
+    else "";
+in {
   inherit nixColorsCompatiblePalette supportedSites userStyles;
 }

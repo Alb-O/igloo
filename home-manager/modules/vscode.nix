@@ -1,8 +1,6 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   fonts = import ../../lib/fonts.nix pkgs;
-in
-{
+in {
   programs.vscode = {
     enable = true;
     package = pkgs.unstable.vscode;

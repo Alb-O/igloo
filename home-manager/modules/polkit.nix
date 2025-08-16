@@ -1,13 +1,12 @@
 # Polkit GNOME authentication agent for user session
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Polkit authentication agent service
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     Unit = {
       Description = "polkit-gnome-authentication-agent-1";
-      Wants = [ "graphical-session.target" ];
-      WantedBy = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
+      Wants = ["graphical-session.target"];
+      WantedBy = ["graphical-session.target"];
+      After = ["graphical-session.target"];
     };
     Service = {
       Type = "simple";
@@ -17,7 +16,7 @@
       TimeoutStopSec = 1;
     };
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = ["graphical-session.target"];
     };
   };
 }

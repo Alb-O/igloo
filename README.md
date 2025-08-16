@@ -213,3 +213,10 @@ git pull origin main
 
 ### Locale Errors
 Ensure your locale settings in `.env` use supported locales. Check available locales with `locale -a`.
+
+## Git Workflow
+
+- Auto-fixup commits: The rebuild tool now creates a small fixup commit before every rebuild to keep the working tree clean (prevents Nix from complaining about a dirty tree). These commits are marked for autosquash and will be folded into your next true commit.
+- True commit with autosquash:
+  - `./scripts/bin/true-commit -m "Your message"` — squashes all auto fixups into the last non-fixup commit and replaces its message with the one you provide.
+  - If there are uncommitted changes, they are included automatically as a fixup before squashing.

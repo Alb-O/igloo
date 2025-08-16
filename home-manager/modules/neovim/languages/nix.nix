@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Nix language support
   home.packages = with pkgs; [
     # Nix LSP servers

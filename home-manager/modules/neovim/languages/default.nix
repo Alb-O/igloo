@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   # Import all language-specific configurations
   imports = [
     ./rust.nix

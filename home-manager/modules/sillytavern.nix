@@ -3,8 +3,7 @@
   pkgs,
   globals,
   ...
-}:
-{
+}: {
   # Package installation
   home.packages = with pkgs.unstable; [
     sillytavern

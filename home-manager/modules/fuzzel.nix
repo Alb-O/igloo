@@ -1,12 +1,10 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   colors = import ../../lib/themes;
   fonts = import ../../lib/fonts.nix pkgs;
   # Helper to add alpha to hex color (e.g. "#3b224c" + "dd" -> "3b224cdd")
-  hexNoHash = hex: builtins.replaceStrings [ "#" ] [ "" ] hex;
+  hexNoHash = hex: builtins.replaceStrings ["#"] [""] hex;
   withAlpha = hex: alpha: hexNoHash hex + alpha;
-in
-{
+in {
   programs.fuzzel = {
     enable = true;
     settings = {

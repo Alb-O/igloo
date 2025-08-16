@@ -142,7 +142,11 @@ case "$MODE" in
 esac
 
 # Execute the rebuild
-REBUILD_SCRIPT=$(nix-build --no-out-link --show-trace -E "$BUILDER" 2>/dev/null)
+if [[ "$VERBOSE" == "true" ]]; then
+    REBUILD_SCRIPT=$(nix-build --no-out-link --show-trace -E "$BUILDER")
+else
+    REBUILD_SCRIPT=$(nix-build --no-out-link --show-trace -E "$BUILDER" 2>/dev/null)
+fi
 
 if [[ $? -ne 0 ]]; then
     error "Failed to build rebuild script"

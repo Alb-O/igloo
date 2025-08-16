@@ -1,6 +1,5 @@
 # Extra hardware-specific configuration
-{ lib, ... }:
-{
+{lib, ...}: {
   # Hardware fan control (no config here)
   hardware.fancontrol = {
     enable = true;
@@ -10,8 +9,8 @@
   # Systemd oneshot service to generate /run/fancontrol.conf at boot
   systemd.services.fancontrol-generate-config = {
     description = "Generate fancontrol config with correct hwmon indices";
-    wantedBy = [ "multi-user.target" ];
-    before = [ "fancontrol.service" ];
+    wantedBy = ["multi-user.target"];
+    before = ["fancontrol.service"];
     serviceConfig.Type = "oneshot";
     script = ''
             set -e
@@ -43,8 +42,8 @@
 
   # Override fancontrol service to use /run/fancontrol.conf and depend on generator
   systemd.services.fancontrol = {
-    after = [ "fancontrol-generate-config.service" ];
-    requires = [ "fancontrol-generate-config.service" ];
+    after = ["fancontrol-generate-config.service"];
+    requires = ["fancontrol-generate-config.service"];
     serviceConfig.ExecStart = lib.mkForce "/run/current-system/sw/bin/fancontrol /run/fancontrol.conf";
     unitConfig.X-StopOnReconfiguration = false;
   };

@@ -6,18 +6,28 @@
   architecture ? "x86_64-linux",
   stateVersion ? "25.05",
   isGraphical ? true,
-}:
-let
+}: let
   bootstrap = import ./bootstrap.nix;
-  finalUsername = if username != null then username else bootstrap.env.USERNAME;
-  finalName = if name != null then name else bootstrap.env.NAME;
-  finalEmail = if email != null then email else bootstrap.env.EMAIL;
-  finalHostname = if hostname != null then hostname else bootstrap.env.HOSTNAME;
+  finalUsername =
+    if username != null
+    then username
+    else bootstrap.env.USERNAME;
+  finalName =
+    if name != null
+    then name
+    else bootstrap.env.NAME;
+  finalEmail =
+    if email != null
+    then email
+    else bootstrap.env.EMAIL;
+  finalHostname =
+    if hostname != null
+    then hostname
+    else bootstrap.env.HOSTNAME;
 
   homeDir = "/home/${finalUsername}";
   actualProjectRoot = bootstrap.actualProjectPath;
-in
-{
+in {
   gtkTheme = bootstrap.env.GTK_THEME or "Adwaita-dark";
   iconTheme = bootstrap.env.ICON_THEME or "Adwaita";
   cursorTheme = bootstrap.env.CURSOR_THEME or "Adwaita";

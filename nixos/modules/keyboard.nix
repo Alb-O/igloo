@@ -1,12 +1,11 @@
 # Keyboard configuration - swap Esc and Caps Lock
-{ ... }:
-{
+{...}: {
   # Key remapping with keyd
   services.keyd = {
     enable = true;
     keyboards = {
       default = {
-        ids = [ "*" ];
+        ids = ["*"];
         settings = {
           main = {
             capslock = "esc";

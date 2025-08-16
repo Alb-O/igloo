@@ -1,6 +1,5 @@
 # This file defines overlays
-{ inputs, ... }:
-[
+{inputs, ...}: [
   # VSCode extensions overlay - use the nix-vscode-extensions overlay
   inputs.nix-vscode-extensions.overlays.default
 

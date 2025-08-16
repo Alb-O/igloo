@@ -6,8 +6,7 @@
   lib,
   modulesPath,
   ...
-}:
-{
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
@@ -19,9 +18,9 @@
     "sd_mod"
     "rtsx_pci_sdmmc"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.kernelModules = [];
+  boot.kernelModules = ["kvm-amd"];
+  boot.extraModulePackages = [];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/f9eb6b74-5f28-4262-a0d3-3ef296eb2ad7";
@@ -38,7 +37,7 @@
   };
 
   swapDevices = [
-    { device = "/dev/disk/by-uuid/36cec786-0adc-4101-86a6-0dfa779ec1cd"; }
+    {device = "/dev/disk/by-uuid/36cec786-0adc-4101-86a6-0dfa779ec1cd";}
   ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

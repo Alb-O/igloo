@@ -1,33 +1,33 @@
 # Rebuild system
-with import <nixpkgs> { };
+with import <nixpkgs> {};
 with import ./common.nix;
-with lib;
-
-rec {
+with lib; rec {
   # Core rebuild pipeline
-  rebuildPipeline =
-    {
-      hostname,
-      username ? null,
-      homeOnly ? false,
-      verbose ? false,
-      autoCommit ? false,
-      skipValidation ? false,
-      updateFlakes ? false,
-    }:
-    let
-      actualUsername = if username != null then username else "$(whoami)";
-      buildScript =
-        if homeOnly then
-          buildPatterns.homeManagerBuild {
-            inherit hostname verbose;
-            username = actualUsername;
-          }
-        else
-          buildPatterns.nixosBuild {
-            inherit hostname verbose;
-          };
-    in
+  rebuildPipeline = {
+    hostname,
+    username ? null,
+    homeOnly ? false,
+    verbose ? false,
+    autoCommit ? false,
+    skipValidation ? false,
+    updateFlakes ? false,
+  }: let
+    actualUsername =
+      if username != null
+      then username
+      else "$(whoami)";
+    buildScript =
+      if homeOnly
+      then
+        buildPatterns.homeManagerBuild {
+          inherit hostname verbose;
+          username = actualUsername;
+        }
+      else
+        buildPatterns.nixosBuild {
+          inherit hostname verbose;
+        };
+  in
     wrap {
       name = "rebuild-${hostname}";
       paths = [
@@ -35,13 +35,21 @@ rec {
         nix
       ];
       description = "Rebuild ${
-        if homeOnly then "home-manager" else "NixOS"
+        if homeOnly
+        then "home-manager"
+        else "NixOS"
       } configuration for ${hostname}";
       vars = {
         HOSTNAME = hostname;
         USERNAME = actualUsername;
-        HOME_ONLY = if homeOnly then "true" else "false";
-        AUTO_COMMIT = if autoCommit then "true" else "false";
+        HOME_ONLY =
+          if homeOnly
+          then "true"
+          else "false";
+        AUTO_COMMIT =
+          if autoCommit
+          then "true"
+          else "false";
       };
       script =
         # bash
@@ -62,6 +70,9 @@ rec {
             ${nixUtils.validator}/bin/validate-flake || warn "Validation failed, continuing anyway..."
           ''}
 
+          # Always keep git tree clean prior to rebuild
+          ${gitUtils.autoFixup}/bin/auto-fixup "$HOSTNAME"
+
           # Execute the build
           ${buildScript}
 
@@ -79,14 +90,15 @@ rec {
     };
 
   # Development mode
-  devMode =
-    {
-      hostname,
-      username ? null,
-    }:
-    let
-      actualUsername = if username != null then username else "$(whoami)";
-    in
+  devMode = {
+    hostname,
+    username ? null,
+  }: let
+    actualUsername =
+      if username != null
+      then username
+      else "$(whoami)";
+  in
     wrap {
       name = "dev-rebuild-${hostname}";
       paths = [
@@ -114,8 +126,7 @@ rec {
     };
 
   # Multi-target builder
-  multiBuilder =
-    targets:
+  multiBuilder = targets:
     wrap {
       name = "rebuild-multi";
       paths = [
@@ -131,9 +142,10 @@ rec {
           info "Building multiple targets: ${concatStringsSep ", " (map (t: t.hostname) targets)}"
 
           ${concatMapStringsSep "\n" (target: ''
-            info "Building ${target.hostname}..."
-            ${rebuildPipeline target}/bin/rebuild-${target.hostname}
-          '') targets}
+              info "Building ${target.hostname}..."
+              ${rebuildPipeline target}/bin/rebuild-${target.hostname}
+            '')
+            targets}
 
           success "All builds completed"
         '';
@@ -142,8 +154,7 @@ rec {
   # Common workflows
   workflows = {
     # Home rebuild
-    quick =
-      hostname:
+    quick = hostname:
       rebuildPipeline {
         inherit hostname;
         homeOnly = true;
@@ -151,8 +162,7 @@ rec {
       };
 
     # System rebuild
-    full =
-      hostname:
+    full = hostname:
       rebuildPipeline {
         inherit hostname;
         homeOnly = false;
@@ -160,11 +170,10 @@ rec {
       };
 
     # Development rebuild
-    dev = hostname: devMode { inherit hostname; };
+    dev = hostname: devMode {inherit hostname;};
 
     # Auto-committing rebuild
-    autoCommit =
-      hostname:
+    autoCommit = hostname:
       rebuildPipeline {
         inherit hostname;
         homeOnly = true;
@@ -172,13 +181,13 @@ rec {
       };
 
     # Test multiple hosts
-    testAll =
-      hostnames:
+    testAll = hostnames:
       multiBuilder (
         map (h: {
           hostname = h;
           homeOnly = true;
-        }) hostnames
+        })
+        hostnames
       );
   };
 
@@ -206,7 +215,7 @@ rec {
             tr '[]"' ' ' | tr ',' '\n' | while read -r host; do
               [[ -n "$host" ]] && echo "  • $host (nixos)"
             done
-          
+
           nix eval --raw .#homeConfigurations --apply builtins.attrNames 2>/dev/null | \
             tr '[]"' ' ' | tr ',' '\n' | while read -r config; do
               [[ -n "$config" ]] && echo "  • $config (home)"
@@ -223,7 +232,7 @@ rec {
           "dev"|"d")
             ${workflows.dev "$hostname"}/bin/dev-rebuild-$hostname
             ;;
-          "full"|"f") 
+          "full"|"f")
             ${workflows.full "$hostname"}/bin/rebuild-$hostname
             ;;
           *)

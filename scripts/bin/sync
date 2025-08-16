@@ -75,8 +75,108 @@ shift
 
 case "$PLUGIN" in
     "wsl")
-        # Delegate to existing WSL sync tool with all remaining arguments
-        exec "$SCRIPT_DIR/bin/wsl-sync" "$@"
+        # Use simplified unison-based sync
+        CONFIG=""
+        HELP=false
+        LIST=false
+        BUNDLE=""
+
+        while [[ $# -gt 0 ]]; do
+            case $1 in
+                --list|-l) LIST=true; shift ;;
+                --help|-h) HELP=true; shift ;;
+                
+                # Bundles
+                --dev|--development) BUNDLE="dev"; shift ;;
+                --all) BUNDLE="all"; shift ;;
+                
+                # Individual configs
+                firefox|vscode|git) CONFIG="$1"; shift ;;
+                
+                --*) 
+                    error "Unknown WSL option: $1"
+                    HELP=true
+                    shift
+                    ;;
+                *) 
+                    if [[ -z "$CONFIG" && -z "$BUNDLE" ]]; then
+                        CONFIG="$1"
+                    else
+                        error "Multiple configurations specified"
+                        HELP=true
+                    fi
+                    shift 
+                    ;;
+            esac
+        done
+
+        if [[ "$HELP" == "true" ]]; then
+            echo "WSL Configuration Sync (Unison-based)"
+            echo "===================================="
+            echo
+            echo "Usage: sync wsl [config|bundle] [options]"
+            echo
+            echo "Bundles:"
+            echo "  --dev        Development tools (Git + VSCode)"
+            echo "  --all        Complete sync (Firefox + Git + VSCode)"
+            echo
+            echo "Individual Configs:"
+            echo "  firefox      Firefox config (WSL → Windows)"
+            echo "  vscode       VSCode config (WSL → Windows)"
+            echo "  git          Git config (WSL → Windows)"
+            echo
+            echo "Options:"
+            echo "  --list, -l   List available configurations"
+            echo "  --help, -h   Show this help"
+            echo
+            exit 0
+        fi
+
+        if [[ "$LIST" == "true" ]]; then
+            echo "Available WSL Sync Operations:"
+            echo "============================="
+            echo "• firefox - Firefox configuration (WSL → Windows)"
+            echo "• vscode  - VSCode configuration (WSL → Windows)" 
+            echo "• git     - Git configuration (WSL → Windows)"
+            echo
+            echo "Bundles:"
+            echo "• dev     - Development tools (Git + VSCode)"
+            echo "• all     - Complete sync (Firefox + Git + VSCode)"
+            exit 0
+        fi
+
+        # Handle bundles
+        if [[ -n "$BUNDLE" ]]; then
+            info "Building unison bundle: $BUNDLE"
+            SYNC_SCRIPT=$(nix-build --no-out-link --show-trace \
+                -E "(import $SCRIPT_DIR/lib/unison-sync.nix).bundles.$BUNDLE" 2>/dev/null)
+        else
+            # Handle individual configs
+            if [[ -z "$CONFIG" ]]; then
+                CONFIG="firefox"
+                info "No configuration specified, defaulting to Firefox"
+            fi
+
+            info "Building unison sync tool for: $CONFIG"
+            SYNC_SCRIPT=$(nix-build --no-out-link --show-trace \
+                -E "(import $SCRIPT_DIR/lib/unison-sync.nix).getSyncUtility \"$CONFIG\"" 2>/dev/null)
+        fi
+
+        if [[ $? -ne 0 ]]; then
+            error "Failed to build sync script for: ${CONFIG:-$BUNDLE}"
+            echo "Run 'sync wsl --list' to see available options"
+            exit 1
+        fi
+
+        # Find and execute
+        EXECUTABLE=$(find "$SYNC_SCRIPT/bin" -type f -executable | head -1)
+
+        if [[ -x "$EXECUTABLE" ]]; then
+            exec "$EXECUTABLE"
+        else
+            error "Sync executable not found: $EXECUTABLE"
+            exit 1
+        fi
         ;;
         
     "dotfiles")

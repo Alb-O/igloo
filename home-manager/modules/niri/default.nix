@@ -4,22 +4,20 @@
   config,
   pkgs,
   ...
-}:
-let
+}: let
   colors = import ../../../lib/themes;
 
   # Import modular configurations
   inputConfig = import ./input.nix;
   outputsConfig = import ./outputs.nix;
-  layoutConfig = import ./layout.nix { inherit colors; };
+  layoutConfig = import ./layout.nix {inherit colors;};
   bindsConfig = import ./binds.nix {
     inherit config;
     inherit pkgs;
   };
   windowRulesConfig = import ./window-rules.nix;
   miscConfig = import ./misc.nix;
-in
-{
+in {
   programs.niri = {
     settings =
       inputConfig // outputsConfig // layoutConfig // bindsConfig // windowRulesConfig // miscConfig;

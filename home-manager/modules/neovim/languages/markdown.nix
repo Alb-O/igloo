@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Markdown development environment
   home.packages = with pkgs; [
     # LSP and language servers

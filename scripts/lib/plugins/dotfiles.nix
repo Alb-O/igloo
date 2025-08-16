@@ -1,10 +1,8 @@
 # Dotfiles sync plugin - demonstrates extensibility of the sync framework
-with import <nixpkgs> { };
+with import <nixpkgs> {};
 with import ../common.nix;
 with import ../sync.nix;
-with lib;
-
-rec {
+with lib; rec {
   # Shell configuration operations
   shellOperations = {
     zshrc = syncOperation {
@@ -278,16 +276,14 @@ rec {
     plugin
     ;
 
-  getSyncUtility =
-    name:
-    if hasAttr name operations then
-      getAttr name operations
-    else
-      throw "Unknown dotfiles configuration: ${name}";
+  getSyncUtility = name:
+    if hasAttr name operations
+    then getAttr name operations
+    else throw "Unknown dotfiles configuration: ${name}";
 
   listApplications = wrap {
     name = "list-dotfiles-apps";
-    paths = [ coreutils ];
+    paths = [coreutils];
     description = "List all available dotfiles sync applications";
     script =
       # bash
@@ -302,10 +298,12 @@ rec {
             ${concatStringsSep "\n" (
               mapAttrsToList (name: desc: ''
                 echo "  • ${name} - ${desc}"
-              '') category.apps
+              '')
+              category.apps
             )}
             echo
-          '') categories
+          '')
+          categories
         )}
 
         echo "Bundles:"

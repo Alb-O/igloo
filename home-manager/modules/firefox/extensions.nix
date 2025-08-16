@@ -1,7 +1,6 @@
 # Firefox extensions configuration
 # Managed extensions and their installation settings
-{ ... }:
-{
+{...}: {
   extensionSettings = {
     "addon@darkreader.org" = {
       # Dark Reader
@@ -28,9 +27,14 @@
       install_url = "https://addons.mozilla.org/firefox/downloads/latest/obsidian-web-clipper/latest.xpi";
       installation_mode = "force_installed";
     };
-    "{5003e502-f361-4bf6-b09e-41a844d36d33}" = {
-      # Redlib
-      install_url = "https://addons.mozilla.org/firefox/downloads/latest/redlib/latest.xpi";
+    "7esoorv3@alefvanoon.anonaddy.me" = {
+      # LibRedirect
+      install_url = "https://addons.mozilla.org/firefox/downloads/latest/libredirect/latest.xpi";
+      installation_mode = "force_installed";
+    };
+    "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
+      # Violentmonkey
+      install_url = "https://addons.mozilla.org/firefox/downloads/latest/violentmonkey/latest.xpi";
       installation_mode = "force_installed";
     };
   };

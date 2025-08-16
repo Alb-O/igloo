@@ -5,12 +5,11 @@
   inputs,
   globals,
   ...
-}:
-{
+}: {
   # Import modular configuration
   imports = [
     # Custom modules
-    (import ./modules { inherit inputs globals; })
+    (import ./modules {inherit inputs globals;})
 
     # Example external modules (commented out):
     # outputs.homeManagerModules.example
@@ -24,8 +23,7 @@
   };
 
   # User packages
-  home.packages =
-    with pkgs.unstable;
+  home.packages = with pkgs.unstable;
     [
       # General
       jq
@@ -41,6 +39,7 @@
       fzf
       ripgrep
       yazi
+      unison
       zoxide
       bat
       rucola
@@ -48,6 +47,7 @@
       chawan
       poppler-utils
       ungoogled-chromium
+      hydrus
       # Development
       nodejs
       gcc
@@ -62,28 +62,28 @@
       # npm globlal packages
       (pkgs.writeShellApplication {
         name = "claude";
-        runtimeInputs = [ pkgs.nodejs ];
+        runtimeInputs = [pkgs.nodejs];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @anthropic-ai/claude-code "$@"
         '';
       })
       (pkgs.writeShellApplication {
         name = "codex";
-        runtimeInputs = [ pkgs.nodejs ];
+        runtimeInputs = [pkgs.nodejs];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
       })
       (pkgs.writeShellApplication {
         name = "gemini";
-        runtimeInputs = [ pkgs.nodejs ];
+        runtimeInputs = [pkgs.nodejs];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@"
         '';
       })
       (pkgs.writeShellApplication {
         name = "qwen";
-        runtimeInputs = [ pkgs.nodejs ];
+        runtimeInputs = [pkgs.nodejs];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @qwen-code/qwen-code "$@"
         '';

@@ -1,10 +1,8 @@
 # Firefox userChrome.css theme
 # Using semantic color structure for better maintainability
-{ ... }:
-let
+{...}: let
   colors = import ../../../lib/themes;
-in
-{
+in {
   # Simplified userChrome.css using Mozilla's color variable template
   userChromeCSS = ''
     /* Source file https://github.com/MrOtherGuy/firefox-csshacks/tree/master/chrome/color_variable_template.css made available under Mozilla Public License v. 2.0

@@ -1,6 +1,5 @@
 # Desktop environment and display manager configuration
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Enable Niri window manager
   programs.niri.enable = true;
 
@@ -14,7 +13,7 @@
   programs.dconf.enable = true;
 
   # udev packages for desktop integration
-  services.udev.packages = with pkgs; [ gnome-settings-daemon ];
+  services.udev.packages = with pkgs; [gnome-settings-daemon];
 
   # Portal configuration following Niri wiki recommendations
   xdg.portal = {
