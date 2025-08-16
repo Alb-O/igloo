@@ -46,8 +46,8 @@
       meowpdf
       chawan
       poppler-utils
-      ungoogled-chromium
       hydrus
+      ungoogled-chromium
       # Development
       nodejs
       gcc
