@@ -1,0 +1,47 @@
+{
+  username,
+  name,
+  email,
+  hostname,
+  architecture ? "x86_64-linux",
+  stateVersion ? "25.05",
+  isGraphical ? true,
+}:
+let
+  homeDir = "/home/${username}";
+  configDir = "${homeDir}/.config/home-manager";
+in
+{
+  # Colorscheme
+  theme = "vscode";
+  # GTK theme
+  gtkTheme = "Adwaita-dark";
+  iconTheme = "Adwaita";
+  cursorTheme = "Adwaita";
+
+  user = {
+    inherit username name email;
+    homeDirectory = homeDir;
+  };
+
+  system = {
+    inherit
+      hostname
+      architecture
+      stateVersion
+      isGraphical
+      ;
+  };
+
+  dirs = {
+    localBin = "${homeDir}/.local/bin";
+    localShare = "${homeDir}/.local/share";
+    cargoBin = "${homeDir}/.local/share/cargo/bin";
+    configRoot = configDir;
+  };
+
+  # Default applications
+  editor = "helix";
+  terminal = "alacritty";
+
+}
