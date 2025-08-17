@@ -19,21 +19,30 @@
 
   # WSL-specific configuration
   wsl.enable = true;
-  wsl.defaultUser = "nixos";
+  wsl.defaultUser = "admin";
   wsl.startMenuLaunchers = true;
 
   # Disable Windows PATH integration for cleaner environment
   wsl.wslConf.interop.appendWindowsPath = false;
 
-  # User configuration
-  users.users.nixos = {
+  # Generic admin user configuration
+  users.users.admin = {
     isNormalUser = true;
-    description = "NixOS WSL User";
+    description = "System Administrator";
     extraGroups = [
       "wheel"
       "networkmanager"
+      "docker"
+      "systemd-journal"
+    ];
+    # Allow passwordless sudo for wheel group
+    openssh.authorizedKeys.keys = [
+      # Add SSH keys here if needed for remote access
     ];
   };
+
+  # Enable passwordless sudo for wheel group
+  security.sudo.wheelNeedsPassword = false;
 
   # System configuration
   system.stateVersion = globals.system.stateVersion;

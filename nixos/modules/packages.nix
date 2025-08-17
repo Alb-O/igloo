@@ -3,6 +3,13 @@
   environment.systemPackages = with pkgs; [
     # Essential tools
     wget
+    just # Task runner for development workflows
+
+    # Emergency root access tools
+    firefox # Web browser for root emergency access
+    alacritty # Terminal emulator for root emergency access
+    kitty # Alternative terminal emulator
+    helix # Text editor for emergency configuration editing
 
     # Desktop and GTK support
     nautilus # Required for GTK4 file pickers via xdg-desktop-portal-gnome delegation

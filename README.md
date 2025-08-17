@@ -116,43 +116,70 @@ This allows multiple physical machines to share the same repository while using 
 
 ## Usage
 
-### Rebuild Commands
+This configuration uses [just](https://github.com/casey/just) for task management.
+
+### NixOS System Management
 ```bash
-# Home manager only (default)
-./scripts/bin/rebuild
+# See all available commands
+just
 
-# Full system rebuild
-./scripts/bin/rebuild --full
+# Rebuild system (default hostname)
+just rebuild
 
-# With specific user/host
-./scripts/bin/rebuild --user username
+# Rebuild specific host
+just rebuild desktop
+
+# Test build without switching
+just test
+
+# Update flake inputs
+just update
 
 # Verbose output
-./scripts/bin/rebuild --verbose
+just rebuild-verbose
 
-# Auto-commit changes
-./scripts/bin/rebuild --auto-commit
+```
+
+### Home Manager Management
+```bash
+# Navigate to home-manager config
+cd ~/.config/home-manager
+
+# See all available commands
+just
+
+# Build and switch configuration
+just switch
+
+# Build for specific user@hostname
+just switch-full
+
+# Update and rebuild
+just update && just switch
 ```
 
 ### Development Tools
 ```bash
 # Format Nix files
-./scripts/bin/dev-tools format
+just fmt
 
 # Validate configuration
-./scripts/bin/dev-tools validate
+just check
 
 # Update flake inputs
-./scripts/bin/dev-tools update
+just update
 
 # Clean old generations
-./scripts/bin/dev-tools clean
+just gc
 ```
 
 ### Manual Commands
 ```bash
 # Direct NixOS rebuild
 sudo nixos-rebuild switch --flake .#hostname
+
+# Direct home-manager rebuild
+home-manager switch --flake ~/.config/home-manager#albert
 
 # Check flake validity
 nix flake check

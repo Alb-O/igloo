@@ -25,7 +25,7 @@
 
   nixpkgs = {
     # You can add overlays here
-    overlays = import ../../overlays {inherit inputs;};
+    overlays = [];
     # Configure your nixpkgs instance
     config = {
       # Disable if you don't want unfree packages
