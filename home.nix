@@ -29,7 +29,7 @@
     [
       # General
       jq
-      ufetch
+      fastfetch
       git
       gh
       just # Task runner for development workflows
