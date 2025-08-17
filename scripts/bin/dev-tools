@@ -55,7 +55,7 @@ case "$COMMAND" in
                 ;;
             "build")
                 info "Starting build shell..."
-                nix-shell -p nixpkgs-fmt git nix home-manager
+                nix-shell -p nixpkgs-fmt git nix
                 ;;
             *)
                 info "Starting default shell..."
@@ -70,9 +70,9 @@ case "$COMMAND" in
         echo "Git status:"
         git status --short
         echo
-        echo "Nix generations:"
-        if command -v home-manager &>/dev/null; then
-            home-manager generations | head -5
+        echo "NixOS generations:"
+        if command -v nixos-rebuild &>/dev/null; then
+            sudo nix-env --list-generations --profile /nix/var/nix/profiles/system | tail -5
         fi
         echo
         echo "Available hosts:"

@@ -6,7 +6,6 @@ with lib; rec {
   rebuildPipeline = {
     hostname,
     username ? null,
-    homeOnly ? false,
     verbose ? false,
     autoCommit ? false,
     skipValidation ? false,
@@ -16,17 +15,9 @@ with lib; rec {
       if username != null
       then username
       else "$(whoami)";
-    buildScript =
-      if homeOnly
-      then
-        buildPatterns.homeManagerBuild {
-          inherit hostname verbose;
-          username = actualUsername;
-        }
-      else
-        buildPatterns.nixosBuild {
-          inherit hostname verbose;
-        };
+    buildScript = buildPatterns.nixosBuild {
+      inherit hostname verbose;
+    };
   in
     wrap {
       name = "rebuild-${hostname}";
@@ -34,18 +25,10 @@ with lib; rec {
         git
         nix
       ];
-      description = "Rebuild ${
-        if homeOnly
-        then "home-manager"
-        else "NixOS"
-      } configuration for ${hostname}";
+      description = "Rebuild NixOS configuration for ${hostname}";
       vars = {
         HOSTNAME = hostname;
         USERNAME = actualUsername;
-        HOME_ONLY =
-          if homeOnly
-          then "true"
-          else "false";
         AUTO_COMMIT =
           if autoCommit
           then "true"
@@ -112,14 +95,10 @@ with lib; rec {
           info "Development rebuild for ${actualUsername}@${hostname}"
 
           # Skip formatting and validation in dev mode
-          nix run github:nix-community/home-manager/master -- switch \
-            --flake .#${actualUsername}@${hostname} \
-            --impure \
-            --option eval-cache false \
-            2>/dev/null || {
-              error "Build failed, try full rebuild"
-              exit 1
-            }
+          sudo nixos-rebuild switch --flake .#${hostname} --impure 2>/dev/null || {
+            error "Build failed, try full rebuild"
+            exit 1
+          }
 
           success "Rebuild completed"
         '';

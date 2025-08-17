@@ -181,25 +181,6 @@ with lib; rec {
         '';
     };
 
-  # Home Manager installer
-  homeManagerInstaller = wrap {
-    name = "home-manager-installer";
-    paths = [nix];
-    description = "Install and verify Home Manager";
-    script =
-      # bash
-      ''
-        info "Installing Home Manager..."
-
-        # Verify Home Manager is available
-        if nix run github:nix-community/home-manager/master -- --help &>/dev/null; then
-          success "Home Manager available"
-        else
-          error "Failed to access Home Manager"
-          exit 1
-        fi
-      '';
-  };
 
   # Configuration validator
   configValidator = wrap {
@@ -284,39 +265,29 @@ with lib; rec {
           ${repoSetup {inherit gitUrl repoDir;}}/bin/repo-setup
           echo
 
-          # Step 4: Install Home Manager
-          ${homeManagerInstaller}/bin/home-manager-installer
-          echo
-
-          # Step 5: Validate configuration
+          # Step 4: Validate configuration
           ${configValidator}/bin/config-validator
           echo
 
-          # Step 6: Bootstrap choice
+          # Step 5: Bootstrap choice
           if [[ "$AUTO_BOOTSTRAP" == "true" ]]; then
-            info "Auto-bootstrapping Home Manager configuration..."
+            info "Auto-bootstrapping NixOS configuration..."
             ${(import ./rebuild.nix).workflows.quick hostname}/bin/rebuild-$HOSTNAME
           else
             if [[ "$WSL_ENV" == "true" ]]; then
               echo "WSL Bootstrap Options:"
-              echo "1) Home Manager only (recommended for WSL)"
-              echo "2) Full NixOS system (for NixOS on WSL)"
-              echo "3) Just validate setup (no build)"
+              echo "1) NixOS system (for NixOS on WSL)"
+              echo "2) Just validate setup (no build)"
             else
               echo "What would you like to bootstrap?"
-              echo "1) Home Manager only (recommended for first run)"
-              echo "2) Full NixOS system (requires sudo)"
-              echo "3) Just validate setup (no build)"
+              echo "1) Full NixOS system (requires sudo)"
+              echo "2) Just validate setup (no build)"
             fi
-            read -p "Choice [1-3]: " -n 1 -r choice
+            read -p "Choice [1-2]: " -n 1 -r choice
             echo
 
             case $choice in
               1)
-                info "Bootstrapping Home Manager configuration..."
-                ${(import ./rebuild.nix).workflows.quick hostname}/bin/rebuild-$HOSTNAME
-                ;;
-              2)
                 if [[ "$WSL_ENV" == "true" ]]; then
                   info "Bootstrapping NixOS system for WSL..."
                 else
@@ -324,7 +295,7 @@ with lib; rec {
                 fi
                 ${(import ./rebuild.nix).workflows.full hostname}/bin/rebuild-$HOSTNAME
                 ;;
-              3)
+              2)
                 info "Setup validation complete. You can now run:"
                 echo "  ./scripts/bin/rebuild $HOSTNAME"
                 ;;

@@ -9,9 +9,6 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
-    # Home manager
-    home-manager.url = "github:nix-community/home-manager/master";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # NUR (Nix User Repository)
     nur.url = "github:nix-community/NUR";
@@ -39,7 +36,6 @@
     {
       self,
       nixpkgs,
-      home-manager,
       nix-vscode-extensions,
       niri-flake,
       nix-colors,
@@ -80,47 +76,6 @@
           { }
       );
 
-      # Helper function to create home configuration
-      mkHomeConfiguration =
-        {
-          username ? bootstrap.env.USERNAME,
-          name ? bootstrap.env.NAME,
-          email ? bootstrap.env.EMAIL,
-          hostname ? bootstrap.env.HOSTNAME,
-          system ? "x86_64-linux",
-          isGraphical ? true, # Most systems have graphics, WSL is the exception
-        }:
-        home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays = import ./overlays { inherit inputs; };
-            config.allowUnfree = true;
-          };
-          extraSpecialArgs = {
-            inherit inputs outputs;
-            globals = import ./lib/globals.nix {
-              inherit
-                username
-                hostname
-                isGraphical
-                name
-                email
-                ;
-            };
-          };
-          modules = [
-            ./home-manager/home.nix
-          ]
-          ++ (
-            # Only include niri module for graphical systems
-            if isGraphical then
-              [
-                niri-flake.homeModules.config
-              ]
-            else
-              [ ]
-          );
-        };
       # This is a function that generates an attribute by calling a function you
       # pass to it, with each system as an argument
       forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -146,11 +101,6 @@
       # These are usually stuff you would upstream into nixpkgs
       nixosModules = {
         default = import ./nixos/modules;
-      };
-      # Reusable home-manager modules you might want to export
-      # These are usually stuff you would upstream into home-manager
-      homeManagerModules = {
-        default = import ./home-manager/modules;
       };
 
       # NixOS configuration entrypoint
@@ -200,23 +150,6 @@
           };
         };
 
-      # Standalone home-manager configuration entrypoint
-      # Available through 'home-manager --flake .#your-username@your-hostname'
-      homeConfigurations =
-        let
-          mkConfigs =
-            hostname:
-            nixpkgs.lib.mapAttrs' (
-              userKey: userConfig:
-              nixpkgs.lib.nameValuePair "${userConfig.username}@${hostname}" (mkHomeConfiguration {
-                inherit (userConfig) username name email;
-                inherit hostname;
-                isGraphical = userConfig.isGraphical or true;
-              })
-            ) users;
-        in
-        # Dynamic hostname from env + static nixos
-        (mkConfigs bootstrap.env.HOSTNAME) // (mkConfigs "nixos");
       # Optionally, add Cachix binary cache for claude-code
       nixConfig = {
         substituters = [ "https://claude-code.cachix.org" ];

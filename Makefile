@@ -17,8 +17,6 @@ help: ## Show this help message
 rebuild: ## Rebuild NixOS configuration (HOSTNAME=desktop)
 	@./scripts/rebuild.sh $(HOSTNAME)
 
-rebuild-home: ## Rebuild home-manager only (HOSTNAME=desktop USERNAME=current)
-	@./scripts/rebuild.sh $(HOSTNAME) $(USERNAME) --home-only
 
 rebuild-verbose: ## Rebuild with verbose output
 	@./scripts/rebuild.sh $(HOSTNAME) --verbose

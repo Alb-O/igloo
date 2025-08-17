@@ -370,29 +370,6 @@ with lib; rec {
   };
 
   buildPatterns = {
-    homeManagerBuild = {
-      hostname,
-      username ? "$(whoami)",
-      verbose ? false,
-    }: let
-      verboseFlag =
-        if verbose
-        then ""
-        else ">/dev/null 2>&1";
-      buildCmd = "nix run github:nix-community/home-manager/master -- switch --flake .#${username}@${hostname} --impure";
-    in
-      # bash
-      ''
-        info "Building home-manager configuration for ${username}@${hostname}..."
-        if ${buildCmd} ${verboseFlag}; then
-          success "Home-manager configuration applied successfully"
-        else
-          error "Home-manager build failed"
-          ${optionalString (!verbose) ''error "Re-run with --verbose to see detailed output"''}
-          exit 1
-        fi
-      '';
-
     nixosBuild = {
       hostname,
       verbose ? false,

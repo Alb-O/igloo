@@ -9,7 +9,6 @@
       ./fonts.nix
       ./ssh.nix
       ./flake-configuration.nix
-      ./home-manager-configuration.nix
     ]
     ++ (
       # Only import desktop modules for graphical systems

@@ -81,9 +81,8 @@ if [[ "$HELP" == "true" ]]; then
     echo "  1. Install Nix (if needed)"
     echo "  2. Configure Nix with flakes"
     echo "  3. Setup git repository"
-    echo "  4. Install Home Manager"
-    echo "  5. Validate configuration"
-    echo "  6. Bootstrap system/home-manager"
+    echo "  4. Validate configuration"
+    echo "  5. Bootstrap NixOS system"
     exit 0
 fi
 

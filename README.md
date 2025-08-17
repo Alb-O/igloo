@@ -82,8 +82,6 @@ nix-config/
 │   │   ├── laptop/        # Laptop machine config
 │   │   └── nixos/         # WSL config
 │   └── modules/           # Shared NixOS modules
-├── home-manager/
-│   └── modules/           # Application configurations
 └── scripts/
     ├── bin/rebuild        # Main rebuild script
     └── lib/               # Utility scripts
@@ -153,9 +151,6 @@ This allows multiple physical machines to share the same repository while using 
 
 ### Manual Commands
 ```bash
-# Direct home manager
-nix run github:nix-community/home-manager/master -- switch --flake .#user@host
-
 # Direct NixOS rebuild
 sudo nixos-rebuild switch --flake .#hostname
 
