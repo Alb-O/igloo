@@ -2,8 +2,8 @@
   # XDG Base Directory support for NixOS
   # Enables XDG compliance for system-level Nix operations
 
-  # Enable XDG base directories for nix commands
-  nix.settings.use-xdg-base-directories = true;
+  # Disable XDG base directories for nix commands to use traditional ~/.nix-profile
+  nix.settings.use-xdg-base-directories = false;
 
   # Environment variables for system-wide XDG compliance
   environment.sessionVariables = {
