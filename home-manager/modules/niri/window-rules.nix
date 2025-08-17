@@ -17,5 +17,6 @@
       ];
       open-floating = true;
     }
+
   ];
 }

@@ -36,11 +36,9 @@
       lm_sensors
       ffmpeg
       yt-dlp
-      fzf
       ripgrep
       yazi
       unison
-      zoxide
       bat
       imagemagick
       rucola

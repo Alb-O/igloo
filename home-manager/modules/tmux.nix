@@ -5,8 +5,8 @@ in
 {
   programs.tmux = {
     enable = true;
-    shortcut = "a";
-    # aggressiveResize = true; -- Disabled to be iTerm-friendly
+    shortcut = "q";
+    # aggssiveResize = true; -- Disabled to be iTerendly
     baseIndex = 1;
     newSession = true;
     # Stop tmux+escape craziness.
@@ -18,6 +18,7 @@ in
       tmuxPlugins.better-mouse-mode
       tmuxPlugins.resurrect
       tmuxPlugins.continuum
+      tmuxPlugins.tmux-sessionx
     ];
 
     extraConfig = ''
@@ -26,7 +27,7 @@ in
       muted_color='${theme.ui.border.secondary}'
       text_color='${theme.ui.foreground.primary}'
       bg_color='${theme.ui.background.primary}'
-      
+
       # https://old.reddit.com/r/tmux/comments/mesrci/tmux_2_doesnt_seem_to_use_256_colors/
       set -g default-terminal "screen-256color"
       set -ga terminal-overrides ",*256col*:Tc"
@@ -37,21 +38,21 @@ in
 
       # Mouse works as expected
       set-option -g mouse on
-      
+
       # Comprehensive theming
       set -g mode-style "fg=$bg_color,bg=$highlight_color"
       set -g message-style "fg=$bg_color,bg=$highlight_color"
       set -g message-command-style "fg=$bg_color,bg=$highlight_color"
       set -g clock-mode-colour "$highlight_color"
-      
+
       # Pane identification - clearer active pane indication
       set -g pane-border-style "fg=$muted_color"
       set -g pane-active-border-style "fg=$highlight_color"
-      
+
       # Pane titles to show which is active
       set -g pane-border-status top
       set -g pane-border-format "#{?pane_active,#[fg=$highlight_color],#[fg=$muted_color]} #{pane_index} #[default]"
-      
+
       # Status bar at top showing windows/tabs
       set -g status on
       set -g status-position top
@@ -65,15 +66,19 @@ in
       set -g window-status-style "fg=$text_color"
       set -g window-status-format ' #I:#W '
       set -g window-status-current-format ' #I:#W '
-      
-      # easy-to-remember split pane commands
-      bind | split-window -h -c "#{pane_current_path}"
-      bind - split-window -v -c "#{pane_current_path}"
+
+      # Split pane commands
+      bind v split-window -h -c "#{pane_current_path}"
+      bind h split-window -v -c "#{pane_current_path}"
       bind c new-window -c "#{pane_current_path}"
-      
+
       # Don't ask before killing panes/windows
       bind x kill-pane
       bind & kill-window
+         
+      # continuum auto-restore and save interval
+      set -g @continuum-restore 'on'
+      set -g @continuum-save-interval '5'
     '';
   };
 

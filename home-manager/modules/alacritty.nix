@@ -12,6 +12,8 @@ in {
         size = fonts.mono.size.normal;
       };
 
+      cursor.style.blinking = "Always";
+
       colors = {
         primary = {
           background = colors.ui.background.primary;

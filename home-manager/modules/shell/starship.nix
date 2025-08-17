@@ -1,18 +1,4 @@
 {
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      function fish_greeting
-          ufetch
-      end
-
-      # Initialize starship
-      starship init fish | source
-
-      direnv hook fish | source
-    '';
-  };
-
   programs.starship = {
     enable = true;
     settings = {
@@ -56,10 +42,5 @@
         deleted = " ✘";
       };
     };
-  };
-
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
   };
 }
