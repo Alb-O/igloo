@@ -41,7 +41,7 @@ in
   };
 
   # Default applications
-  editor = "helix";
+  editor = "hx";
   terminal = "alacritty";
-
+  browser = "firefox";
 }

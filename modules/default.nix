@@ -29,7 +29,7 @@
         ./gtk.nix
         ./mako.nix
         ./firefox
-        ./vscode.nix
+        # ./vscode.nix
         ./sillytavern.nix
         ./alacritty.nix
         ./polkit.nix
@@ -52,5 +52,9 @@
   home.sessionVariables = {
     USERNAME = globals.user.username;
     HOSTNAME = globals.system.hostname;
+    EDITOR = globals.editor;
+    TERMINAL = globals.terminal;
+    TERM = globals.terminal;
+    BROWSER = globals.browser;
   };
 }
