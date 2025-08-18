@@ -3,11 +3,19 @@
   programs.helix = {
     enable = true;
     settings = {
-      theme = "dark_plus";
-      editor.cursor-shape = {
-        normal = "block";
-        insert = "bar";
-        select = "underline";
+      theme = "dark_plus_transparent";
+      editor = {
+        line-number = "relative";
+        scrolloff = 5;
+        soft-wrap = {
+          enable = true;
+          max-wrap = 25;
+        };
+        cursor-shape = {
+          normal = "block";
+          insert = "bar";
+          select = "underline";
+        };
       };
     };
     languages.language = [
@@ -18,10 +26,10 @@
       }
     ];
     themes = {
-      #dark_plus_custom = {
-      #  "inherits" = "dark_plus";
-      #  "ui.background" = { };
-      #};
+      dark_plus_transparent = {
+        "inherits" = "dark_plus";
+        "ui.background" = { };
+      };
     };
   };
 }
