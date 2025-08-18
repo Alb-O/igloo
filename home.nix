@@ -33,7 +33,8 @@
       fastfetch
       git
       gh
-      just # Task runner for development workflows
+      just
+      opencode
       unipicker
       hyprpicker
       xdg-ninja
@@ -128,7 +129,7 @@
       # Notes:
       # - We intentionally do NOT use ~/.nix-profile to avoid legacy paths.
       # - If a tool still references ~/.nix-profile, create a compat symlink:
-      #     ln -sTf "${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile" "$HOME/.nix-profile"
+      #     ln -sTf "$\{XDG_STATE_HOME}:-$HOME/.local/state}/nix/profile" "$HOME/.nix-profile"
       if [ -e "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" ]; then
         . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
       elif [ -n "$XDG_STATE_HOME" ] && [ -e "$XDG_STATE_HOME/nix/profiles/profile/etc/profile.d/hm-session-vars.sh" ]; then

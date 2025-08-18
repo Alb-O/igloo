@@ -5,6 +5,7 @@
     settings = {
       theme = "dark_plus_transparent";
       editor = {
+        true-color = true;
         line-number = "relative";
         scrolloff = 5;
         soft-wrap = {

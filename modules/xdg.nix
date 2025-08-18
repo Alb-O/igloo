@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   # XDG Base Directory Specification
   # Sets up proper XDG environment variables and directory structure
 
@@ -14,14 +15,17 @@
 
   home.sessionVariables = {
     # Application-specific XDG compliance (don't override base XDG vars - let Home Manager handle them)
-    CARGO_HOME = "$XDG_DATA_HOME/cargo";
-    CUDA_CACHE_PATH = "$XDG_CACHE_HOME/nv";
-    DOTNET_CLI_HOME = "$XDG_DATA_HOME/dotnet";
+    HISTFILE = lib.mkForce "$XDG_STATE_HOME/bash/history";
+    CARGO_HOME = lib.mkForce "$XDG_DATA_HOME/cargo";
+    CUDA_CACHE_PATH = lib.mkForce "$XDG_CACHE_HOME/nv";
+    DOTNET_CLI_HOME = lib.mkForce "$XDG_DATA_HOME/dotnet";
     GTK2_RC_FILES = lib.mkForce "$XDG_CONFIG_HOME/gtk-2.0/gtkrc";
-    NPM_CONFIG_INIT_MODULE = "$XDG_CONFIG_HOME/npm/config/npm-init.js";
-    NPM_CONFIG_CACHE = "$XDG_CACHE_HOME/npm";
-    NPM_CONFIG_TMP = "$XDG_RUNTIME_DIR/npm";
-    PYTHONSTARTUP = "$XDG_CONFIG_HOME/python/pythonrc";
+    NPM_CONFIG_INIT_MODULE = lib.mkForce "$XDG_CONFIG_HOME/npm/config/npm-init.js";
+    NPM_CONFIG_CACHE = lib.mkForce "$XDG_CACHE_HOME/npm";
+    NPM_CONFIG_TMP = lib.mkForce "$XDG_RUNTIME_DIR/npm";
+    PYTHONSTARTUP = lib.mkForce "$XDG_CONFIG_HOME/python/pythonrc";
+    NBRC_PATH = lib.mkForce "$XDG_CONFIG_HOME/nbrc";
+    NB_DIR = lib.mkForce "$XDG_DATA_HOME/nb";
   };
 
   # Create necessary directories
