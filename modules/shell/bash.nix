@@ -45,6 +45,9 @@ in
       # Load ble.sh
       source ${pkgs.unstable.blesh}/share/blesh/ble.sh
 
+      # Disable EOF marker like "[ble: EOF]"
+      bleopt prompt_eol_mark=""
+
       # Theme-integrated ble.sh color configuration
       # highlighting related to editing
       ble-face -s region                    fg=${colors.ui.foreground.primary}

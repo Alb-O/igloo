@@ -20,7 +20,7 @@
     error = "#f44747"; # red
     info = "#569cd6"; # blue
     highlight = "#d7ba7d"; # selection background
-    muted = "#4B4B4B"; # gray (for comments/dimmed text)
+    muted = "#A9A9A9"; # gray (for comments/dimmed text)
 
     # Additional VSCode-specific colors
     magenta = "#c678dd";
