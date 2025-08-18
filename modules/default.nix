@@ -29,9 +29,8 @@
         ./gtk.nix
         ./mako.nix
         ./firefox
-        # ./vscode.nix
         ./sillytavern.nix
-        ./alacritty.nix
+        ./foot.nix
         ./polkit.nix
         ./clipboard.nix
       ]

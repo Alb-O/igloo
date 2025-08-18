@@ -45,7 +45,9 @@
       yazi
       unison
       bat
+      ueberzugpp
       nb
+      foot
       imagemagick
       rucola
       meowpdf

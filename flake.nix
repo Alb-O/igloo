@@ -25,8 +25,6 @@
       self,
       nixpkgs,
       home-manager,
-      nur,
-      nix-vscode-extensions,
       niri-flake,
       nix-colors,
       nix-userstyles,

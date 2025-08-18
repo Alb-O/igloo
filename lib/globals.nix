@@ -42,6 +42,6 @@ in
 
   # Default applications
   editor = "hx";
-  terminal = "alacritty";
+  terminal = "foot";
   browser = "firefox";
 }
