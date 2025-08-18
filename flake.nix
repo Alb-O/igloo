@@ -56,7 +56,8 @@
           email
           hostname
           ;
-        isGraphical = true;
+        # Disable graphical features in WSL
+        isGraphical = !envConfig.isWSL;
       };
     in
     {

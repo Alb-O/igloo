@@ -1,6 +1,6 @@
 # Desktop environment configuration
 # Handles themes, fonts, and desktop-wide settings
-{pkgs, ...}: let
+{pkgs, globals, ...}: let
   fonts = import ../lib/fonts.nix pkgs;
   #colors = import ../lib/themes/default.nix;
   # Generate GTK CSS from theme colors
@@ -116,14 +116,14 @@ in {
     };
   };
 
-  # Dark theme preferences with UI scaling
-  dconf.settings = {
+  # Dark theme preferences with UI scaling (only for graphical systems)
+  dconf.settings = if globals.system.isGraphical then {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
       # GTK UI scaling - 1.25 = 125% scale
       text-scaling-factor = 1.25;
     };
-  };
+  } else {};
 
   # GTK theme configuration
   gtk = {

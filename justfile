@@ -14,11 +14,11 @@ default:
 
 # Build and activate home-manager configuration
 switch config=user:
-    home-manager switch --flake .#{{config}} --impure
+    USER={{config}} HOME=/home/{{config}} home-manager switch --flake .#{{config}} --impure
 
 # Build home-manager configuration with full path (user@hostname)
 switch-full:
-    home-manager switch --flake .#{{user}}@{{hostname}} --impure
+    USER={{user}} HOME=/home/{{user}} home-manager switch --flake .#{{user}}@{{hostname}} --impure
 
 # Build configuration without activation
 build config=user:

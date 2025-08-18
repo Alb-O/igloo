@@ -6,10 +6,18 @@ let
     let value = builtins.getEnv key;
     in if value != "" then value else fallback;
 
+  # Detect if running in WSL using environment variables or explicit flag
+  isWSL = (builtins.getEnv "WSL_DISTRO_NAME") != "" || 
+          (builtins.getEnv "WSLENV") != "" ||
+          (builtins.getEnv "IS_WSL") == "true";
+
 in {
   # Personal information (from .env file or environment)
   username = getEnv "USERNAME" (getEnv "USER" "user");
   fullName = getEnv "FULL_NAME" "Home Manager User";
   email = getEnv "EMAIL" "user@example.com";
   hostname = getEnv "HOSTNAME" "localhost";
+  
+  # System detection
+  inherit isWSL;
 }
