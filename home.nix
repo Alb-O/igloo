@@ -45,6 +45,7 @@
       yazi
       unison
       bat
+      nb
       imagemagick
       rucola
       meowpdf
@@ -76,20 +77,6 @@
         runtimeInputs = [ pkgs.nodejs ];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
-        '';
-      })
-      (pkgs.writeShellApplication {
-        name = "gemini";
-        runtimeInputs = [ pkgs.nodejs ];
-        text = ''
-          exec ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@"
-        '';
-      })
-      (pkgs.writeShellApplication {
-        name = "qwen";
-        runtimeInputs = [ pkgs.nodejs ];
-        text = ''
-          exec ${pkgs.nodejs}/bin/npx -y @qwen-code/qwen-code "$@"
         '';
       })
     ];
