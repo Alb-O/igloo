@@ -22,6 +22,20 @@ in
     ];
 
     initExtra = ''
+      # Ensure XDG_RUNTIME_DIR exists to satisfy tools that expect it (e.g. ble.sh).
+      # In proper systemd user sessions this is /run/user/$(id -u). In non-login
+      # shells or tmux, it may be unset. We provide a secure per-user fallback to
+      # keep tools happy without polluting $HOME.
+      if [ -z "$XDG_RUNTIME_DIR" ]; then
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+      fi
+      if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+        # Fallback to a private dir if systemd runtime dir is unavailable (e.g., TTY/tmux)
+        export XDG_RUNTIME_DIR="$HOME/.xdg-runtime"
+        mkdir -p "$XDG_RUNTIME_DIR"
+        chmod 700 "$XDG_RUNTIME_DIR"
+      fi
+
       # Initialize starship
       eval "$(starship init bash)"
 

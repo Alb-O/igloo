@@ -93,6 +93,10 @@
     };
   };
 
-  # Enable generic Linux target for proper session variable handling
-  targets.genericLinux.enable = true;
+  # On NixOS, Home Manager's `targets.genericLinux` can generate a default
+  # ~/.profile that sources ~/.nix-profile/... This conflicts with
+  # nix.settings.use-xdg-base-directories and our explicit .profile that prefers
+  # /etc/profiles/per-user (canonical) and XDG STATE paths. We force-disable it
+  # here so our managed .profile is linked and used.
+  targets.genericLinux.enable = lib.mkForce false;
 }
