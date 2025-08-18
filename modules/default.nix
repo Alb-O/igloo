@@ -18,6 +18,7 @@
     ./codex.nix
     ./geminicommit.nix
     ./helix.nix
+    ./languages
   ]
   ++ (
     if globals.system.isGraphical then
