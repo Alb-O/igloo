@@ -1,28 +1,34 @@
 # NixOS System Configuration Management
 # Run `just` to see available commands
 
-# Default hostname (can be overridden)
-hostname := env_var_or_default('HOSTNAME', 'desktop')
-
 # List all available commands
 default:
     @just --list
 
 # Rebuild NixOS system configuration
-rebuild host=hostname:
+rebuild host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "Rebuilding system configuration for host: {{host}}"
+    
     # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
         set +a
     fi
-    sudo -E nixos-rebuild switch --flake .#{{host}} --impure
+    
+    # Determine host after sourcing .env
+    if [ "{{host}}" = "auto" ]; then
+        TARGET_HOST="${HOSTNAME:-desktop}"
+    else
+        TARGET_HOST="{{host}}"
+    fi
+    
+    echo "Rebuilding system configuration for host: $TARGET_HOST"
+    sudo -E nixos-rebuild switch --flake .#$TARGET_HOST --impure
 
 # Rebuild with verbose output
-rebuild-verbose host=hostname:
+rebuild-verbose host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
     # Source environment variables if .env exists
@@ -31,10 +37,18 @@ rebuild-verbose host=hostname:
         source .env
         set +a
     fi
-    sudo -E nixos-rebuild switch --flake .#{{host}} --show-trace --verbose --impure
+    
+    # Determine host after sourcing .env
+    if [ "{{host}}" = "auto" ]; then
+        TARGET_HOST="${HOSTNAME:-desktop}"
+    else
+        TARGET_HOST="{{host}}"
+    fi
+    
+    sudo -E nixos-rebuild switch --flake .#$TARGET_HOST --show-trace --verbose --impure
 
 # Test build without activation
-test host=hostname:
+test host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
     # Source environment variables if .env exists
@@ -43,10 +57,18 @@ test host=hostname:
         source .env
         set +a
     fi
-    sudo -E nixos-rebuild test --flake .#{{host}} --impure
+    
+    # Determine host after sourcing .env
+    if [ "{{host}}" = "auto" ]; then
+        TARGET_HOST="${HOSTNAME:-desktop}"
+    else
+        TARGET_HOST="{{host}}"
+    fi
+    
+    sudo -E nixos-rebuild test --flake .#$TARGET_HOST --impure
 
 # Build configuration without switching
-build host=hostname:
+build host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
     # Source environment variables if .env exists
@@ -55,8 +77,16 @@ build host=hostname:
         source .env
         set +a
     fi
+    
+    # Determine host after sourcing .env
+    if [ "{{host}}" = "auto" ]; then
+        TARGET_HOST="${HOSTNAME:-desktop}"
+    else
+        TARGET_HOST="{{host}}"
+    fi
+    
     # Pass environment variables to sudo and use impure mode
-    sudo -E nixos-rebuild build --flake .#{{host}} --impure
+    sudo -E nixos-rebuild build --flake .#$TARGET_HOST --impure
 
 # Check flake validity and build
 check:
@@ -124,5 +154,21 @@ show:
     nix flake show
 
 # Build ISO image
-iso host=hostname:
-    nix build .#nixosConfigurations.{{host}}.config.system.build.isoImage
+iso host="auto":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # Source environment variables if .env exists
+    if [ -f .env ]; then
+        set -a
+        source .env
+        set +a
+    fi
+    
+    # Determine host after sourcing .env
+    if [ "{{host}}" = "auto" ]; then
+        TARGET_HOST="${HOSTNAME:-desktop}"
+    else
+        TARGET_HOST="{{host}}"
+    fi
+    
+    nix build .#nixosConfigurations.$TARGET_HOST.config.system.build.isoImage
