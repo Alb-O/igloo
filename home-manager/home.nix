@@ -45,6 +45,7 @@ in
       unison
       bat
       nb
+      rucola
       tree
       imagemagick
       poppler-utils
@@ -57,9 +58,7 @@ in
       unipicker
       hyprpicker
       foot
-      rucola
       hydrus
-      ungoogled-chromium
       # Clipboard tools for Wayland
       wl-clipboard
       cliphist
@@ -229,6 +228,9 @@ in
 
           # highlighting for completions (backgrounds removed except for selections)
           ble-face -s auto_complete             fg=${colors.ui.foreground.tertiary}
+
+          # XDG-compliant aliases
+          alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
         ;;
       esac
     '';
