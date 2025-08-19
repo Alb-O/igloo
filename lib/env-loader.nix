@@ -14,7 +14,7 @@ let
 in {
   # Personal information (from .env file or environment)
   username = getEnv "USERNAME" (getEnv "USER" "user");
-  fullName = getEnv "FULL_NAME" "Home Manager User";
+  fullName = getEnv "NAME" (getEnv "FULL_NAME" "Home Manager User");
   email = getEnv "EMAIL" "user@example.com";
   hostname = getEnv "HOSTNAME" "localhost";
   
