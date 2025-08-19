@@ -6,12 +6,15 @@ NixOS and Home Manager configurations in a single repository with independent bu
 
 NixOS system configuration:
 ```bash
+just system-rebuild
+# or short alias
 just rebuild
 ```
 
 Home Manager configuration:
 ```bash
-cd home-manager
+just home-switch
+# or short alias
 just switch
 ```
 
@@ -19,11 +22,10 @@ just switch
 
 ```
 ├── flake.nix          # NixOS configuration
-├── justfile           # NixOS build tasks
+├── justfile           # Unified build tasks (system + home)
 ├── nixos/             # NixOS modules and hosts
 └── home-manager/      # Home Manager configuration
     ├── flake.nix      # Home Manager flake
-    ├── justfile       # Home Manager build tasks
     └── modules/       # Home Manager modules
 ```
 
@@ -41,33 +43,38 @@ MACHINE_ID="nixos"  # desktop, laptop, or nixos
 
 # Optional
 TIMEZONE="UTC"
-THEME="vscode"
 ```
 
 ## Commands
 
-### NixOS
+### System (NixOS)
 ```bash
-just                    # List commands
-just rebuild           # Rebuild system
-just rebuild desktop   # Rebuild specific host
-just test              # Test build
-just update            # Update inputs
+just system-rebuild       # Rebuild system
+just system-rebuild desktop # Rebuild specific host
+just system-test          # Test build
+just system-check         # Check system config
 ```
 
 ### Home Manager
 ```bash
-cd home-manager
-just switch            # Build and switch
-just switch-full       # Build user@hostname
-just update            # Update inputs
+just home-switch         # Build and switch
+just home-switch-full    # Build user@hostname
+just home-check          # Check home config
 ```
 
-### Development
+### Shared
 ```bash
-just fmt               # Format files
-just check             # Validate configuration
-just gc                # Clean old generations
+just                     # List all commands
+just update              # Update both system and home inputs
+just fmt                 # Format all files
+just gc                  # Clean old generations
+just check-all           # Check both configurations
+```
+
+### Aliases
+```bash
+just rebuild             # Alias for system-rebuild
+just switch              # Alias for home-switch
 ```
 
 ## Machine Types
