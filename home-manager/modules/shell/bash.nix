@@ -20,8 +20,15 @@ in
       "ignoredups"
       "ignorespace"
     ];
+    
+    sessionVariables = {
+      EDITOR = globals.editor;
+    };
 
     initExtra = ''
+      # Override system EDITOR default
+      export EDITOR="${globals.editor}"
+      
       # Ensure XDG_RUNTIME_DIR exists to satisfy tools that expect it (e.g. ble.sh).
       # In proper systemd user sessions this is /run/user/$(id -u). In non-login
       # shells or tmux, it may be unset. We provide a secure per-user fallback to

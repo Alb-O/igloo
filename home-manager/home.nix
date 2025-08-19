@@ -108,20 +108,20 @@
       #
       # Order of preference:
       #  1) /etc/profiles/per-user/$USER/...  (canonical on NixOS)
-      #  2) "$XDG_STATE_HOME"/nix/profiles/profile/...  (XDG-compliant user profile)
-      #  3) "$HOME/.local/state"/nix/profile/...       (implicit XDG_STATE_HOME)
-      #
-      # Notes:
-      # - We intentionally do NOT use ~/.nix-profile to avoid legacy paths.
-      # - If a tool still references ~/.nix-profile, create a compat symlink:
-      #     ln -sTf "$\{XDG_STATE_HOME}:-$HOME/.local/state}/nix/profile" "$HOME/.nix-profile"
-      if [ -e "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" ]; then
-        . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
-      elif [ -n "$XDG_STATE_HOME" ] && [ -e "$XDG_STATE_HOME/nix/profiles/profile/etc/profile.d/hm-session-vars.sh" ]; then
-        . "$XDG_STATE_HOME/nix/profiles/profile/etc/profile.d/hm-session-vars.sh"
-      elif [ -e "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
-        . "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh"
-      fi
+       #  2) "$XDG_STATE_HOME"/nix/profile/...  (XDG-compliant user profile)
+       #  3) "$HOME/.local/state"/nix/profile/...       (implicit XDG_STATE_HOME)
+       #
+       # Notes:
+       # - We intentionally do NOT use ~/.nix-profile to avoid legacy paths.
+       # - If a tool still references ~/.nix-profile, create a compat symlink:
+       #     ln -sTf "$\{XDG_STATE_HOME}:-$HOME/.local/state}/nix/profile" "$HOME/.nix-profile"
+       if [ -e "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" ]; then
+         . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+       elif [ -n "$XDG_STATE_HOME" ] && [ -e "$XDG_STATE_HOME/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
+         . "$XDG_STATE_HOME/nix/profile/etc/profile.d/hm-session-vars.sh"
+       elif [ -e "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
+         . "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh"
+       fi
     '';
     force = true;
   };
