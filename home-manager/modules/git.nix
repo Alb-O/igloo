@@ -3,7 +3,8 @@
   lib,
   globals,
   ...
-}: {
+}:
+{
   programs.git = {
     enable = true;
     userName = globals.user.name;
@@ -99,33 +100,6 @@
       "result"
       "result-*"
     ];
-  };
-
-  # Fish shell aliases for git commands
-  programs.fish.shellAliases = {
-    # 2-letter commands
-    gs = "git status";
-    gb = "git branch";
-    gc = "git checkout";
-    gd = "git diff";
-    gl = "git log --oneline --graph --decorate";
-    ga = "git add";
-    gm = "git commit -m";
-    gp = "git push";
-    gu = "git pull";
-    gf = "git fetch";
-
-    # 3-letter commands
-    gcb = "git checkout -b";
-    gam = "git commit -am";
-    gmn = "git commit --amend --no-edit";
-    grs = "git reset";
-    grb = "git rebase";
-
-    # Compound commands
-    gundo = "git undo";
-    glast = "git last";
-    gclean = "git cleanup";
   };
 
   # lazygit

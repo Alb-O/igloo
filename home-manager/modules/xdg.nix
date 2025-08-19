@@ -28,7 +28,7 @@
     NB_DIR = lib.mkForce "$XDG_DATA_HOME/nb";
   };
 
-  # Create necessary directories
+  # Create necessary directories and shell configuration
   home.file = {
     # Python startup script for history management
     ".config/python/pythonrc".text = ''
@@ -72,11 +72,6 @@
 
     # Create NPM config directory structure
     ".config/npm/config/.keep".text = "";
-  };
-
-  # Shell aliases for XDG compliance
-  programs.fish.shellAliases = {
-    wget = "wget --hsts-file=$XDG_DATA_HOME/wget-hsts";
   };
 
   # Enable XDG directories with developer-friendly names
