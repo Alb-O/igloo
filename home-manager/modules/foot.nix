@@ -14,6 +14,8 @@ in {
         term = "xterm-256color";
         dpi-aware = true;
         pad = "15x15";
+        # Make new terminals spawn login shells so only ~/.profile is needed
+        login-shell = "yes";
       };
 
       cursor = {
