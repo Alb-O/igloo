@@ -19,13 +19,36 @@
         };
       };
     };
-    languages.language = [
-      {
-        name = "nix";
-        auto-format = true;
-        formatter.command = "${pkgs.nixfmt}/bin/nixfmt";
-      }
-    ];
+    languages = {
+      language = [
+        {
+          name = "nix";
+          auto-format = true;
+          formatter.command = "${pkgs.nixfmt}/bin/nixfmt";
+        }
+        {
+          name = "rust";
+          roots = [
+            "Cargo.toml"
+            "Cargo.lock"
+          ];
+          auto-format = true;
+          formatter.command = "${pkgs.rustfmt}/bin/rustfmt";
+        }
+      ];
+      language-server = {
+        rust-analyzer = {
+          config = {
+            # check = {
+            #   command = "clippy";
+            # };
+            diagnostics = {
+              styleLints.enable = true;
+            };
+          };
+        };
+      };
+    };
     themes = {
       dark_plus_transparent = {
         "inherits" = "dark_plus";

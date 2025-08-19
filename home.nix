@@ -31,7 +31,6 @@
       # General
       jq
       fastfetch
-      git
       gh
       just
       opencode
