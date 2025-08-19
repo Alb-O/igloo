@@ -1,6 +1,6 @@
 { pkgs, globals, ... }:
 let
-  theme = import ../lib/themes/default.nix globals;
+  theme = import ../../lib/themes/default.nix globals;
 in
 {
   programs.tmux = {
@@ -11,6 +11,8 @@ in
     escapeTime = 0;
     # Force tmux to use /tmp for sockets (WSL2 compat)
     secureSocket = false;
+    # Use XDG-compliant directory
+    historyLimit = 3000;
 
     plugins = with pkgs; [
       tmuxPlugins.better-mouse-mode
@@ -21,6 +23,10 @@ in
     ];
 
     extraConfig = ''
+      set -g default-shell ${pkgs.bash}/bin/bash
+      # Start panes as login shells so they read ~/.profile
+      set -g default-command "${pkgs.bash}/bin/bash -l"
+            
       # Color theme from semantic theme system
       highlight_color='${theme.ui.interactive.primary}'
       muted_color='${theme.ui.border.secondary}'
@@ -37,6 +43,11 @@ in
       set -ga terminal-overrides '*:Ss=\E[%p1%d q:Se=\E[ q'
       set-environment -g COLORTERM "truecolor"
       set-option -sa terminal-features ',*:RGB'
+
+      set-environment -g TMUX_PLUGIN_MANAGER_PATH '${globals.dirs.localShare}/tmux/plugins'
+
+      # Move tmux data to XDG-compliant location
+      set -g @resurrect-dir '${globals.dirs.localShare}/tmux/resurrect'
 
       # Mouse works as expected
       set-option -g mouse on
