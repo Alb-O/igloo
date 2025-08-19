@@ -28,14 +28,12 @@
   home.packages =
     with pkgs.unstable;
     [
-      # General
+      # CLI Tools (always included)
       jq
       fastfetch
       gh
       just
       opencode
-      unipicker
-      hyprpicker
       xdg-ninja
       lm_sensors
       ffmpeg
@@ -44,35 +42,30 @@
       yazi
       unison
       bat
-      ueberzugpp
       nb
-      foot
       imagemagick
-      rucola
-      meowpdf
       chawan
       poppler-utils
-      hydrus
-      ungoogled-chromium
       # Development
       nodejs
       gcc
-      # Clipboard
+    ]
+    ++ lib.optionals globals.system.isGraphical [
+      # Graphical Tools (only when isGraphical = true)
+      unipicker
+      hyprpicker
+      ueberzugpp
+      foot
+      rucola
+      meowpdf
+      hydrus
+      ungoogled-chromium
+      # Clipboard tools for Wayland
       wl-clipboard
       cliphist
     ]
     ++ [
       # Custom packages
-      pkgs.blender-daily
-
-      # npm globlal packages
-      (pkgs.writeShellApplication {
-        name = "claude";
-        runtimeInputs = [ pkgs.nodejs ];
-        text = ''
-          exec ${pkgs.nodejs}/bin/npx -y @anthropic-ai/claude-code "$@"
-        '';
-      })
       (pkgs.writeShellApplication {
         name = "codex";
         runtimeInputs = [ pkgs.nodejs ];
@@ -80,6 +73,10 @@
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
       })
+    ]
+    ++ lib.optionals globals.system.isGraphical [
+      # Custom graphical packages
+      pkgs.blender-daily
     ];
 
   # State version - don't change this
