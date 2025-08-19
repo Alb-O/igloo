@@ -16,7 +16,6 @@
     ./zoxide.nix
     ./fzf.nix
     ./codex.nix
-    ./geminicommit.nix
     ./helix.nix
     ./languages
   ]
@@ -24,9 +23,7 @@
     if globals.system.isGraphical then
       [
         ./niri
-        ./fuzzel.nix
         ./swww.nix
-        ./gtk.nix
         ./mako.nix
         ./firefox
         ./sillytavern.nix

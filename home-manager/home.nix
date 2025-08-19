@@ -39,13 +39,11 @@
       ffmpeg
       yt-dlp
       ripgrep
-      yazi
       unison
       bat
       nb
       tree
       imagemagick
-      chawan
       poppler-utils
       # Development
       nodejs
@@ -55,10 +53,8 @@
       # Graphical Tools (only when isGraphical = true)
       unipicker
       hyprpicker
-      ueberzugpp
       foot
       rucola
-      meowpdf
       hydrus
       ungoogled-chromium
       # Clipboard tools for Wayland
