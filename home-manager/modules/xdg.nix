@@ -79,16 +79,12 @@
     enable = true;
     userDirs = {
       enable = true;
-      createDirectories = true;
       # Developer-friendly lowercase directory names
-      desktop = "$HOME/desktop";
       documents = "$HOME/docs";
       download = "$HOME/dl";
-      music = "$HOME/music";
-      pictures = "$HOME/pics";
-      publicShare = "$HOME/public";
-      templates = "$HOME/templates";
-      videos = "$HOME/vids";
+      music = "$HOME/media/music";
+      pictures = "$HOME/media/pics";
+      videos = "$HOME/media/vids";
     };
   };
 
