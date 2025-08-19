@@ -78,7 +78,23 @@
       # GitHub CLI credential helpers
       credential."https://github.com".helper = "${lib.getExe pkgs.gh} auth git-credential";
       credential."https://gist.github.com".helper = "${lib.getExe pkgs.gh} auth git-credential";
-    };
+    }
+    # Git signing configuration (if signing key is available in environment)
+    // (let signingKey = builtins.getEnv "SIGNING_KEY"; in
+      if signingKey != ""
+      then {
+        gpg = {
+          format = "ssh";
+        };
+        commit = {
+          gpgsign = true;
+        };
+        user = {
+          signingKey = signingKey;
+        };
+      }
+      else {}
+    );
 
     ignores = [
       # OS files
