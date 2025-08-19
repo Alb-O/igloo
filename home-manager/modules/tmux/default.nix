@@ -1,15 +1,19 @@
-{ pkgs, globals, ... }:
+{ pkgs, lib, globals, config, ... }:
 let
   theme = import ../../lib/themes/default.nix globals;
-  scripts = import ./scripts.nix { inherit pkgs; };
+  capabilities = import ../../lib/capabilities.nix { inherit pkgs globals; };
 in
 {
-  programs.tmux = {
-    enable = true;
-    shortcut = "q";
-    keyMode = "vi";
-    # Stop tmux+escape craziness.
-    escapeTime = 0;
+  options.igloo.tmux.enable = lib.mkEnableOption "Enable tmux configuration" // { default = true; };
+  options.igloo.tmux.pickers.enable = lib.mkEnableOption "Enable fzf-based tmux pickers (F1–F4)" // { default = globals.system.isGraphical; };
+
+  config = lib.mkIf config.igloo.tmux.enable {
+    programs.tmux = {
+      enable = true;
+      shortcut = "q";
+      keyMode = "vi";
+      # Stop tmux+escape craziness.
+      escapeTime = 0;
     # Force tmux to use /tmp for sockets (WSL2 compat)
     secureSocket = false;
     # Use XDG-compliant directory
@@ -23,10 +27,18 @@ in
       tmuxPlugins.tmux-sessionx
     ];
 
-    extraConfig = ''
-      set -g default-shell ${pkgs.bash}/bin/bash
-      # Start panes as login shells so they read ~/.profile
-      set -g default-command "${pkgs.bash}/bin/bash -l"
+      extraConfig = let
+        pickerBinds = if (config.igloo.tmux.pickers.enable && globals.system.isGraphical) then ''
+          # Custom fzf pickers
+          bind-key F1 run-shell "tmux-app-launcher"
+          bind-key F2 run-shell "tmux-cliphist"
+          bind-key F3 run-shell "tmux-unicode"
+          bind-key F4 run-shell "tmux-system-menu"
+        '' else '''';
+      in ''
+        set -g default-shell ${pkgs.bash}/bin/bash
+        # Start panes as login shells so they read ~/.profile
+        set -g default-command "${pkgs.bash}/bin/bash -l"
             
       # Color theme from semantic theme system
       highlight_color='${theme.ui.interactive.primary}'
@@ -136,21 +148,17 @@ in
 
       # Setup 'v' to begin selection as in Vim
       bind-key -T copy-mode-vi v send -X begin-selection
-      bind-key -T copy-mode-vi y send -X copy-pipe-and-cancel "wl-copy"
+      bind-key -T copy-mode-vi y send -X copy-pipe-and-cancel "${capabilities.copyCmd}"
 
       # Update default binding of Enter to also use copy-pipe
       unbind -T copy-mode-vi Enter
-      bind-key -T copy-mode-vi Enter send -X copy-pipe-and-cancel "wl-copy"
+      bind-key -T copy-mode-vi Enter send -X copy-pipe-and-cancel "${capabilities.copyCmd}"
 
       # Don't ask before killing panes/windows
       bind x kill-pane
       bind & kill-window
 
-      # Custom fzf pickers
-      bind-key F1 run-shell "${scripts.appLauncher}"
-      bind-key F2 run-shell "${scripts.cliphistPicker}"
-      bind-key F3 run-shell "${scripts.unicodePicker}"
-      bind-key F4 run-shell "${scripts.systemMenu}"
+        ${pickerBinds}
 
       # Set window notifications
       setw -g monitor-activity on
@@ -165,15 +173,16 @@ in
 
       # Force plugin initialization
       run-shell '${pkgs.tmuxPlugins.mode-indicator}/share/tmux-plugins/mode-indicator/mode_indicator.tmux'
-    '';
-  };
+      '';
+    };
 
-  home.packages = [
-    # Open tmux for current project.
-    (pkgs.writeShellApplication {
-      name = "pux";
-      runtimeInputs = [ pkgs.tmux ];
-      text = ''
+    home.packages = [
+      pkgs.tmux-fzf-tools
+      # Open tmux for current project.
+      (pkgs.writeShellApplication {
+        name = "pux";
+        runtimeInputs = [ pkgs.tmux ];
+        text = ''
         PRJ="''$(zoxide query -i)"
         echo "Launching tmux for ''$PRJ"
         set -x
@@ -181,5 +190,6 @@ in
           exec tmux -S "''$PRJ".tmux attach
       '';
     })
-  ];
+    ];
+  };
 }

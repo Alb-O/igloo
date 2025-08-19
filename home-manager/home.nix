@@ -43,6 +43,7 @@
       unison
       bat
       nb
+      tree
       imagemagick
       chawan
       poppler-utils
