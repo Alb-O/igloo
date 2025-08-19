@@ -132,7 +132,17 @@ let
       "Restart") systemctl reboot ;;
       "Shutdown") systemctl poweroff ;;
       "Hibernate") systemctl hibernate ;;
-      "Power off monitors") ${pkgs.niri}/bin/niri msg action power-off-monitors ;;
+      "Power off monitors") ${
+        # Detect WSL/headless environment and avoid niri dependency
+        let
+          isWSL = (builtins.getEnv "WSL_DISTRO_NAME") != "" || 
+                  (builtins.getEnv "WSLENV") != "" ||
+                  (builtins.getEnv "IS_WSL") == "true";
+        in
+          if isWSL 
+          then "${pkgs.coreutils}/bin/true"
+          else "${pkgs.niri}/bin/niri msg action power-off-monitors"
+      } ;;
     esac
   '';
 in
