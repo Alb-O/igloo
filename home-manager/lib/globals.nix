@@ -13,7 +13,7 @@ let
 in
 {
   # Colorscheme
-  theme = "vscode";
+  theme = "catppuccin";
   # GTK theme
   gtkTheme = "Adwaita-dark";
   iconTheme = "Adwaita";

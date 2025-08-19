@@ -1,6 +1,7 @@
 # Firefox profile configuration
 # Settings, UI customization, and feature toggles
-{lib, ...}: {
+{ lib, ... }:
+{
   profileSettings = {
     "browser.startup.homepage" = "about:home";
 
@@ -85,7 +86,7 @@
     "sidebar.main.tools" = "aichat,bookmarks,history";
 
     # Use XDG portal
-    "widget.use-xdg-desktop-portal.file-picker" = true;
+    #"widget.use-xdg-desktop-portal.file-picker" = true;
 
     # Restore session on startup
     "browser.startup.page" = 3;
