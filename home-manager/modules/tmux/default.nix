@@ -1,6 +1,7 @@
 { pkgs, globals, ... }:
 let
   theme = import ../../lib/themes/default.nix globals;
+  scripts = import ./scripts.nix { inherit pkgs; };
 in
 {
   programs.tmux = {
@@ -144,6 +145,12 @@ in
       # Don't ask before killing panes/windows
       bind x kill-pane
       bind & kill-window
+
+      # Custom fzf pickers
+      bind-key F1 run-shell "${scripts.appLauncher}"
+      bind-key F2 run-shell "${scripts.cliphistPicker}"
+      bind-key F3 run-shell "${scripts.unicodePicker}"
+      bind-key F4 run-shell "${scripts.systemMenu}"
 
       # Set window notifications
       setw -g monitor-activity on

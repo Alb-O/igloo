@@ -15,11 +15,7 @@ with config.lib.niri.actions;
     "Mod+Return".action.spawn = globals.terminal;
     "Super+Alt+L".action.spawn = "swaylock";
 
-    # Tmux pickers
-    "Mod+D".action.spawn = "./modules/tmux/scripts/app-launcher.sh";
-    "Mod+E".action.spawn = "./modules/tmux/scripts/cliphist-picker.sh";
-    "Mod+Shift+Period".action.spawn = "./modules/tmux/scripts/unicode-picker.sh";
-    "Mod+Shift+End".action.spawn = "./modules/tmux/scripts/system-menu.sh";
+
 
     # Color picker
     "Mod+Shift+C".action.spawn = [

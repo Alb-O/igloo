@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# System menu using fzf-tmux
-selection=$(tmux run-shell "echo 'Lock
+# System menu using fzf
+options="Lock
 Suspend
 Restart
 Shutdown
 Hibernate
-Power off monitors' | fzf-tmux -p --prompt='System: '")
+Power off monitors"
+
+if [[ -n "${TMUX:-}" ]]; then
+    # Inside tmux - use fzf-tmux
+    selection=$(echo "$options" | fzf-tmux -p --prompt='System: ')
+else
+    # Outside tmux - use regular fzf
+    selection=$(echo "$options" | fzf --prompt='System: ')
+fi
 
 case "$selection" in
     "Lock") swaylock ;;
