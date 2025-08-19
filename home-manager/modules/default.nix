@@ -12,7 +12,7 @@
     ./ssh.nix
     ./broot
     ./git.nix
-    ./tmux.nix
+    ./tmux
     ./zoxide.nix
     ./fzf.nix
     ./codex.nix

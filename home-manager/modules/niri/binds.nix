@@ -15,49 +15,11 @@ with config.lib.niri.actions;
     "Mod+Return".action.spawn = globals.terminal;
     "Super+Alt+L".action.spawn = "swaylock";
 
-    # Fuzzel pickers
-    "Mod+D".action.spawn = "fuzzel";
-    "Mod+E".action.spawn = [
-      "sh"
-      "-c"
-      "cliphist list | fuzzel --dmenu --with-nth 2 -p 'cliphist ' | cliphist decode | wl-copy"
-    ];
-    "Mod+Shift+Period".action.spawn = [
-      "sh"
-      "-c"
-      "unipicker --command 'fuzzel --dmenu -p \"unipicker \"' | wl-copy -n"
-    ];
-    "Mod+Shift+End".action.spawn = [
-      "sh"
-      "-c"
-      ''
-        set -euo pipefail
-        PATH=${
-          pkgs.lib.makeBinPath [
-            pkgs.fuzzel
-            pkgs.systemd
-          ]
-        }:$PATH
-        {
-          echo "Lock"
-          echo "Suspend"
-          echo "Restart"
-          echo "Shutdown"
-          echo "Hibernate"
-          echo "Power off monitors"
-        } | fuzzel --dmenu -p "system " | {
-          read -r selection
-          case "$selection" in
-            "Lock") swaylock ;;
-            "Suspend") systemctl suspend ;;
-            "Restart") systemctl reboot ;;
-            "Shutdown") systemctl poweroff ;;
-            "Hibernate") systemctl hibernate ;;
-            "Power off monitors") niri msg action power-off-monitors ;;
-          esac
-        }
-      ''
-    ];
+    # Tmux pickers
+    "Mod+D".action.spawn = "./modules/tmux/scripts/app-launcher.sh";
+    "Mod+E".action.spawn = "./modules/tmux/scripts/cliphist-picker.sh";
+    "Mod+Shift+Period".action.spawn = "./modules/tmux/scripts/unicode-picker.sh";
+    "Mod+Shift+End".action.spawn = "./modules/tmux/scripts/system-menu.sh";
 
     # Color picker
     "Mod+Shift+C".action.spawn = [
