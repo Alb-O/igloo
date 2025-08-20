@@ -34,10 +34,39 @@ let
 
     # In non-graphical environments, show a command launcher instead
     if [ "$HAS_DISPLAY" = "false" ]; then
-      # Generate command list from PATH
-      command_list=$(printf '%s\n' $PATH | ''${SED} 's/:/ /g' | ''${AWK} '{for(i=1;i<=NF;i++) print $i}' | while read dir; do
-        [ -d "$dir" ] && ''${FIND} "$dir" -maxdepth 1 -type f -executable -printf '%f\n' 2>/dev/null
-      done | ''${SORT} -u)
+      # Generate command list from PATH and additional Windows program directories
+      command_list=$({
+        # Process PATH directories
+        printf '%s\n' $PATH | ''${SED} 's/:/ /g' | ''${AWK} '{for(i=1;i<=NF;i++) print $i}' | while read dir; do
+          # Skip Windows system directories entirely
+          case "$dir" in
+            */mnt/c/Windows* | */mnt/c/windows* | \
+            */mnt/c/'Program Files'/WindowsApps/* | \
+            */mnt/c/'Program Files (x86)'/WindowsApps/* | \
+            */mnt/c/'Program Files'/Common\ Files/* | \
+            */mnt/c/'Program Files (x86)'/Common\ Files/*) continue ;;
+          esac
+          if [ -d "$dir" ]; then
+            if [[ "$dir" == */mnt/c/* ]]; then
+              # For Windows paths, only include .exe files
+              ''${FIND} "$dir" -maxdepth 1 -name '*.exe' -type f -printf '%f\n' 2>/dev/null
+            else
+              # For Unix paths, use normal executable detection
+              ''${FIND} "$dir" -maxdepth 1 -type f -executable -printf '%f\n' 2>/dev/null
+            fi
+          fi
+        done
+        
+        # Also search common Windows program installation directories
+        for prog_dir in \
+          "/mnt/c/Program Files" \
+          "/mnt/c/Program Files (x86)"; do
+          if [ -d "$prog_dir" ]; then
+            ''${FIND} "$prog_dir" -maxdepth 2 -name '*.exe' -type f -printf '%f\n' 2>/dev/null | \
+              ''${GREP} -Eiv '(^unins[0-9]*|^uninst|uninstall|^setup|^install|^updater?|^vcredist|^directx)\.exe$'
+          fi
+        done
+      } | ''${SORT} -u)
       
       selection=$(echo "$command_list" | ${popup}/bin/tmux-fzf-popup --prompt='Command: ' || true)
       if [ -n "''${selection:-}" ]; then
@@ -111,7 +140,7 @@ let
 
   cliphist = pkgs.writeShellScriptBin "tmux-cliphist" ''
     set -euo pipefail
-    
+
     # Check if we're in WSL or have clipboard access
     HAS_CLIPBOARD=false
     if [ -n "''${WAYLAND_DISPLAY:-}" ] || [ -n "''${DISPLAY:-}" ]; then
@@ -121,12 +150,12 @@ let
       HAS_CLIPBOARD=true
       CLIP_TOOL="windows"
     fi
-    
+
     if [ "$HAS_CLIPBOARD" = "false" ]; then
       printf '%s\n' "Clipboard history requires a graphical session or WSL." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
       exit 0
     fi
-    
+
     if [ "$CLIP_TOOL" = "cliphist" ]; then
       # Use cliphist for Wayland/X11
       selection=$(cliphist list | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' --with-nth=2..) || true
@@ -151,7 +180,7 @@ let
 
   unicode = pkgs.writeShellScriptBin "tmux-unicode" ''
     set -euo pipefail
-    
+
     # Check if we have a clipboard available
     HAS_CLIPBOARD=false
     CLIP_TYPE=""
@@ -162,7 +191,7 @@ let
       HAS_CLIPBOARD=true
       CLIP_TYPE="windows"
     fi
-    
+
     selection=$(unipicker --command "${popup}/bin/tmux-fzf-popup --prompt='Unicode: '") || true
     if [[ -n "$selection" ]]; then
       if [ "$HAS_CLIPBOARD" = "true" ]; then
@@ -198,19 +227,26 @@ let
       "Power off monitors") ${
         # Detect WSL/headless environment and avoid niri dependency
         let
-          isWSL = (builtins.getEnv "WSL_DISTRO_NAME") != "" || 
-                  (builtins.getEnv "WSLENV") != "" ||
-                  (builtins.getEnv "IS_WSL") == "true";
+          isWSL =
+            (builtins.getEnv "WSL_DISTRO_NAME") != ""
+            || (builtins.getEnv "WSLENV") != ""
+            || (builtins.getEnv "IS_WSL") == "true";
         in
-          if isWSL 
-          then "${pkgs.coreutils}/bin/true"
-          else "${pkgs.niri}/bin/niri msg action power-off-monitors"
+        if isWSL then
+          "${pkgs.coreutils}/bin/true"
+        else
+          "${pkgs.niri}/bin/niri msg action power-off-monitors"
       } ;;
     esac
   '';
 in
 pkgs.symlinkJoin {
   name = "tmux-fzf-tools";
-  paths = [ popup appLauncher cliphist unicode systemMenu ];
+  paths = [
+    popup
+    appLauncher
+    cliphist
+    unicode
+    systemMenu
+  ];
 }
-
