@@ -28,7 +28,7 @@ in
     ];
 
       extraConfig = let
-        pickerBinds = if (config.igloo.tmux.pickers.enable && globals.system.isGraphical) then ''
+        pickerBinds = if config.igloo.tmux.pickers.enable then ''
           # Custom fzf pickers
           bind-key F1 run-shell "tmux-app-launcher"
           bind-key F2 run-shell "tmux-cliphist"

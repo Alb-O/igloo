@@ -26,8 +26,23 @@ let
     DEX=${pkgs.dex}/bin/dex
     SETSID=${pkgs.util-linux}/bin/setsid
 
-    if [ -z "''${WAYLAND_DISPLAY:-}" ] && [ -z "''${DISPLAY:-}" ]; then
-      printf '%s\n' "No graphical session detected." | ${popup}/bin/tmux-fzf-popup --prompt='Apps: ' || true
+    # Check if we're in a graphical environment
+    HAS_DISPLAY=false
+    if [ -n "''${WAYLAND_DISPLAY:-}" ] || [ -n "''${DISPLAY:-}" ]; then
+      HAS_DISPLAY=true
+    fi
+
+    # In non-graphical environments, show a command launcher instead
+    if [ "$HAS_DISPLAY" = "false" ]; then
+      # Generate command list from PATH
+      command_list=$(printf '%s\n' $PATH | ''${SED} 's/:/ /g' | ''${AWK} '{for(i=1;i<=NF;i++) print $i}' | while read dir; do
+        [ -d "$dir" ] && ''${FIND} "$dir" -maxdepth 1 -type f -executable -printf '%f\n' 2>/dev/null
+      done | ''${SORT} -u)
+      
+      selection=$(echo "$command_list" | ${popup}/bin/tmux-fzf-popup --prompt='Command: ' || true)
+      if [ -n "''${selection:-}" ]; then
+        ''${SETSID} -f ''${selection} >/dev/null 2>&1 &
+      fi
       exit 0
     fi
 
@@ -97,10 +112,10 @@ let
   cliphist = pkgs.writeShellScriptBin "tmux-cliphist" ''
     set -euo pipefail
     if [ -z "''${WAYLAND_DISPLAY:-}" ] && [ -z "''${DISPLAY:-}" ]; then
-      printf '%s\n' "No graphical session detected." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
+      printf '%s\n' "Clipboard history requires a graphical session." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
       exit 0
     fi
-    selection=$(cliphist list | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' --with-nth=2..)
+    selection=$(cliphist list | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' --with-nth=2..) || true
     if [[ -n "$selection" ]]; then
       echo "$selection" | cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
     fi
@@ -108,13 +123,23 @@ let
 
   unicode = pkgs.writeShellScriptBin "tmux-unicode" ''
     set -euo pipefail
-    if [ -z "''${WAYLAND_DISPLAY:-}" ] && [ -z "''${DISPLAY:-}" ]; then
-      printf '%s\n' "No graphical session detected." | ${popup}/bin/tmux-fzf-popup --prompt='Unicode: ' || true
-      exit 0
+    
+    # Check if we have a clipboard available
+    HAS_CLIPBOARD=false
+    if [ -n "''${WAYLAND_DISPLAY:-}" ] || [ -n "''${DISPLAY:-}" ]; then
+      HAS_CLIPBOARD=true
     fi
-    selection=$(unipicker --command "${popup}/bin/tmux-fzf-popup --prompt='Unicode: '")
+    
+    selection=$(unipicker --command "${popup}/bin/tmux-fzf-popup --prompt='Unicode: '") || true
     if [[ -n "$selection" ]]; then
-      echo "$selection" | ${pkgs.wl-clipboard}/bin/wl-copy -n
+      if [ "$HAS_CLIPBOARD" = "true" ]; then
+        echo "$selection" | ${pkgs.wl-clipboard}/bin/wl-copy -n
+        echo "Copied to clipboard: $selection"
+      else
+        echo "Selected: $selection"
+        # In non-graphical environments, just display the character
+        echo "$selection"
+      fi
     fi
   '';
 
@@ -125,7 +150,8 @@ let
     else
       options="Suspend\nRestart\nShutdown\nHibernate"
     fi
-    selection=$(echo "$options" | ${popup}/bin/tmux-fzf-popup --prompt='System: ')
+    selection=$(echo -e "$options" | ${popup}/bin/tmux-fzf-popup --prompt='System: ') || true
+    [ -z "$selection" ] && exit 0
     case "$selection" in
       "Lock") ${pkgs.swaylock}/bin/swaylock ;;
       "Suspend") systemctl suspend ;;

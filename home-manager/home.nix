@@ -21,6 +21,9 @@ in
     # inputs.nix-colors.homeManagerModules.default
   ];
 
+  # Enable tmux fzf-tools even in non-graphical environments
+  igloo.tmux.pickers.enable = true;
+
   # Basic user information
   home = {
     username = globals.user.username;
@@ -49,13 +52,13 @@ in
       tree
       imagemagick
       poppler-utils
+      unipicker
       # Development
       nodejs
       gcc
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)
-      unipicker
       hyprpicker
       foot
       hydrus
