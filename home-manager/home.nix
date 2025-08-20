@@ -39,7 +39,8 @@ in
       fastfetch
       gh
       just
-      opencode
+      unzip
+      #opencode
       xdg-ninja
       lm_sensors
       ffmpeg
@@ -62,6 +63,7 @@ in
       hyprpicker
       foot
       hydrus
+      vesktop
       # Clipboard tools for Wayland
       wl-clipboard
       cliphist
@@ -75,6 +77,7 @@ in
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
       })
+      pkgs.opencode-src
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Custom graphical packages

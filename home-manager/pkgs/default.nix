@@ -4,4 +4,6 @@ pkgs: {
   # example = pkgs.callPackage ./example { };
   blender-daily = pkgs.callPackage ./blender-daily.nix {};
   tmux-fzf-tools = pkgs.callPackage ./tmux-fzf-tools.nix {};
+  opencode-bin = pkgs.callPackage ./opencode-bin.nix {};
+  opencode-src = pkgs.callPackage ./opencode-src.nix {};
 }
