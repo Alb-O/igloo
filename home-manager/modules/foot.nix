@@ -1,10 +1,12 @@
-{pkgs, globals, ...}: let
+{ pkgs, globals, ... }:
+let
   colors = import ../lib/themes globals;
   fonts = import ../lib/fonts.nix pkgs;
-  
+
   # Helper function to strip # prefix from hex colors for foot
   stripHash = color: builtins.substring 1 6 color;
-in {
+in
+{
   programs.foot = {
     enable = true;
     settings = {
@@ -19,14 +21,15 @@ in {
       };
 
       cursor = {
-        style = "block";
+        style = "beam";
         blink = true;
+        blink-rate = 250;
       };
 
       colors = {
         background = stripHash colors.ui.background.primary;
         foreground = stripHash colors.ui.foreground.primary;
-        
+
         regular0 = stripHash colors.terminal.black;
         regular1 = stripHash colors.terminal.red;
         regular2 = stripHash colors.terminal.green;
@@ -35,7 +38,7 @@ in {
         regular5 = stripHash colors.terminal.magenta;
         regular6 = stripHash colors.terminal.cyan;
         regular7 = stripHash colors.terminal.white;
-        
+
         bright0 = stripHash colors.terminal.brightBlack;
         bright1 = stripHash colors.terminal.brightRed;
         bright2 = stripHash colors.terminal.brightGreen;
@@ -44,7 +47,7 @@ in {
         bright5 = stripHash colors.terminal.brightMagenta;
         bright6 = stripHash colors.terminal.brightCyan;
         bright7 = stripHash colors.terminal.brightWhite;
-        
+
         selection-foreground = stripHash colors.ui.foreground.inverse;
         selection-background = stripHash colors.ui.special.selection;
       };
