@@ -35,6 +35,11 @@
           auto-format = true;
           formatter.command = "${pkgs.rustfmt}/bin/rustfmt";
         }
+        {
+          name = "markdown";
+          auto-format = true;
+          formatter.command = "${pkgs.prettier}/bin/prettier";
+        }
       ];
       language-server = {
         rust-analyzer = {

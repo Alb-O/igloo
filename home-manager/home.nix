@@ -54,7 +54,7 @@ in
       imagemagick
       poppler-utils
       unipicker
-      # Development
+      prettier
       nodejs
       gcc
     ]
