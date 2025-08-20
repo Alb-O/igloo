@@ -111,13 +111,41 @@ let
 
   cliphist = pkgs.writeShellScriptBin "tmux-cliphist" ''
     set -euo pipefail
-    if [ -z "''${WAYLAND_DISPLAY:-}" ] && [ -z "''${DISPLAY:-}" ]; then
-      printf '%s\n' "Clipboard history requires a graphical session." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
+    
+    # Check if we're in WSL or have clipboard access
+    HAS_CLIPBOARD=false
+    if [ -n "''${WAYLAND_DISPLAY:-}" ] || [ -n "''${DISPLAY:-}" ]; then
+      HAS_CLIPBOARD=true
+      CLIP_TOOL="cliphist"
+    elif [ "''${IS_WSL:-}" = "true" ] && command -v powershell.exe >/dev/null 2>&1; then
+      HAS_CLIPBOARD=true
+      CLIP_TOOL="windows"
+    fi
+    
+    if [ "$HAS_CLIPBOARD" = "false" ]; then
+      printf '%s\n' "Clipboard history requires a graphical session or WSL." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
       exit 0
     fi
-    selection=$(cliphist list | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' --with-nth=2..) || true
-    if [[ -n "$selection" ]]; then
-      echo "$selection" | cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
+    
+    if [ "$CLIP_TOOL" = "cliphist" ]; then
+      # Use cliphist for Wayland/X11
+      selection=$(cliphist list | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' --with-nth=2..) || true
+      if [[ -n "$selection" ]]; then
+        echo "$selection" | cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
+      fi
+    else
+      # WSL: Show current Windows clipboard content  
+      current_clip=$(powershell.exe -Command "Get-Clipboard" 2>/dev/null | sed 's/\r$//' || true)
+      if [ -n "$current_clip" ]; then
+        # Show current clipboard content (user can view/edit and it gets copied back)
+        selection=$(echo "$current_clip" | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard Content: ' --print-query) || true
+        if [[ -n "$selection" ]]; then
+          # Copy the (potentially edited) selection back to clipboard
+          echo "$selection" | clip.exe 2>/dev/null || echo "$selection" | powershell.exe -Command "Set-Clipboard" 2>/dev/null || true
+        fi
+      else
+        printf '%s\n' "Windows clipboard is empty." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
+      fi
     fi
   '';
 
@@ -126,14 +154,23 @@ let
     
     # Check if we have a clipboard available
     HAS_CLIPBOARD=false
+    CLIP_TYPE=""
     if [ -n "''${WAYLAND_DISPLAY:-}" ] || [ -n "''${DISPLAY:-}" ]; then
       HAS_CLIPBOARD=true
+      CLIP_TYPE="wayland"
+    elif [ "''${IS_WSL:-}" = "true" ] && command -v clip.exe >/dev/null 2>&1; then
+      HAS_CLIPBOARD=true
+      CLIP_TYPE="windows"
     fi
     
     selection=$(unipicker --command "${popup}/bin/tmux-fzf-popup --prompt='Unicode: '") || true
     if [[ -n "$selection" ]]; then
       if [ "$HAS_CLIPBOARD" = "true" ]; then
-        echo "$selection" | ${pkgs.wl-clipboard}/bin/wl-copy -n
+        if [ "$CLIP_TYPE" = "wayland" ]; then
+          echo "$selection" | ${pkgs.wl-clipboard}/bin/wl-copy -n
+        elif [ "$CLIP_TYPE" = "windows" ]; then
+          printf "%s" "$selection" | clip.exe 2>/dev/null || true
+        fi
         echo "Copied to clipboard: $selection"
       else
         echo "Selected: $selection"
