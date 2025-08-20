@@ -169,12 +169,12 @@ let
         if [ "$CLIP_TYPE" = "wayland" ]; then
           echo "$selection" | ${pkgs.wl-clipboard}/bin/wl-copy -n
         elif [ "$CLIP_TYPE" = "windows" ]; then
-          printf "%s" "$selection" | clip.exe 2>/dev/null || true
+          printf "%s" "$selection" | clip.exe >/dev/null 2>&1 || true
         fi
-        echo "Copied to clipboard: $selection"
+        # Silent operation - no output to avoid disrupting tmux
       else
+        # Only show output in non-clipboard environments
         echo "Selected: $selection"
-        # In non-graphical environments, just display the character
         echo "$selection"
       fi
     fi
