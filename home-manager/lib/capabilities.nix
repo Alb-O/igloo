@@ -1,8 +1,23 @@
 { pkgs, globals }:
 let
+  # Detect WSL environment
+  isWSL = (builtins.getEnv "WSL_DISTRO_NAME") != "" || 
+          (builtins.getEnv "WSLENV") != "" ||
+          (builtins.getEnv "IS_WSL") == "true";
+
   copyBin = if globals.system.isGraphical then
     pkgs.writeShellScriptBin "igloo-copy" ''
       exec ${pkgs.wl-clipboard}/bin/wl-copy "$@"
+    ''
+  else if isWSL then
+    pkgs.writeShellScriptBin "igloo-copy" ''
+      # Use Windows clipboard in WSL
+      if command -v /mnt/c/Windows/System32/clip.exe >/dev/null 2>&1; then
+        exec /mnt/c/Windows/System32/clip.exe
+      else
+        # Fallback to consuming input if Windows clipboard not available
+        exec ${pkgs.coreutils}/bin/cat > /dev/null
+      fi
     ''
   else
     pkgs.writeShellScriptBin "igloo-copy" ''

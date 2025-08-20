@@ -18,6 +18,7 @@
     ./codex.nix
     ./helix.nix
     ./languages
+    ./wsl.nix
   ]
   ++ (
     if globals.system.isGraphical then

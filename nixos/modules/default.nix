@@ -9,6 +9,7 @@
       ./fonts.nix
       ./ssh.nix
       ./flake-configuration.nix
+      ./wsl.nix
     ]
     ++ (
       # Only import desktop modules for graphical systems

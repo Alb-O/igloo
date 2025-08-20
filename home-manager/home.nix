@@ -136,11 +136,25 @@ in
         chmod 700 "$XDG_RUNTIME_DIR"
       fi
 
-      # Ensure Bash history path under XDG state exists to avoid errors
-      if [ -n "''${HISTFILE:-}" ]; then
-        mkdir -p "$(dirname -- "''${HISTFILE}")"
-        [ -e "''${HISTFILE}" ] || : > "''${HISTFILE}"
-      fi
+       # Ensure Bash history path under XDG state exists to avoid errors
+       if [ -n "''${HISTFILE:-}" ]; then
+         mkdir -p "$(dirname -- "''${HISTFILE}")"
+         [ -e "''${HISTFILE}" ] || : > "''${HISTFILE}"
+       fi
+
+       # Add Windows PATH for WSL interoperability
+       if [ "''${IS_WSL:-}" = "true" ]; then
+         WIN_PATHS="/mnt/c/Windows/System32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0"
+         # Check if PowerShell 7 is installed
+         if [ -d "/mnt/c/Program Files/PowerShell/7" ]; then
+           WIN_PATHS="$WIN_PATHS:/mnt/c/Program Files/PowerShell/7"
+         fi
+         # Only add if not already present
+         case ":$PATH:" in
+           *":/mnt/c/Windows/System32:"*) : ;;
+           *) export PATH="$PATH:$WIN_PATHS" ;;
+         esac
+       fi
 
       # Interactive-only setup
       case $- in

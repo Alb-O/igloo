@@ -21,9 +21,42 @@
   wsl.enable = true;
   wsl.defaultUser = "admin";
   wsl.startMenuLaunchers = true;
-
-  # Disable Windows PATH integration for cleaner environment
-  wsl.wslConf.interop.appendWindowsPath = false;
+  
+  # Enhanced WSL interoperability
+  wsl.wslConf = {
+    # Network configuration
+    network = {
+      generateHosts = true;
+      generateResolvConf = true;
+      hostname = globals.system.hostname;
+    };
+    
+    # Boot configuration  
+    boot = {
+      systemd = true;
+      command = ""; # Can add startup commands here
+    };
+    
+    # Interoperability settings
+    interop = {
+      enabled = true;
+      # Include Windows PATH but filter it intelligently
+      appendWindowsPath = true;
+    };
+    
+    # Automount settings for Windows drives
+    automount = {
+      enabled = true;
+      root = "/mnt";
+      # Remove metadata to fix Windows executable execution, allow execute for group
+      options = "gid=100,umask=002,fmask=002,case=off,exec";
+      mountFsTab = false; # Let systemd handle /etc/fstab
+      ldconfig = false;   # Use NixOS OpenGL instead
+    };
+    
+    # User settings
+    user.default = "admin";
+  };
 
   # Generic admin user configuration
   users.users.admin = {
@@ -107,5 +140,13 @@
     wget
     htop
     tree
+    # WSL-specific utilities
+    wslu # WSL utilities for interop
   ];
+
+  # Environment variables for WSL identification
+  environment.variables = {
+    WSL_DISTRO_NAME = "NixOS";
+    IS_WSL = "true";
+  };
 }
