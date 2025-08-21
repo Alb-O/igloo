@@ -74,6 +74,7 @@
           command = "helix-gpt";
           environment = {
             COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
+            COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
             HANDLER = builtins.getEnv "HANDLER";
           };
         };

@@ -92,6 +92,7 @@ in
   # Environment variables from .env file (loaded during build)
   home.sessionVariables = {
     COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
+    COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
     HANDLER = builtins.getEnv "HANDLER";
   };
 
