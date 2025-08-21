@@ -54,9 +54,10 @@ in
       imagemagick
       poppler-utils
       unipicker
-      prettier
+      # prettier  # Temporarily disabled due to LICENSE file conflict with helix-gpt
       nodejs
       gcc
+      helix-gpt
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)
@@ -87,6 +88,12 @@ in
   # State version - don't change this
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = globals.system.stateVersion;
+
+  # Environment variables from .env file (loaded during build)
+  home.sessionVariables = {
+    COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
+    HANDLER = builtins.getEnv "HANDLER";
+  };
 
   # Ensure login shells source Home Manager session vars from XDG-friendly paths
   # and avoid legacy ~/.nix-profile references.
@@ -178,6 +185,9 @@ in
           # Share history across shells/panes in real time
           shopt -s histappend
           PROMPT_COMMAND='history -a; history -n; '"''${PROMPT_COMMAND:-}"
+
+          # Ensure programs pick up truecolor support
+          export COLORTERM="truecolor"
 
           # Theme-integrated ble.sh colors
           ble-face -s region                    fg=${colors.ui.foreground.primary}

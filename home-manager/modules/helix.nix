@@ -25,6 +25,10 @@
           name = "nix";
           auto-format = true;
           formatter.command = "${pkgs.nixfmt}/bin/nixfmt";
+          language-servers = [
+            "nil"
+            "helix-gpt"
+          ];
         }
         {
           name = "rust";
@@ -34,9 +38,17 @@
           ];
           auto-format = true;
           formatter.command = "${pkgs.rustfmt}/bin/rustfmt";
+          language-servers = [
+            "rust-analyzer"
+            "helix-gpt"
+          ];
         }
         {
           name = "markdown";
+          language-servers = [
+            "markdown-oxide"
+            "helix-gpt"
+          ];
           auto-format = true;
           formatter.command = "${pkgs.prettier}/bin/prettier";
         }
@@ -50,6 +62,13 @@
             diagnostics = {
               styleLints.enable = true;
             };
+          };
+        };
+        helix-gpt = {
+          command = "helix-gpt";
+          environment = {
+            COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
+            HANDLER = builtins.getEnv "HANDLER";
           };
         };
       };

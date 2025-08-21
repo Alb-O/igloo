@@ -33,4 +33,7 @@
       RUST_MIN_STACK = "16777216";
     });
   })
+
+  # helix-gpt overlay
+  inputs.helix-gpt.overlays.default
 ]

@@ -18,6 +18,9 @@
     niri-flake.url = "github:sodiboo/niri-flake";
     nix-colors.url = "github:misterio77/nix-colors";
     nix-userstyles.url = "github:knoopx/nix-userstyles";
+
+    # helix-gpt integration
+    helix-gpt.url = "github:SilverCoder/helix-gpt/nix-flake";
   };
 
   outputs =
@@ -28,6 +31,7 @@
       niri-flake,
       nix-colors,
       nix-userstyles,
+      helix-gpt,
       ...
     }@inputs:
     let
