@@ -1,34 +1,84 @@
 # Global font configuration
-# Centralized font definitions for consistent typography across all applications
-pkgs: {
-  mono = {
-    # Use regular JetBrains Mono with nerd symbols as fallback
-    name = "JetBrains Mono";
-    package = pkgs.jetbrains-mono;
-    size = {
-      small = 11;
-      normal = 13;
-      large = 15;
+# Centralized font definitions and home-manager configuration for consistent typography
+{pkgs, globals, ...}: let
+  # Font definitions with packages and sizes
+  fontDefs = rec {
+    mono = {
+      # Use Hack font with nerd symbols as fallback
+      name = "Hack";
+      package = pkgs.hack-font;
+      size = {
+        small = 11;
+        normal = 13;
+        large = 15;
+      };
     };
-  };
 
-  sansSerif = {
-    name = "Fira Sans";
-    package = pkgs.fira-sans;
-    size = {
-      small = 11;
-      normal = 12;
-      large = 14;
+    sansSerif = {
+      name = "Fira Sans";
+      package = pkgs.fira-sans;
+      size = {
+        small = 11;
+        normal = 12;
+        large = 14;
+      };
     };
-  };
 
-  serif = {
-    name = "Crimson Pro";
-    package = pkgs.crimson-pro;
-    size = {
-      small = 12;
-      normal = 13;
-      large = 15;
+    serif = {
+      name = "Crimson Pro";
+      package = pkgs.crimson-pro;
+      size = {
+        small = 12;
+        normal = 13;
+        large = 15;
+      };
+    };
+
+    # Font packages to install in user environment
+    packages = with pkgs; [
+      # Basic system fonts
+      noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-emoji
+      
+      # Personal fonts with nerd symbol support via fallback
+      nerd-fonts.symbols-only
+      hack-font
+      inter
+      crimson-pro
+      
+      # Sans serif fallback
+      fira-sans
+    ];
+
+    # Fontconfig defaults and fallback configuration
+    defaultFonts = {
+      monospace = [
+        mono.name
+        "Symbols Nerd Font Mono"
+      ];
+      sansSerif = [
+        sansSerif.name
+        "Inter"
+      ];
+      serif = [
+        serif.name
+      ];
+      emoji = [
+        "Noto Color Emoji"
+      ];
     };
   };
+in {
+  # Export font definitions for use by other modules
+  _module.args.fonts = fontDefs;
+
+  # Install font packages in user environment
+  home.packages = fontDefs.packages;
+
+  # Enable fontconfig for user
+  fonts.fontconfig.enable = true;
+  
+  # Configure font defaults and fallback
+  fonts.fontconfig.defaultFonts = fontDefs.defaultFonts;
 }

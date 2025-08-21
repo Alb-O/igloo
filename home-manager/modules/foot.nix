@@ -1,10 +1,10 @@
 {
   pkgs,
   globals,
+  fonts,
   ...
 }: let
   colors = import ../lib/themes globals;
-  fonts = import ../lib/fonts.nix pkgs;
 
   # Helper function to strip # prefix from hex colors for foot
   stripHash = color: builtins.substring 1 6 color;

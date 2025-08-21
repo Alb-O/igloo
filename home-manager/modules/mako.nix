@@ -1,10 +1,10 @@
 {
   pkgs,
   globals,
+  fonts,
   ...
 }: let
   colors = import ../lib/themes globals;
-  fonts = import ../lib/fonts.nix pkgs;
 in {
   services.mako = {
     enable = true;
