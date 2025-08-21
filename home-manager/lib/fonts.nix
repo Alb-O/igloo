@@ -1,12 +1,13 @@
 # Global font configuration
 # Centralized font definitions and home-manager configuration for consistent typography
-{pkgs, globals, ...}: let
+{ pkgs, globals, ... }:
+let
   # Font definitions with packages and sizes
   fontDefs = rec {
     mono = {
       # Use Hack font with nerd symbols as fallback
-      name = "Hack";
-      package = pkgs.hack-font;
+      name = "Jetbrains Mono";
+      package = pkgs.jetbrains-mono;
       size = {
         small = 11;
         normal = 13;
@@ -40,13 +41,13 @@
       noto-fonts
       noto-fonts-cjk-sans
       noto-fonts-emoji
-      
+
       # Personal fonts with nerd symbol support via fallback
       nerd-fonts.symbols-only
-      hack-font
+      jetbrains-mono
       inter
       crimson-pro
-      
+
       # Sans serif fallback
       fira-sans
     ];
@@ -69,7 +70,8 @@
       ];
     };
   };
-in {
+in
+{
   # Export font definitions for use by other modules
   _module.args.fonts = fontDefs;
 
@@ -78,7 +80,7 @@ in {
 
   # Enable fontconfig for user
   fonts.fontconfig.enable = true;
-  
+
   # Configure font defaults and fallback
   fonts.fontconfig.defaultFonts = fontDefs.defaultFonts;
 }
