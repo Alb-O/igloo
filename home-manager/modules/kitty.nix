@@ -12,6 +12,8 @@ in {
     font.size = fonts.mono.size.normal;
     font.package = fonts.mono.package;
     settings = {
+      # Font fallback for nerd symbols
+      symbol_map = "U+E000-U+F8FF,U+100000-U+10FFFF Symbols Nerd Font Mono";
       # Basic appearance
       window_padding_width = 5;
       foreground = colors.ui.foreground.primary;

@@ -8,6 +8,7 @@
   imports =
     [
       ./xdg.nix
+      ./fonts.nix
       ./shell/bash.nix
       ./shell-tools.nix
       ./broot

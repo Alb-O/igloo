@@ -2,8 +2,9 @@
 # Centralized font definitions for consistent typography across all applications
 pkgs: {
   mono = {
-    name = "JetBrainsMono Nerd Font Mono";
-    package = pkgs.nerd-fonts.jetbrains-mono;
+    # Use regular JetBrains Mono with nerd symbols as fallback
+    name = "JetBrains Mono";
+    package = pkgs.jetbrains-mono;
     size = {
       small = 11;
       normal = 13;
