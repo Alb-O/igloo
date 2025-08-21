@@ -59,26 +59,25 @@ while (( tries < max_tries )); do
     break
   fi
 
-  echo "$out" | sed -n "s/.*got: *\(sha256-[A-Za-z0-9\/+]*=\).*/\1/p" | while read -r got; do
-    if echo "$out" | grep -q "-source.drv"; then
-      sed -i "0,/hash = \"sha256-[^"]*\"/s//hash = \"$got\"/" "$pkg_file"
+  # Extract the hash from the error message
+  got=$(echo "$out" | sed -n "s/.*got: *\(sha256-[A-Za-z0-9\/+]*=\).*/\1/p" | head -n1)
+  
+  if [[ -n "$got" ]]; then
+    # Determine which hash to update based on the derivation name in the error message
+    # Look for the specific derivation mentioned in the "hash mismatch" error line
+    if echo "$out" | grep "hash mismatch.*opencode-node_modules-" >/dev/null; then
+      sed -i "0,/outputHash = \"sha256-[^\"]*\"/s//outputHash = \"$got\"/" "$pkg_file"
+      echo "Updated nodeModules.outputHash -> $got" >&2
+      continue
+    elif echo "$out" | grep "hash mismatch.*source\.drv" >/dev/null; then
+      sed -i "0,/hash = \"sha256-[^\"]*\"/s//hash = \"$got\"/" "$pkg_file"
       echo "Updated src.hash -> $got" >&2
       continue
+    elif echo "$out" | grep "hash mismatch.*go-modules\.drv" >/dev/null; then
+      sed -i "0,/vendorHash = \"sha256-[^\"]*\"/s//vendorHash = \"$got\"/" "$pkg_file"
+      echo "Updated vendorHash -> $got" >&2
+      continue
     fi
-  done
-
-  if echo "$out" | grep -q "go-modules.drv"; then
-    got=$(echo "$out" | sed -n "s/.*got: *\(sha256-[A-Za-z0-9\/+]*=\).*/\1/p" | head -n1)
-    sed -i "0,/vendorHash = \"sha256-[^"]*\"/s//vendorHash = \"$got\"/" "$pkg_file"
-    echo "Updated vendorHash -> $got" >&2
-    continue
-  fi
-
-  if echo "$out" | grep -q "opencode-node_modules-"; then
-    got=$(echo "$out" | sed -n "s/.*got: *\(sha256-[A-Za-z0-9\/+]*=\).*/\1/p" | head -n1)
-    sed -i "0,/outputHash = \"sha256-[^"]*\"/s//outputHash = \"$got\"/" "$pkg_file"
-    echo "Updated nodeModules.outputHash -> $got" >&2
-    continue
   fi
 
   echo "$out" >&2

@@ -63,6 +63,9 @@
       };
     in
     {
+      # Export custom packages
+      packages.${system} = import ./pkgs pkgs;
+
       homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
