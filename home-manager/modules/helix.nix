@@ -52,6 +52,12 @@
           auto-format = true;
           formatter.command = "${pkgs.prettier}/bin/prettier";
         }
+        {
+          name = "git-commit";
+          language-servers = [
+            "helix-gpt"
+          ];
+        }
       ];
       language-server = {
         rust-analyzer = {
