@@ -9,6 +9,9 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
+    # Home manager
+    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # NUR (Nix User Repository)
     nur.url = "github:nix-community/NUR";
@@ -28,6 +31,9 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
+    # helix-gpt integration
+    helix-gpt.url = "github:SilverCoder/helix-gpt/nix-flake";
+
     # Neovim nightly overlay
     #neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
@@ -36,11 +42,13 @@
     {
       self,
       nixpkgs,
+      home-manager,
       nix-vscode-extensions,
       niri-flake,
       nix-colors,
       nix-userstyles,
       nixos-wsl,
+      helix-gpt,
       #neovim-nightly-overlay,
       ...
     }@inputs:
@@ -114,6 +122,68 @@
           # Current hostname configuration (only if different from generic names)
           ${currentHostname} = mkSystem currentConfig;
         });
+
+      # Home Manager configurations
+      homeConfigurations = 
+        let
+          system = "x86_64-linux";
+          
+          # Load dynamic user configuration from .env file
+          envConfig = import ./home-manager/lib/env-loader.nix;
+          username = envConfig.username;
+          hostname = envConfig.hostname;
+          name = envConfig.fullName;
+          email = envConfig.email;
+
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = import ./home-manager/overlays { inherit inputs; };
+            config.allowUnfree = true;
+          };
+
+          # User globals configuration
+          homeGlobals = import ./home-manager/lib/globals.nix {
+            inherit
+              username
+              name
+              email
+              hostname
+              ;
+            # Disable graphical features in WSL
+            isGraphical = !envConfig.isWSL;
+          };
+
+          # Shared home-manager configuration function
+          mkHome = modules: home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+
+            extraSpecialArgs = {
+              inherit inputs;
+              outputs = self;
+              globals = homeGlobals;
+            };
+
+            modules = modules ++ [
+              niri-flake.homeModules.config
+            ];
+          };
+        in
+        {
+          # Full configuration with user@hostname
+          "${username}@${hostname}" = mkHome [ ./home-manager/home.nix ];
+          
+          # Simple configuration for easier switching
+          ${username} = mkHome [ ./home-manager/home.nix ];
+        };
+
+      # Export custom packages
+      packages = forAllSystems (system: 
+        import ./home-manager/pkgs (import nixpkgs {
+          inherit system;
+          overlays = import ./home-manager/overlays { inherit inputs; };
+          config.allowUnfree = true;
+        })
+      );
 
       # Optionally, add Cachix binary cache for claude-code
       nixConfig = {

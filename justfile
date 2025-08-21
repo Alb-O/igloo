@@ -155,17 +155,13 @@ home-switch config=user:
     #!/usr/bin/env bash
     set -euo pipefail
     
-    # Get absolute path to repo root
-    REPO_ROOT="$(pwd)"
-    
     # Source environment variables from root .env if it exists
-    if [ -f "$REPO_ROOT/.env" ]; then
+    if [ -f ".env" ]; then
         set -a
-        source "$REPO_ROOT/.env"
+        source ".env"
         set +a
     fi
     
-    cd home-manager
     env USER={{config}} HOME=/home/{{config}} nix run github:nix-community/home-manager/master -- switch --flake .#{{config}} --impure
 
 # Build home-manager configuration with full path (user@hostname)
@@ -173,17 +169,13 @@ home-switch-full:
     #!/usr/bin/env bash
     set -euo pipefail
     
-    # Get absolute path to repo root
-    REPO_ROOT="$(pwd)"
-    
     # Source environment variables from root .env if it exists
-    if [ -f "$REPO_ROOT/.env" ]; then
+    if [ -f ".env" ]; then
         set -a
-        source "$REPO_ROOT/.env"
+        source ".env"
         set +a
     fi
     
-    cd home-manager
     env USER={{user}} HOME=/home/{{user}} nix run github:nix-community/home-manager/master -- switch --flake .#{{user}}@{{hostname}} --impure
 
 # Build configuration without activation
@@ -191,36 +183,29 @@ home-build config=user:
     #!/usr/bin/env bash
     set -euo pipefail
     
-    # Get absolute path to repo root
-    REPO_ROOT="$(pwd)"
-    
     # Source environment variables from root .env if it exists
-    if [ -f "$REPO_ROOT/.env" ]; then
+    if [ -f ".env" ]; then
         set -a
-        source "$REPO_ROOT/.env"
+        source ".env"
         set +a
     fi
     
-    cd home-manager
     home-manager build --flake .#{{config}} --impure
 
-# Check home-manager flake validity
+# Check home-manager flake validity  
 home-check:
     #!/usr/bin/env bash
     set -euo pipefail
     
-    # Get absolute path to repo root
-    REPO_ROOT="$(pwd)"
-    
     # Source environment variables from root .env if it exists
-    if [ -f "$REPO_ROOT/.env" ]; then
+    if [ -f ".env" ]; then
         set -a
-        source "$REPO_ROOT/.env"
+        source ".env"
         set +a
     fi
     
-    cd home-manager
-    nix flake check
+    # Check home configurations
+    nix flake check --impure .#homeConfigurations
 
 # List home-manager generations
 home-generations:
@@ -232,7 +217,7 @@ home-info:
     @echo "Hostname: {{hostname}}"
     @echo "Home Manager version: $(home-manager --version 2>/dev/null || echo 'not installed')"
     @echo "Available configurations:"
-    @cd home-manager && nix eval --impure --json .#homeConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No configurations found"
+    @nix eval --impure --json .#homeConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No configurations found"
 
 # Show home-manager news
 home-news:
@@ -250,10 +235,9 @@ home-edit:
 # SHARED - Common Development Tasks
 # ========================================
 
-# Format all Nix files (both system and home)
+# Format all Nix files
 fmt:
     nix fmt
-    cd home-manager && nix fmt
 
 # Bump OpenCode to a specific version (or latest) and auto-fill hashes
 opencode-bump version="latest":
@@ -264,15 +248,13 @@ opencode-update:
     ./scripts/opencode-bump.sh latest
     just home-switch
 
-# Update flake inputs (both system and home)
+# Update flake inputs
 update:
     nix flake update
-    cd home-manager && nix flake update
 
-# Update specific input (both system and home)
+# Update specific input
 update-input input:
     nix flake update {{input}}
-    cd home-manager && nix flake update {{input}}
 
 # Start Nix REPL with system flake
 repl:
@@ -280,13 +262,13 @@ repl:
 
 # Start Nix REPL with home-manager flake
 home-repl:
-    cd home-manager && nix repl --file flake.nix
+    nix repl --file flake.nix
 
 # Enter development shell
 dev:
     nix develop
 
-# Clean build artifacts (both system and home)
+# Clean build artifacts
 clean:
     rm -rf result result-*
     cd home-manager && rm -rf result result-*
@@ -302,7 +284,7 @@ show:
 
 # Show home-manager flake info
 home-show:
-    cd home-manager && nix flake show
+    nix flake show
 
 # Check both system and home configurations
 check-all:
