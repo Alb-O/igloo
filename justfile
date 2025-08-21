@@ -20,21 +20,12 @@ default:
 system-rebuild host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
-    
-    # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
         set +a
     fi
-    
-    # Determine host after sourcing .env
-    if [ "{{host}}" = "auto" ]; then
-        TARGET_HOST="${HOSTNAME:-desktop}"
-    else
-        TARGET_HOST="{{host}}"
-    fi
-    
+    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
     echo "Rebuilding system configuration for host: $TARGET_HOST"
     sudo -E nixos-rebuild switch --flake .#$TARGET_HOST --impure
 
@@ -42,68 +33,42 @@ system-rebuild host="auto":
 system-rebuild-verbose host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
-    # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
         set +a
     fi
-    
-    # Determine host after sourcing .env
-    if [ "{{host}}" = "auto" ]; then
-        TARGET_HOST="${HOSTNAME:-desktop}"
-    else
-        TARGET_HOST="{{host}}"
-    fi
-    
+    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
     sudo -E nixos-rebuild switch --flake .#$TARGET_HOST --show-trace --verbose --impure
 
 # Test build without activation
 system-test host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
-    # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
         set +a
     fi
-    
-    # Determine host after sourcing .env
-    if [ "{{host}}" = "auto" ]; then
-        TARGET_HOST="${HOSTNAME:-desktop}"
-    else
-        TARGET_HOST="{{host}}"
-    fi
-    
+    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
     sudo -E nixos-rebuild test --flake .#$TARGET_HOST --impure
 
 # Build configuration without switching
 system-build host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
-    # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
         set +a
     fi
-    
-    # Determine host after sourcing .env
-    if [ "{{host}}" = "auto" ]; then
-        TARGET_HOST="${HOSTNAME:-desktop}"
-    else
-        TARGET_HOST="{{host}}"
-    fi
-    
-    # Pass environment variables to sudo and use impure mode
+    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
     sudo -E nixos-rebuild build --flake .#$TARGET_HOST --impure
 
 # Check system flake validity
 system-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
@@ -130,20 +95,12 @@ system-info:
 system-iso host="auto":
     #!/usr/bin/env bash
     set -euo pipefail
-    # Source environment variables if .env exists
     if [ -f .env ]; then
         set -a
         source .env
         set +a
     fi
-    
-    # Determine host after sourcing .env
-    if [ "{{host}}" = "auto" ]; then
-        TARGET_HOST="${HOSTNAME:-desktop}"
-    else
-        TARGET_HOST="{{host}}"
-    fi
-    
+    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
     nix build .#nixosConfigurations.$TARGET_HOST.config.system.build.isoImage
 
 # =====================================
@@ -151,60 +108,37 @@ system-iso host="auto":
 # =====================================
 
 # Build and activate home-manager configuration
-home-switch config=user:
+home-switch:
     #!/usr/bin/env bash
     set -euo pipefail
-    
-    # Source environment variables from root .env if it exists
-    if [ -f ".env" ]; then
+    if [ -f .env ]; then
         set -a
-        source ".env"
+        source .env
         set +a
     fi
-    
-    env USER={{config}} HOME=/home/{{config}} nix run github:nix-community/home-manager/master -- switch --flake .#{{config}} --impure
-
-# Build home-manager configuration with full path (user@hostname)
-home-switch-full:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    
-    # Source environment variables from root .env if it exists
-    if [ -f ".env" ]; then
-        set -a
-        source ".env"
-        set +a
-    fi
-    
-    env USER={{user}} HOME=/home/{{user}} nix run github:nix-community/home-manager/master -- switch --flake .#{{user}}@{{hostname}} --impure
+    TARGET="${USERNAME}@${HOSTNAME}"
+    env USER="${USERNAME}" HOME="/home/${USERNAME}" nix run github:nix-community/home-manager/master -- switch --flake ".#${TARGET}" --impure
 
 # Build configuration without activation
-home-build config=user:
+home-build:
     #!/usr/bin/env bash
     set -euo pipefail
-    
-    # Source environment variables from root .env if it exists
-    if [ -f ".env" ]; then
+    if [ -f .env ]; then
         set -a
-        source ".env"
+        source .env
         set +a
     fi
-    
-    home-manager build --flake .#{{config}} --impure
+    home-manager build --flake ".#${USERNAME}@${HOSTNAME}" --impure
 
 # Check home-manager flake validity  
 home-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    
-    # Source environment variables from root .env if it exists
-    if [ -f ".env" ]; then
+    if [ -f .env ]; then
         set -a
-        source ".env"
+        source .env
         set +a
     fi
-    
-    # Check home configurations
     nix flake check --impure .#homeConfigurations
 
 # List home-manager generations

@@ -60,6 +60,13 @@
     # This is a function that generates an attribute by calling a function you
     # pass to it, with each system as an argument
     forAllSystems = nixpkgs.lib.genAttrs systems;
+  in let
+    # Shared pkgs configuration to avoid duplication
+    pkgsFor = system: import nixpkgs {
+      inherit system;
+      overlays = import ./home-manager/overlays {inherit inputs;};
+      config.allowUnfree = true;
+    };
   in {
     # Formatter for your nix files, available through 'nix fmt'
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
@@ -131,71 +138,41 @@
       // nixpkgs.lib.optionalAttrs (currentHostname != "desktop" && currentHostname != "server") {
         # Current hostname configuration (only if different from generic names)
         ${currentHostname} = mkSystem currentConfig;
-      });
+        });
 
     # Home Manager configurations
     homeConfigurations = let
-      system = "x86_64-linux";
-
       # Load dynamic user configuration from .env file
       envConfig = import ./home-manager/lib/env-loader.nix;
-      username = envConfig.username;
-      hostname = envConfig.hostname;
-      name = envConfig.fullName;
-      email = envConfig.email;
-
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = import ./home-manager/overlays {inherit inputs;};
-        config.allowUnfree = true;
-      };
+      pkgs = pkgsFor "x86_64-linux";
 
       # User globals configuration
       homeGlobals = import ./home-manager/lib/globals.nix {
-        inherit
-          username
-          name
-          email
-          hostname
-          ;
+        inherit (envConfig) username;
+        name = envConfig.fullName;
+        email = envConfig.email;
+        hostname = envConfig.hostname;
         # Disable graphical features in WSL
         isGraphical = !envConfig.isWSL;
       };
-
-      # Shared home-manager configuration function
-      mkHome = modules:
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-
-          extraSpecialArgs = {
-            inherit inputs;
-            outputs = self;
-            globals = homeGlobals;
-          };
-
-          modules =
-            modules
-            ++ [
-              niri-flake.homeModules.config
-            ];
-        };
     in {
-      # Full configuration with user@hostname
-      "${username}@${hostname}" = mkHome [./home-manager/home.nix];
-
-      # Simple configuration for easier switching
-      ${username} = mkHome [./home-manager/home.nix];
+      # Primary configuration with user@hostname
+      "${envConfig.username}@${envConfig.hostname}" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = {
+          inherit inputs;
+          outputs = self;
+          globals = homeGlobals;
+        };
+        modules = [
+          ./home-manager/home.nix
+          niri-flake.homeModules.config
+        ];
+      };
     };
 
     # Export custom packages
-    packages = forAllSystems (
-      system:
-        import ./home-manager/pkgs (import nixpkgs {
-          inherit system;
-          overlays = import ./home-manager/overlays {inherit inputs;};
-          config.allowUnfree = true;
-        })
-    );
+    packages = forAllSystems (system: import ./home-manager/pkgs (pkgsFor system));
 
     # Optionally, add Cachix binary cache for claude-code
     nixConfig = {
