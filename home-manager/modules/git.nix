@@ -20,9 +20,6 @@
       cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d";
       branches = "branch -a";
       remotes = "remote -v";
-      
-      # AI commit hook installer
-      install-ai-hook = "!cp ${pkgs.git-ai-commit-hook}/bin/git-ai-commit-hook .git/hooks/prepare-commit-msg && chmod +x .git/hooks/prepare-commit-msg && echo 'AI commit hook installed!'";
     };
 
     extraConfig = {
@@ -81,11 +78,6 @@
 
       # Note: AI context is added via prepare-commit-msg hook below
       
-      # Global hooks directory
-      core.hooksPath = "${pkgs.linkFarm "git-hooks" [
-        { name = "prepare-commit-msg"; path = "${pkgs.git-ai-commit-hook}/bin/git-ai-commit-hook"; }
-      ]}";
-
       # GitHub CLI credential helpers
       credential."https://github.com".helper = "${lib.getExe pkgs.gh} auth git-credential";
       credential."https://gist.github.com".helper = "${lib.getExe pkgs.gh} auth git-credential";
@@ -134,6 +126,5 @@
     enable = true;
   };
 
-  # Install git AI commit hook globally
-  home.packages = [ pkgs.git-ai-commit-hook ];
+
 }
