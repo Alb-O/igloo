@@ -6,13 +6,15 @@
   inputs,
   globals,
   ...
-}: let
+}:
+let
   colors = import ./lib/themes globals;
-in {
+in
+{
   # Import modular configuration
   imports = [
     # Custom modules
-    (import ./modules {inherit inputs globals;})
+    (import ./modules { inherit inputs globals; })
 
     # Example external modules (commented out):
     # outputs.homeManagerModules.example
@@ -29,7 +31,8 @@ in {
   };
 
   # User packages
-  home.packages = with pkgs.unstable;
+  home.packages =
+    with pkgs.unstable;
     [
       # CLI Tools (always included)
       jq
@@ -72,7 +75,7 @@ in {
       # Custom packages
       (pkgs.writeShellApplication {
         name = "codex";
-        runtimeInputs = [pkgs.nodejs];
+        runtimeInputs = [ pkgs.nodejs ];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
@@ -185,9 +188,6 @@ in {
           # Share history across shells/panes in real time
           shopt -s histappend
           PROMPT_COMMAND='history -a; history -n; '"''${PROMPT_COMMAND:-}"
-
-          # Ensure programs pick up truecolor support
-          export COLORTERM="truecolor"
 
           # Theme-integrated ble.sh colors
           ble-face -s region                    fg=${colors.ui.foreground.primary}
