@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   models-dev,
 }: let
-  version = "0.5.12";
+  version = "0.5.13";
 
   # Target mapping for bun --target
   bunTarget =
@@ -28,7 +28,7 @@
     repo = "opencode";
     rev = "v${version}";
     # Upstream source tarball hash
-    hash = "sha256-iPv6rATpIpf2j81Ud4OSWOt0ZSR0sAYBhBRrQpOH1Bs=";
+    hash = "sha256-CzVzBvuK/RRYxFA4wOhkIXuXjoxWHHRnzUpGuvl9kQU=";
   };
 
   # Build TUI (Go) first
