@@ -14,16 +14,26 @@ pkgs.writeShellScriptBin "git-ai-commit-hook" ''
     if [ -z "$COMMIT_SOURCE" ] || [ "$COMMIT_SOURCE" = "message" ]; then
         # Create a temporary file with the enhanced commit message
         TEMP_FILE=$(mktemp)
-        
+
+        # Add comprehensive context information first
+        cat > "$TEMP_FILE" << 'EOF'
+# Write your commit message above this line
+# Everything below will be automatically removed
+
+EOF
+
         # Copy original commit message (preserving any pre-filled content)
-        cp "$COMMIT_MSG_FILE" "$TEMP_FILE"
-        
+        ORIGINAL_MSG=$(cat "$COMMIT_MSG_FILE")
+        if [ -n "$ORIGINAL_MSG" ]; then
+            echo "$ORIGINAL_MSG" >> "$TEMP_FILE"
+            echo "" >> "$TEMP_FILE"
+        fi
+
         # Add comprehensive context information
         cat >> "$TEMP_FILE" << 'EOF'
+# === CONTEXT FOR AI COMMIT MESSAGE GENERATION ===
 
-  # === CONTEXT ===
-
-  EOF
+EOF
         
         # Recent commit history
         echo "# Recent commits (last 8):" >> "$TEMP_FILE"
@@ -78,7 +88,7 @@ pkgs.writeShellScriptBin "git-ai-commit-hook" ''
             echo "# No branch information available" >> "$TEMP_FILE"
         fi
         
-        # Replace the original file
+        # Replace the original file with the enhanced version
         mv "$TEMP_FILE" "$COMMIT_MSG_FILE"
     fi
 ''
