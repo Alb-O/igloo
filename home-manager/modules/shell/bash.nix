@@ -9,7 +9,6 @@
 in {
   imports = [
     ./starship.nix
-    ./direnv.nix
   ];
 
   # Disable HM-managed Bash init files; we’ll handle everything via ~/.profile

@@ -12,7 +12,4 @@
       PasswordAuthentication = false;
     };
   };
-
-  # Set environment variables for system-wide use
-  environment.sessionVariables = globals.env or {};
 }

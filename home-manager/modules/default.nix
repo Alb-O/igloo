@@ -9,11 +9,10 @@
     [
       ./xdg.nix
       ./shell/bash.nix
-      ./ssh.nix
+      ./shell-tools.nix
       ./broot
       ./git.nix
       ./tmux
-      ./zoxide.nix
       ./fzf.nix
       ./codex.nix
       ./helix.nix

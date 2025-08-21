@@ -6,7 +6,6 @@
       ./keyring.nix
       ./packages.nix
       ./keyboard.nix
-      ./fonts.nix
       ./ssh.nix
       ./flake-configuration.nix
       ./wsl.nix
