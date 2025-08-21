@@ -1,17 +1,23 @@
 # Home Manager WSL integration module
-{ pkgs, lib, config, globals, ... }:
-
-let
+{
+  pkgs,
+  lib,
+  config,
+  globals,
+  ...
+}: let
   # Detect WSL environment
-  isWSL = (builtins.getEnv "WSL_DISTRO_NAME") != "" || 
-          (builtins.getEnv "WSLENV") != "" ||
-          (builtins.getEnv "IS_WSL") == "true";
+  isWSL =
+    (builtins.getEnv "WSL_DISTRO_NAME")
+    != ""
+    || (builtins.getEnv "WSLENV") != ""
+    || (builtins.getEnv "IS_WSL") == "true";
 
   # Windows clipboard integration
   windowsClipboard = pkgs.writeShellScriptBin "wsl-clipboard" ''
     #!/bin/bash
     # Smart clipboard integration for WSL
-    
+
     clip_copy() {
       if command -v /mnt/c/Windows/System32/clip.exe >/dev/null 2>&1; then
         # Convert line endings to Windows format for clip.exe
@@ -21,7 +27,7 @@ let
         return 1
       fi
     }
-    
+
     clip_paste() {
       if command -v /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe >/dev/null 2>&1; then
         /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command "Get-Clipboard" 2>/dev/null | sed 's/\r$//'
@@ -33,9 +39,9 @@ let
         return 1
       fi
     }
-    
+
     case "''${1:-copy}" in
-      copy|c) 
+      copy|c)
         if [ -p /dev/stdin ]; then
           clip_copy
         else
@@ -47,11 +53,12 @@ let
       *) echo "Usage: wsl-clipboard [copy|paste]" >&2; exit 1 ;;
     esac
   '';
-
 in {
-  options.igloo.wsl.enable = lib.mkEnableOption "Enable WSL integration features" // { 
-    default = isWSL; 
-  };
+  options.igloo.wsl.enable =
+    lib.mkEnableOption "Enable WSL integration features"
+    // {
+      default = isWSL;
+    };
 
   config = lib.mkIf config.igloo.wsl.enable {
     home.packages = [
@@ -62,10 +69,10 @@ in {
     home.sessionVariables = {
       # Ensure we can detect WSL in nested shells
       IS_WSL = "true";
-      
+
       # Set WSL-friendly browser
       BROWSER = lib.mkDefault "/mnt/c/Windows/System32/cmd.exe /c start";
-      
+
       # Configure editor to work with Windows paths
       EDITOR = lib.mkDefault "hx";
     };
@@ -76,18 +83,18 @@ in {
       "pbcopy" = "${windowsClipboard}/bin/wsl-clipboard copy";
       "pbpaste" = "${windowsClipboard}/bin/wsl-clipboard paste";
       "clip" = "${windowsClipboard}/bin/wsl-clipboard copy";
-      
+
       # Windows integration
       "open" = ''f() { /mnt/c/Windows/System32/cmd.exe /c start "$(wslpath -w "$1")" 2>/dev/null & }; f'';
       "explorer" = ''f() { /mnt/c/Windows/explorer.exe "$(wslpath -w "''${1:-.}")" 2>/dev/null & }; f'';
       "notepad" = ''f() { /mnt/c/Windows/System32/notepad.exe "$(wslpath -w "$1")" 2>/dev/null & }; f'';
-      
+
       # Quick Windows navigation
       "cdhome" = "cd /mnt/c/Users/$USER";
       "cddownloads" = "cd /mnt/c/Users/$USER/Downloads";
       "cddesktop" = "cd /mnt/c/Users/$USER/Desktop";
       "cddocuments" = "cd /mnt/c/Users/$USER/Documents";
-      
+
       # Windows tools
       "cmd" = "/mnt/c/Windows/System32/cmd.exe";
       "powershell" = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
@@ -100,11 +107,11 @@ in {
         # Handle line endings properly in WSL
         core.autocrlf = false;
         core.eol = "lf";
-        
+
         # Performance optimization for Windows filesystem
         core.preloadindex = true;
         core.fscache = true;
-        
+
         # Credential helper for Windows
         credential.helper = "/mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe";
       };
@@ -114,15 +121,15 @@ in {
     programs.tmux = lib.mkIf config.programs.tmux.enable {
       extraConfig = ''
         # WSL-specific tmux configuration
-        
+
         # Use Windows clipboard for copy operations
         if-shell 'test -f /mnt/c/Windows/System32/clip.exe' \
           'bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "${windowsClipboard}/bin/wsl-clipboard copy"'
-        
+
         # Set terminal title properly in WSL
         set-option -g set-titles on
         set-option -g set-titles-string '#T - #W'
-        
+
         # Handle focus events from Windows Terminal
         set-option -g focus-events on
       '';

@@ -6,15 +6,13 @@
   inputs,
   globals,
   ...
-}:
-let
+}: let
   colors = import ./lib/themes globals;
-in
-{
+in {
   # Import modular configuration
   imports = [
     # Custom modules
-    (import ./modules { inherit inputs globals; })
+    (import ./modules {inherit inputs globals;})
 
     # Example external modules (commented out):
     # outputs.homeManagerModules.example
@@ -31,8 +29,7 @@ in
   };
 
   # User packages
-  home.packages =
-    with pkgs.unstable;
+  home.packages = with pkgs.unstable;
     [
       # CLI Tools (always included)
       jq
@@ -75,7 +72,7 @@ in
       # Custom packages
       (pkgs.writeShellApplication {
         name = "codex";
-        runtimeInputs = [ pkgs.nodejs ];
+        runtimeInputs = [pkgs.nodejs];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';

@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.helix = {
     enable = true;
     settings = {
@@ -83,7 +82,7 @@
     themes = {
       dark_plus_transparent = {
         "inherits" = "dark_plus";
-        "ui.background" = { };
+        "ui.background" = {};
       };
     };
   };

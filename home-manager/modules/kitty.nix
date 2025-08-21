@@ -1,4 +1,8 @@
-{pkgs, globals, ...}: let
+{
+  pkgs,
+  globals,
+  ...
+}: let
   colors = import ../lib/themes globals;
   fonts = import ../lib/fonts.nix pkgs;
 in {

@@ -38,157 +38,169 @@
     #neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      nix-vscode-extensions,
-      niri-flake,
-      nix-colors,
-      nix-userstyles,
-      nixos-wsl,
-      helix-gpt,
-      #neovim-nightly-overlay,
-      ...
-    }@inputs:
-    let
-      inherit (self) outputs;
-      # Supported systems for your flake packages, shell, etc.
-      systems = [
-        "x86_64-linux"
-      ];
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    nix-vscode-extensions,
+    niri-flake,
+    nix-colors,
+    nix-userstyles,
+    nixos-wsl,
+    helix-gpt,
+    #neovim-nightly-overlay,
+    ...
+  } @ inputs: let
+    inherit (self) outputs;
+    # Supported systems for your flake packages, shell, etc.
+    systems = [
+      "x86_64-linux"
+    ];
 
+    # This is a function that generates an attribute by calling a function you
+    # pass to it, with each system as an argument
+    forAllSystems = nixpkgs.lib.genAttrs systems;
+  in {
+    # Formatter for your nix files, available through 'nix fmt'
+    # Other options beside 'alejandra' include 'nixpkgs-fmt'
+    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
-      # This is a function that generates an attribute by calling a function you
-      # pass to it, with each system as an argument
-      forAllSystems = nixpkgs.lib.genAttrs systems;
-    in
-    {
-      # Formatter for your nix files, available through 'nix fmt'
-      # Other options beside 'alejandra' include 'nixpkgs-fmt'
-      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+    # Reusable nixos modules you might want to export
+    # These are usually stuff you would upstream into nixpkgs
+    nixosModules = {
+      default = import ./nixos/modules;
+    };
 
-      # Reusable nixos modules you might want to export
-      # These are usually stuff you would upstream into nixpkgs
-      nixosModules = {
-        default = import ./nixos/modules;
-      };
+    # NixOS configuration entrypoint
+    # Available through 'nixos-rebuild --flake .#configuration-name'
+    nixosConfigurations = let
+      users = import ./lib/users.nix;
+      hosts = import ./lib/hosts.nix;
 
-      # NixOS configuration entrypoint
-      # Available through 'nixos-rebuild --flake .#configuration-name'
-      nixosConfigurations = 
-        let
-          users = import ./lib/users.nix;
-          hosts = import ./lib/hosts.nix;
-          
-          mkSystem = { userProfile, hostProfile, modules ? [] }: nixpkgs.lib.nixosSystem {
-            specialArgs = {
-              inherit inputs outputs;
-              globals = import ./lib/globals.nix {
-                inherit userProfile hostProfile;
-              };
-            };
-            modules = modules;
-          };
-
-          # Configuration mapping based on MACHINE_ID environment variable
-          machineConfigs = {
-            desktop = {
-              userProfile = users.default;
-              hostProfile = hosts.desktop;
-              modules = [ ./nixos/hosts/desktop/configuration.nix ];
-            };
-            server = {
-              userProfile = users.admin;
-              hostProfile = hosts.server;
-              modules = [
-                ./nixos/hosts/server/configuration.nix
-                nixos-wsl.nixosModules.wsl
-              ];
+      mkSystem = {
+        userProfile,
+        hostProfile,
+        modules ? [],
+      }:
+        nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs outputs;
+            globals = import ./lib/globals.nix {
+              inherit userProfile hostProfile;
             };
           };
-
-          # Get current machine configuration
-          machineId = let id = builtins.getEnv "MACHINE_ID"; in if id != "" then id else "desktop";
-          currentHostname = let h = builtins.getEnv "HOSTNAME"; in if h != "" then h else "desktop";
-          currentConfig = machineConfigs.${machineId} or machineConfigs.desktop;
-
-        in ({
-          # Generic configuration types for reference
-          desktop = mkSystem machineConfigs.desktop;
-          server = mkSystem machineConfigs.server;
-        } // nixpkgs.lib.optionalAttrs (currentHostname != "desktop" && currentHostname != "server") {
-          # Current hostname configuration (only if different from generic names)
-          ${currentHostname} = mkSystem currentConfig;
-        });
-
-      # Home Manager configurations
-      homeConfigurations = 
-        let
-          system = "x86_64-linux";
-          
-          # Load dynamic user configuration from .env file
-          envConfig = import ./home-manager/lib/env-loader.nix;
-          username = envConfig.username;
-          hostname = envConfig.hostname;
-          name = envConfig.fullName;
-          email = envConfig.email;
-
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays = import ./home-manager/overlays { inherit inputs; };
-            config.allowUnfree = true;
-          };
-
-          # User globals configuration
-          homeGlobals = import ./home-manager/lib/globals.nix {
-            inherit
-              username
-              name
-              email
-              hostname
-              ;
-            # Disable graphical features in WSL
-            isGraphical = !envConfig.isWSL;
-          };
-
-          # Shared home-manager configuration function
-          mkHome = modules: home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-
-            extraSpecialArgs = {
-              inherit inputs;
-              outputs = self;
-              globals = homeGlobals;
-            };
-
-            modules = modules ++ [
-              niri-flake.homeModules.config
-            ];
-          };
-        in
-        {
-          # Full configuration with user@hostname
-          "${username}@${hostname}" = mkHome [ ./home-manager/home.nix ];
-          
-          # Simple configuration for easier switching
-          ${username} = mkHome [ ./home-manager/home.nix ];
+          modules = modules;
         };
 
-      # Export custom packages
-      packages = forAllSystems (system: 
+      # Configuration mapping based on MACHINE_ID environment variable
+      machineConfigs = {
+        desktop = {
+          userProfile = users.default;
+          hostProfile = hosts.desktop;
+          modules = [./nixos/hosts/desktop/configuration.nix];
+        };
+        server = {
+          userProfile = users.admin;
+          hostProfile = hosts.server;
+          modules = [
+            ./nixos/hosts/server/configuration.nix
+            nixos-wsl.nixosModules.wsl
+          ];
+        };
+      };
+
+      # Get current machine configuration
+      machineId = let
+        id = builtins.getEnv "MACHINE_ID";
+      in
+        if id != ""
+        then id
+        else "desktop";
+      currentHostname = let
+        h = builtins.getEnv "HOSTNAME";
+      in
+        if h != ""
+        then h
+        else "desktop";
+      currentConfig = machineConfigs.${machineId} or machineConfigs.desktop;
+    in ({
+        # Generic configuration types for reference
+        desktop = mkSystem machineConfigs.desktop;
+        server = mkSystem machineConfigs.server;
+      }
+      // nixpkgs.lib.optionalAttrs (currentHostname != "desktop" && currentHostname != "server") {
+        # Current hostname configuration (only if different from generic names)
+        ${currentHostname} = mkSystem currentConfig;
+      });
+
+    # Home Manager configurations
+    homeConfigurations = let
+      system = "x86_64-linux";
+
+      # Load dynamic user configuration from .env file
+      envConfig = import ./home-manager/lib/env-loader.nix;
+      username = envConfig.username;
+      hostname = envConfig.hostname;
+      name = envConfig.fullName;
+      email = envConfig.email;
+
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = import ./home-manager/overlays {inherit inputs;};
+        config.allowUnfree = true;
+      };
+
+      # User globals configuration
+      homeGlobals = import ./home-manager/lib/globals.nix {
+        inherit
+          username
+          name
+          email
+          hostname
+          ;
+        # Disable graphical features in WSL
+        isGraphical = !envConfig.isWSL;
+      };
+
+      # Shared home-manager configuration function
+      mkHome = modules:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+
+          extraSpecialArgs = {
+            inherit inputs;
+            outputs = self;
+            globals = homeGlobals;
+          };
+
+          modules =
+            modules
+            ++ [
+              niri-flake.homeModules.config
+            ];
+        };
+    in {
+      # Full configuration with user@hostname
+      "${username}@${hostname}" = mkHome [./home-manager/home.nix];
+
+      # Simple configuration for easier switching
+      ${username} = mkHome [./home-manager/home.nix];
+    };
+
+    # Export custom packages
+    packages = forAllSystems (
+      system:
         import ./home-manager/pkgs (import nixpkgs {
           inherit system;
-          overlays = import ./home-manager/overlays { inherit inputs; };
+          overlays = import ./home-manager/overlays {inherit inputs;};
           config.allowUnfree = true;
         })
-      );
+    );
 
-      # Optionally, add Cachix binary cache for claude-code
-      nixConfig = {
-        substituters = [ "https://claude-code.cachix.org" ];
-        trusted-public-keys = [ "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk=" ];
-      };
+    # Optionally, add Cachix binary cache for claude-code
+    nixConfig = {
+      substituters = ["https://claude-code.cachix.org"];
+      trusted-public-keys = ["claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="];
     };
+  };
 }

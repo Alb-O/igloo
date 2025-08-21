@@ -4,11 +4,9 @@
   globals,
   lib,
   ...
-}:
-let
+}: let
   colors = import ../../lib/themes globals;
-in
-{
+in {
   imports = [
     ./starship.nix
     ./direnv.nix

@@ -12,9 +12,24 @@
 
   # Environment defaults (can be overridden via environment variables)
   env = {
-    TIMEZONE = let tz = builtins.getEnv "TIMEZONE"; in if tz != "" then tz else "UTC";
-    DEFAULT_LOCALE = let locale = builtins.getEnv "DEFAULT_LOCALE"; in if locale != "" then locale else "en_US.UTF-8";
-    LC_LOCALE = let locale = builtins.getEnv "LC_LOCALE"; in if locale != "" then locale else "en_US.UTF-8";
+    TIMEZONE = let
+      tz = builtins.getEnv "TIMEZONE";
+    in
+      if tz != ""
+      then tz
+      else "UTC";
+    DEFAULT_LOCALE = let
+      locale = builtins.getEnv "DEFAULT_LOCALE";
+    in
+      if locale != ""
+      then locale
+      else "en_US.UTF-8";
+    LC_LOCALE = let
+      locale = builtins.getEnv "LC_LOCALE";
+    in
+      if locale != ""
+      then locale
+      else "en_US.UTF-8";
   };
 
   # UI configuration

@@ -21,7 +21,7 @@
   wsl.enable = true;
   wsl.defaultUser = "admin";
   wsl.startMenuLaunchers = true;
-  
+
   # Enhanced WSL interoperability
   wsl.wslConf = {
     # Network configuration
@@ -30,20 +30,20 @@
       generateResolvConf = true;
       hostname = globals.system.hostname;
     };
-    
-    # Boot configuration  
+
+    # Boot configuration
     boot = {
       systemd = true;
       command = ""; # Can add startup commands here
     };
-    
+
     # Interoperability settings
     interop = {
       enabled = true;
       # Include Windows PATH but filter it intelligently
       appendWindowsPath = true;
     };
-    
+
     # Automount settings for Windows drives
     automount = {
       enabled = true;
@@ -51,9 +51,9 @@
       # Remove metadata to fix Windows executable execution, allow execute for group
       options = "gid=100,umask=002,fmask=002,case=off,exec";
       mountFsTab = false; # Let systemd handle /etc/fstab
-      ldconfig = false;   # Use NixOS OpenGL instead
+      ldconfig = false; # Use NixOS OpenGL instead
     };
-    
+
     # User settings
     user.default = "admin";
   };

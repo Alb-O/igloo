@@ -5,24 +5,24 @@
   pkgs,
   globals,
   ...
-}:
-let
+}: let
   # Import modular configurations
   #colorschemeConfig = import ./colorscheme.nix {inherit inputs pkgs;};
   #userChromeConfig = import ./userchrome.nix {};
-  policiesConfig = import ./policies.nix { };
-  extensionsConfig = import ./extensions.nix { };
-  profileConfig = import ./profile.nix { inherit lib; };
-  searchConfig = import ./search.nix { inherit lib pkgs; };
-in
-{
+  policiesConfig = import ./policies.nix {};
+  extensionsConfig = import ./extensions.nix {};
+  profileConfig = import ./profile.nix {inherit lib;};
+  searchConfig = import ./search.nix {inherit lib pkgs;};
+in {
   programs.firefox = {
     enable = true;
 
     # Security and extension policies
-    policies = policiesConfig.policies // {
-      ExtensionSettings = extensionsConfig.extensionSettings;
-    };
+    policies =
+      policiesConfig.policies
+      // {
+        ExtensionSettings = extensionsConfig.extensionSettings;
+      };
 
     # User profile configuration
     profiles.${globals.user.username} = {
@@ -46,12 +46,12 @@ in
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "text/html" = [ "firefox.desktop" ];
-      "text/xml" = [ "firefox.desktop" ];
-      "x-scheme-handler/http" = [ "firefox.desktop" ];
-      "x-scheme-handler/https" = [ "firefox.desktop" ];
-      "x-scheme-handler/about" = [ "firefox.desktop" ];
-      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
+      "text/html" = ["firefox.desktop"];
+      "text/xml" = ["firefox.desktop"];
+      "x-scheme-handler/http" = ["firefox.desktop"];
+      "x-scheme-handler/https" = ["firefox.desktop"];
+      "x-scheme-handler/about" = ["firefox.desktop"];
+      "x-scheme-handler/unknown" = ["firefox.desktop"];
     };
   };
 

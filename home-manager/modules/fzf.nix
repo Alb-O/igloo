@@ -1,9 +1,13 @@
-{ pkgs, lib, globals, config, ... }:
-let
-  theme = import ../lib/themes/default.nix globals;
-in
 {
-  options.igloo.fzf.enable = lib.mkEnableOption "Enable themed fzf with sane defaults" // { default = true; };
+  pkgs,
+  lib,
+  globals,
+  config,
+  ...
+}: let
+  theme = import ../lib/themes/default.nix globals;
+in {
+  options.igloo.fzf.enable = lib.mkEnableOption "Enable themed fzf with sane defaults" // {default = true;};
   options.igloo.fzf.style = lib.mkOption {
     type = lib.types.attrs;
     default = {

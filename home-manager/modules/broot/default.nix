@@ -1,12 +1,14 @@
-{ pkgs, globals, ... }:
-let
+{
+  pkgs,
+  globals,
+  ...
+}: let
   # Import the colorscheme system
   colors = import ../../lib/themes globals;
 
   # Generate the HJSON skin content with colorscheme variables
-  skinContent = import ./skins/dark-blue.nix { inherit colors; };
-in
-{
+  skinContent = import ./skins/dark-blue.nix {inherit colors;};
+in {
   home.packages = with pkgs; [
     broot
   ];

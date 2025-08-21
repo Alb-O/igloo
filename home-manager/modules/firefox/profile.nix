@@ -1,7 +1,6 @@
 # Firefox profile configuration
 # Settings, UI customization, and feature toggles
-{ lib, ... }:
-{
+{lib, ...}: {
   profileSettings = {
     "browser.startup.homepage" = "about:home";
 

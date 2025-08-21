@@ -23,78 +23,75 @@
     helix-gpt.url = "github:SilverCoder/helix-gpt/nix-flake";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      home-manager,
-      niri-flake,
-      nix-colors,
-      nix-userstyles,
-      helix-gpt,
-      ...
-    }@inputs:
-    let
-      system = "x86_64-linux";
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    niri-flake,
+    nix-colors,
+    nix-userstyles,
+    helix-gpt,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
 
-      # Load dynamic user configuration from .env file
-      envConfig = import ./lib/env-loader.nix;
-      username = envConfig.username;
-      hostname = envConfig.hostname;
-      name = envConfig.fullName;
-      email = envConfig.email;
+    # Load dynamic user configuration from .env file
+    envConfig = import ./lib/env-loader.nix;
+    username = envConfig.username;
+    hostname = envConfig.hostname;
+    name = envConfig.fullName;
+    email = envConfig.email;
 
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = import ./overlays { inherit inputs; };
-        config.allowUnfree = true;
-      };
-
-      # User globals using the proper lib
-      globals = import ./lib/globals.nix {
-        inherit
-          username
-          name
-          email
-          hostname
-          ;
-        # Disable graphical features in WSL
-        isGraphical = !envConfig.isWSL;
-      };
-    in
-    {
-      # Export custom packages
-      packages.${system} = import ./pkgs pkgs;
-
-      homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-
-        extraSpecialArgs = {
-          inherit inputs;
-          outputs = self;
-          inherit globals;
-        };
-
-        modules = [
-          ./home.nix
-          niri-flake.homeModules.config
-        ];
-      };
-
-      # Also create a simple configuration for easier switching
-      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-
-        extraSpecialArgs = {
-          inherit inputs;
-          outputs = self;
-          inherit globals;
-        };
-
-        modules = [
-          ./home.nix
-          niri-flake.homeModules.config
-        ];
-      };
+    pkgs = import nixpkgs {
+      inherit system;
+      overlays = import ./overlays {inherit inputs;};
+      config.allowUnfree = true;
     };
+
+    # User globals using the proper lib
+    globals = import ./lib/globals.nix {
+      inherit
+        username
+        name
+        email
+        hostname
+        ;
+      # Disable graphical features in WSL
+      isGraphical = !envConfig.isWSL;
+    };
+  in {
+    # Export custom packages
+    packages.${system} = import ./pkgs pkgs;
+
+    homeConfigurations."${username}@${hostname}" = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+
+      extraSpecialArgs = {
+        inherit inputs;
+        outputs = self;
+        inherit globals;
+      };
+
+      modules = [
+        ./home.nix
+        niri-flake.homeModules.config
+      ];
+    };
+
+    # Also create a simple configuration for easier switching
+    homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+
+      extraSpecialArgs = {
+        inherit inputs;
+        outputs = self;
+        inherit globals;
+      };
+
+      modules = [
+        ./home.nix
+        niri-flake.homeModules.config
+      ];
+    };
+  };
 }

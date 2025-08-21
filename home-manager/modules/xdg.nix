@@ -2,8 +2,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   # XDG Base Directory Specification
   # Sets up proper XDG environment variables and directory structure
 

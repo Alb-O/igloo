@@ -6,12 +6,10 @@
   architecture ? "x86_64-linux",
   stateVersion ? "25.05",
   isGraphical ? true,
-}:
-let
+}: let
   homeDir = "/home/${username}";
   configDir = "${homeDir}/.config/home-manager";
-in
-{
+in {
   # Colorscheme
   theme = "catppuccin";
   # GTK theme

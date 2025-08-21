@@ -3,26 +3,26 @@
   inputs,
   globals,
   ...
-}:
-{
-  _module.args = { inherit inputs globals; };
-  imports = [
-    ./xdg.nix
-    ./shell/bash.nix
-    ./ssh.nix
-    ./broot
-    ./git.nix
-    ./tmux
-    ./zoxide.nix
-    ./fzf.nix
-    ./codex.nix
-    ./helix.nix
-    ./languages
-    ./wsl.nix
-  ]
-  ++ (
-    if globals.system.isGraphical then
-      [
+}: {
+  _module.args = {inherit inputs globals;};
+  imports =
+    [
+      ./xdg.nix
+      ./shell/bash.nix
+      ./ssh.nix
+      ./broot
+      ./git.nix
+      ./tmux
+      ./zoxide.nix
+      ./fzf.nix
+      ./codex.nix
+      ./helix.nix
+      ./languages
+      ./wsl.nix
+    ]
+    ++ (
+      if globals.system.isGraphical
+      then [
         ./niri
         ./swww.nix
         ./mako.nix
@@ -32,11 +32,10 @@
         ./polkit.nix
         ./clipboard.nix
       ]
-    else
-      [
+      else [
         ./firefox/wsl.nix
       ]
-  );
+    );
 
   programs.home-manager.enable = true;
 

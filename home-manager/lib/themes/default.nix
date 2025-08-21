@@ -1,7 +1,6 @@
 # Theme system with semantic color management
 # This function expects globals as input to get the theme selection
-globals:
-let
+globals: let
   # Available themes
   themes = {
     helix = import ./helix.nix;

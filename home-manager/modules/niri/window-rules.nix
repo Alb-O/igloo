@@ -17,6 +17,5 @@
       ];
       open-floating = true;
     }
-
   ];
 }

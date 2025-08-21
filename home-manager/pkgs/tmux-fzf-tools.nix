@@ -1,5 +1,4 @@
-{ pkgs }:
-let
+{pkgs}: let
   popup = pkgs.writeShellScriptBin "tmux-fzf-popup" ''
     set -euo pipefail
     export FZF_DEFAULT_OPTS=${pkgs.lib.strings.escapeShellArg ""}
@@ -56,7 +55,7 @@ let
             fi
           fi
         done
-        
+
         # Also search common Windows program installation directories
         for prog_dir in \
           "/mnt/c/Program Files" \
@@ -67,7 +66,7 @@ let
           fi
         done
       } | ''${SORT} -u)
-      
+
       selection=$(echo "$command_list" | ${popup}/bin/tmux-fzf-popup --prompt='Command: ' || true)
       if [ -n "''${selection:-}" ]; then
         ''${SETSID} -f ''${selection} >/dev/null 2>&1 &
@@ -163,7 +162,7 @@ let
         echo "$selection" | cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
       fi
     else
-      # WSL: Show current Windows clipboard content  
+      # WSL: Show current Windows clipboard content
       current_clip=$(powershell.exe -Command "Get-Clipboard" 2>/dev/null | sed 's/\r$//' || true)
       if [ -n "$current_clip" ]; then
         # Show current clipboard content (user can view/edit and it gets copied back)
@@ -225,28 +224,28 @@ let
       "Shutdown") systemctl poweroff ;;
       "Hibernate") systemctl hibernate ;;
       "Power off monitors") ${
-        # Detect WSL/headless environment and avoid niri dependency
-        let
-          isWSL =
-            (builtins.getEnv "WSL_DISTRO_NAME") != ""
-            || (builtins.getEnv "WSLENV") != ""
-            || (builtins.getEnv "IS_WSL") == "true";
-        in
-        if isWSL then
-          "${pkgs.coreutils}/bin/true"
-        else
-          "${pkgs.niri}/bin/niri msg action power-off-monitors"
-      } ;;
+      # Detect WSL/headless environment and avoid niri dependency
+      let
+        isWSL =
+          (builtins.getEnv "WSL_DISTRO_NAME")
+          != ""
+          || (builtins.getEnv "WSLENV") != ""
+          || (builtins.getEnv "IS_WSL") == "true";
+      in
+        if isWSL
+        then "${pkgs.coreutils}/bin/true"
+        else "${pkgs.niri}/bin/niri msg action power-off-monitors"
+    } ;;
     esac
   '';
 in
-pkgs.symlinkJoin {
-  name = "tmux-fzf-tools";
-  paths = [
-    popup
-    appLauncher
-    cliphist
-    unicode
-    systemMenu
-  ];
-}
+  pkgs.symlinkJoin {
+    name = "tmux-fzf-tools";
+    paths = [
+      popup
+      appLauncher
+      cliphist
+      unicode
+      systemMenu
+    ];
+  }

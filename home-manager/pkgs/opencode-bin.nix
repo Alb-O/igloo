@@ -6,9 +6,7 @@
   zlib,
   openssl,
   stdenv,
-}:
-
-let
+}: let
   version = "0.5.8";
 
   # Map platform to release asset URL and hash.
@@ -32,59 +30,61 @@ let
         hash = lib.fakeSha256;
       };
     }
-    .${stdenv.hostPlatform.system} or (throw "Unsupported platform: ${stdenv.hostPlatform.system}");
+    .${
+      stdenv.hostPlatform.system
+    } or (throw "Unsupported platform: ${stdenv.hostPlatform.system}");
 in
-stdenv.mkDerivation (finalAttrs: {
-  pname = "opencode-bin";
-  inherit version;
+  stdenv.mkDerivation (finalAttrs: {
+    pname = "opencode-bin";
+    inherit version;
 
-  src = fetchzip {
-    url = srcInfo.url;
-    # Typed SRI placeholder; Nix will print the real hash to paste
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-    stripRoot = false;
-  };
+    src = fetchzip {
+      url = srcInfo.url;
+      # Typed SRI placeholder; Nix will print the real hash to paste
+      hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      stripRoot = false;
+    };
 
-  nativeBuildInputs = [ unzip ] ++ lib.optionals stdenv.isLinux [ autoPatchelfHook ];
+    nativeBuildInputs = [unzip] ++ lib.optionals stdenv.isLinux [autoPatchelfHook];
 
-  # Libraries typically needed by bun-compiled binaries
-  buildInputs =
-    [ ]
-    ++ lib.optionals stdenv.isLinux [
-      zlib
-      openssl
-      stdenv.cc.cc.lib
-    ];
+    # Libraries typically needed by bun-compiled binaries
+    buildInputs =
+      []
+      ++ lib.optionals stdenv.isLinux [
+        zlib
+        openssl
+        stdenv.cc.cc.lib
+      ];
 
-  installPhase = ''
-        runHook preInstall
+    installPhase = ''
+          runHook preInstall
 
-        # Install all release files to a dedicated dir to preserve any assets
-        mkdir -p "$out/lib/opencode"
-        cp -R . "$out/lib/opencode"
+          # Install all release files to a dedicated dir to preserve any assets
+          mkdir -p "$out/lib/opencode"
+          cp -R . "$out/lib/opencode"
 
-        # Create a wrapper that runs from that directory to satisfy any relative paths
-        mkdir -p "$out/bin"
-        cat > "$out/bin/opencode" <<'SH'
-    #!/usr/bin/env bash
-    set -euo pipefail
-    cd "$(dirname "''${BASH_SOURCE[0]}")/../lib/opencode"
-    # Ensure libstdc++ is available on NixOS if needed (bun sometimes dlopens it)
-    if [ "$(uname)" = Linux ]; then
-      export LD_LIBRARY_PATH="${lib.makeLibraryPath [ stdenv.cc.cc.lib ]}:"''${LD_LIBRARY_PATH-}
-    fi
-    exec ./opencode "$@"
-    SH
-        chmod +x "$out/bin/opencode"
+          # Create a wrapper that runs from that directory to satisfy any relative paths
+          mkdir -p "$out/bin"
+          cat > "$out/bin/opencode" <<'SH'
+      #!/usr/bin/env bash
+      set -euo pipefail
+      cd "$(dirname "''${BASH_SOURCE[0]}")/../lib/opencode"
+      # Ensure libstdc++ is available on NixOS if needed (bun sometimes dlopens it)
+      if [ "$(uname)" = Linux ]; then
+        export LD_LIBRARY_PATH="${lib.makeLibraryPath [stdenv.cc.cc.lib]}:"''${LD_LIBRARY_PATH-}
+      fi
+      exec ./opencode "$@"
+      SH
+          chmod +x "$out/bin/opencode"
 
-        runHook postInstall
-  '';
+          runHook postInstall
+    '';
 
-  meta = with lib; {
-    description = "OpenCode prebuilt binary wrapped for Nix";
-    homepage = "https://github.com/sst/opencode";
-    license = licenses.mit;
-    platforms = platforms.unix;
-    mainProgram = "opencode";
-  };
-})
+    meta = with lib; {
+      description = "OpenCode prebuilt binary wrapped for Nix";
+      homepage = "https://github.com/sst/opencode";
+      license = licenses.mit;
+      platforms = platforms.unix;
+      mainProgram = "opencode";
+    };
+  })

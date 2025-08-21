@@ -5,8 +5,7 @@
   globals,
   ...
 }:
-with config.lib.niri.actions;
-{
+with config.lib.niri.actions; {
   binds = {
     # Help overlay
     "Mod+Shift+Slash".action = show-hotkey-overlay;
@@ -14,8 +13,6 @@ with config.lib.niri.actions;
     # Program launchers
     "Mod+Return".action.spawn = globals.terminal;
     "Super+Alt+L".action.spawn = "swaylock";
-
-
 
     # Color picker
     "Mod+Shift+C".action.spawn = [
@@ -211,9 +208,9 @@ with config.lib.niri.actions;
     "Mod+W".action = toggle-column-tabbed-display;
 
     # Screenshots
-    "Print".action.screenshot = { };
-    "Shift+Print".action.screenshot-screen = { };
-    "Alt+Print".action.screenshot-window = { };
+    "Print".action.screenshot = {};
+    "Shift+Print".action.screenshot-screen = {};
+    "Alt+Print".action.screenshot-window = {};
 
     # System controls
     "Mod+Escape" = {

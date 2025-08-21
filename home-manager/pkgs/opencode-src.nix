@@ -1,25 +1,27 @@
-{ lib
-, stdenv
-, stdenvNoCC
-, buildGoModule
-, bun
-, fetchFromGitHub
-, makeBinaryWrapper
-, writableTmpDirAsHomeHook
-, models-dev
-}:
-
-let
+{
+  lib,
+  stdenv,
+  stdenvNoCC,
+  buildGoModule,
+  bun,
+  fetchFromGitHub,
+  makeBinaryWrapper,
+  writableTmpDirAsHomeHook,
+  models-dev,
+}: let
   version = "0.5.12";
 
   # Target mapping for bun --target
-  bunTarget = {
-    "x86_64-linux" = "bun-linux-x64";
-    "aarch64-linux" = "bun-linux-arm64";
-    "x86_64-darwin" = "bun-darwin-x64";
-    "aarch64-darwin" = "bun-darwin-arm64";
-  }.
-    ${stdenv.hostPlatform.system} or (throw "Unsupported platform: ${stdenv.hostPlatform.system}");
+  bunTarget =
+    {
+      "x86_64-linux" = "bun-linux-x64";
+      "aarch64-linux" = "bun-linux-arm64";
+      "x86_64-darwin" = "bun-darwin-x64";
+      "aarch64-darwin" = "bun-darwin-arm64";
+    }.
+    ${
+      stdenv.hostPlatform.system
+    } or (throw "Unsupported platform: ${stdenv.hostPlatform.system}");
 
   src = fetchFromGitHub {
     owner = "sst";
@@ -37,7 +39,7 @@ let
     modRoot = "packages/tui";
     # Go modules vendor hash
     vendorHash = "sha256-acDXCL7ZQYW5LnEqbMgDwpTbSgtf4wXnMMVtQI1Dv9s=";
-    subPackages = [ "cmd/opencode" ];
+    subPackages = ["cmd/opencode"];
     env.CGO_ENABLED = 0;
     ldflags = [
       "-s"
@@ -54,7 +56,7 @@ let
   nodeModules = stdenvNoCC.mkDerivation {
     pname = "opencode-node_modules";
     inherit version src;
-    nativeBuildInputs = [ bun writableTmpDirAsHomeHook ];
+    nativeBuildInputs = [bun writableTmpDirAsHomeHook];
     dontConfigure = true;
     buildPhase = ''
       runHook preBuild
@@ -74,54 +76,54 @@ let
     outputHashMode = "recursive";
   };
 in
-stdenvNoCC.mkDerivation (finalAttrs: {
-  pname = "opencode";
-  inherit version src;
+  stdenvNoCC.mkDerivation (finalAttrs: {
+    pname = "opencode";
+    inherit version src;
 
-  nativeBuildInputs = [ bun makeBinaryWrapper ];
+    nativeBuildInputs = [bun makeBinaryWrapper];
 
-  patches = [ ./opencode-local-models-dev.patch ];
+    patches = [./opencode-local-models-dev.patch];
 
-  # Provide local models.dev API JSON to macro during bun build
-  env.MODELS_DEV_API_JSON = "${models-dev}/dist/_api.json";
+    # Provide local models.dev API JSON to macro during bun build
+    env.MODELS_DEV_API_JSON = "${models-dev}/dist/_api.json";
 
-  configurePhase = ''
-    runHook preConfigure
-    cp -R ${nodeModules}/node_modules .
-    runHook postConfigure
-  '';
+    configurePhase = ''
+      runHook preConfigure
+      cp -R ${nodeModules}/node_modules .
+      runHook postConfigure
+    '';
 
-  buildPhase = ''
-    runHook preBuild
-    bun build \
-      --define OPENCODE_TUI_PATH="'${tui}/bin/tui'" \
-      --define OPENCODE_VERSION="'${version}'" \
-      --compile \
-      --target=${bunTarget} \
-      --outfile=opencode \
-      ./packages/opencode/src/index.ts
-    runHook postBuild
-  '';
+    buildPhase = ''
+      runHook preBuild
+      bun build \
+        --define OPENCODE_TUI_PATH="'${tui}/bin/tui'" \
+        --define OPENCODE_VERSION="'${version}'" \
+        --compile \
+        --target=${bunTarget} \
+        --outfile=opencode \
+        ./packages/opencode/src/index.ts
+      runHook postBuild
+    '';
 
-  dontStrip = true;
+    dontStrip = true;
 
-  installPhase = ''
-    runHook preInstall
-    install -Dm755 opencode "$out/bin/opencode"
-    runHook postInstall
-  '';
+    installPhase = ''
+      runHook preInstall
+      install -Dm755 opencode "$out/bin/opencode"
+      runHook postInstall
+    '';
 
-  # Add libstdc++ to runtime path (linux)
-  postFixup = lib.optionalString stdenv.isLinux ''
-    wrapProgram "$out/bin/opencode" \
-      --set LD_LIBRARY_PATH "${lib.makeLibraryPath [ stdenv.cc.cc.lib ]}"
-  '';
+    # Add libstdc++ to runtime path (linux)
+    postFixup = lib.optionalString stdenv.isLinux ''
+      wrapProgram "$out/bin/opencode" \
+        --set LD_LIBRARY_PATH "${lib.makeLibraryPath [stdenv.cc.cc.lib]}"
+    '';
 
-  meta = with lib; {
-    description = "OpenCode (built from source)";
-    homepage = "https://github.com/sst/opencode";
-    license = licenses.mit;
-    platforms = platforms.unix;
-    mainProgram = "opencode";
-  };
-})
+    meta = with lib; {
+      description = "OpenCode (built from source)";
+      homepage = "https://github.com/sst/opencode";
+      license = licenses.mit;
+      platforms = platforms.unix;
+      mainProgram = "opencode";
+    };
+  })
