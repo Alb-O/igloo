@@ -57,6 +57,8 @@ in
       # prettier  # Temporarily disabled due to LICENSE file conflict with helix-gpt
       nodejs
       gcc
+      bun
+      typescript-language-server
       helix-gpt
     ]
     ++ lib.optionals globals.system.isGraphical [
