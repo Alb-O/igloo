@@ -1,58 +1,46 @@
 {
-  name = "VS Code";
+  name = "VS Code Dark+";
   palette = {
-    # Terminal colors mapped to theme structure
+    # Neutral scale based on VS Code Dark+ theme
     neutral = {
-      "50" = "#D4D4D4"; # foreground/white
-      "100" = "#545454"; # bright black
-      "200" = "#D4D4D4"; # white
-      "300" = "#545454"; # black bright
-      "400" = "#545454"; # black bright
-      "500" = "#1F1F1F"; # background/black
+      "50" = "#DCDCDC"; # foreground - main text color
+      "100" = "#C6C6C6"; # light_gray2 - slightly dimmed text
+      "200" = "#858585"; # dark_gray - line numbers, muted text
+      "300" = "#404040"; # dark_gray4 - indent guides, borders
+      "400" = "#282828"; # dark_gray3 - current line bg
+      "500" = "#1E1E1E"; # dark_gray2 - main background
     };
 
-    # VSCode semantic colors
-    primary = "#569CD6"; # blue
-    secondary = "#C586C0"; # purple
-    accent = "#DCDCAA"; # yellow
-    success = "#6A9955"; # green
-    warning = "#DCDCAA"; # yellow
-    error = "#F44747"; # red
-    info = "#569CD6"; # blue
-    highlight = "#264F78"; # selection background
-    muted = "#545454"; # gray (for comments/dimmed text)
+    # VS Code Dark+ semantic colors (exact matches from tmTheme/toml)
+    primary = "#569CD6"; # blue2 - keywords, types
+    secondary = "#C586C0"; # special - keywords, operators
+    accent = "#DCDCAA"; # fn_declaration - function names
+    success = "#6A9955"; # dark_green - comments
+    warning = "#D7BA7D"; # gold - CSS selectors, escapes
+    error = "#F14C4C"; # orange_red - errors
+    info = "#75BEFF"; # light_blue - info messages
+    highlight = "#264F78"; # dark_blue - selection background
+    muted = "#608B4E"; # comment color
 
-    # Additional VSCode-specific colors
-    magenta = "#C586C0";
-    cyan = "#56B6C2";
-    url = "#569CD6";
+    # Code syntax colors (exact from theme files)
+    variable = "#9CDCFE"; # variables, CSS properties
+    string = "#CE9178"; # orange - strings
+    number = "#B5CEA8"; # pale_green - numbers, constants
+    type = "#4EC9B0"; # type names, class names
+    function = "#DCDCAA"; # function declarations
+    keyword = "#569CD6"; # keywords, built-ins
+    operator = "#C586C0"; # operators
+    comment = "#6A9955"; # comments
 
-    # Background variants
-    background = "#1F1F1F";
-    foreground = "#D4D4D4";
-    selection_bg = "#264F78";
-    selection_fg = "#D4D4D4";
-    cursor = "#AEAFAD";
-  };
+    # Background and UI colors
+    background = "#1E1E1E";
+    foreground = "#DCDCDC";
+    cursor = "#DCDCDC";
+    selection = "#264F78";
+    line_highlight = "#282828";
 
-  # Terminal color palette (for terminal applications)
-  terminal = {
-    black = "#1F1F1F";
-    red = "#F44747";
-    green = "#6A9955";
-    yellow = "#DCDCAA";
-    blue = "#569CD6";
-    magenta = "#C586C0";
-    cyan = "#56B6C2";
-    white = "#D4D4D4";
-
-    bright_black = "#545454";
-    bright_red = "#F44747";
-    bright_green = "#6A9955";
-    bright_yellow = "#DCDCAA";
-    bright_blue = "#569CD6";
-    bright_magenta = "#C586C0";
-    bright_cyan = "#56B6C2";
-    bright_white = "#D4D4D4";
+    # Widget and border colors
+    widget = "#252526";
+    border = "#404040";
   };
 }

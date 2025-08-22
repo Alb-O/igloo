@@ -62,11 +62,12 @@
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in let
     # Shared pkgs configuration to avoid duplication
-    pkgsFor = system: import nixpkgs {
-      inherit system;
-      overlays = import ./home-manager/overlays {inherit inputs;};
-      config.allowUnfree = true;
-    };
+    pkgsFor = system:
+      import nixpkgs {
+        inherit system;
+        overlays = import ./home-manager/overlays {inherit inputs;};
+        config.allowUnfree = true;
+      };
   in {
     # Formatter for your nix files, available through 'nix fmt'
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
@@ -138,7 +139,7 @@
       // nixpkgs.lib.optionalAttrs (currentHostname != "desktop" && currentHostname != "server") {
         # Current hostname configuration (only if different from generic names)
         ${currentHostname} = mkSystem currentConfig;
-        });
+      });
 
     # Home Manager configurations
     homeConfigurations = let

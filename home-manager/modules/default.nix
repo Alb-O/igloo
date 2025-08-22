@@ -15,8 +15,9 @@
       ./git.nix
       ./tmux
       ./fzf.nix
+      ./bat
       ./codex.nix
-      ./helix.nix
+      ./helix
       ./languages
       ./wsl.nix
     ]

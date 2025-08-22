@@ -10,6 +10,4 @@
     # Display manager
     sddm-astronaut
   ];
-
-
 }

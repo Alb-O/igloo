@@ -1,14 +1,4 @@
 {pkgs}: let
-  popup = pkgs.writeShellScriptBin "tmux-fzf-popup" ''
-    set -euo pipefail
-    export FZF_DEFAULT_OPTS=${pkgs.lib.strings.escapeShellArg ""}
-    if [ -n "''${TMUX:-}" ]; then
-      exec ${pkgs.fzf}/bin/fzf-tmux -p 85%,85% --border --info=inline "$@"
-    else
-      exec ${pkgs.fzf}/bin/fzf --height=85% --layout=reverse --border --info=inline "$@"
-    fi
-  '';
-
   appLauncher = pkgs.writeShellScriptBin "tmux-app-launcher" ''
     set -euo pipefail
 
@@ -67,7 +57,7 @@
         done
       } | ''${SORT} -u)
 
-      selection=$(echo "$command_list" | ${popup}/bin/tmux-fzf-popup --prompt='Command: ' || true)
+      selection=$(echo "$command_list" | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Command: ' || true)
       if [ -n "''${selection:-}" ]; then
         ''${SETSID} -f ''${selection} >/dev/null 2>&1 &
       fi
@@ -131,7 +121,7 @@
       tmp=$(mktemp "$CACHE_DIR/menu.XXXXXX"); build_menu >"$tmp" && mv "$tmp" "$CACHE_FILE"
     fi
 
-    selection=$(cat "$CACHE_FILE" | ${popup}/bin/tmux-fzf-popup --prompt='Apps: ' --with-nth=1,2 --delimiter=$'\t' --ansi) || true
+    selection=$(cat "$CACHE_FILE" | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Apps: ' --with-nth=1,2 --delimiter=$'\t' --ansi) || true
     [ -z "''${selection:-}" ] && exit 0
     file_path=$(echo "''${selection}" | "''${CUT}" -f3)
     "''${SETSID}" -f "''${DEX}" "''${file_path}" >/dev/null 2>&1 &
@@ -151,13 +141,13 @@
     fi
 
     if [ "$HAS_CLIPBOARD" = "false" ]; then
-      printf '%s\n' "Clipboard history requires a graphical session or WSL." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
+      printf '%s\n' "Clipboard history requires a graphical session or WSL." | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Clipboard: ' || true
       exit 0
     fi
 
     if [ "$CLIP_TOOL" = "cliphist" ]; then
       # Use cliphist for Wayland/X11
-      selection=$(cliphist list | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' --with-nth=2..) || true
+      selection=$(cliphist list | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Clipboard: ' --with-nth=2..) || true
       if [[ -n "$selection" ]]; then
         echo "$selection" | cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy
       fi
@@ -166,13 +156,14 @@
       current_clip=$(powershell.exe -Command "Get-Clipboard" 2>/dev/null | sed 's/\r$//' || true)
       if [ -n "$current_clip" ]; then
         # Show current clipboard content (user can view/edit and it gets copied back)
-        selection=$(echo "$current_clip" | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard Content: ' --print-query) || true
+        selection=$(echo "$current_clip" | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Clipboard Content: ' --print-query) || true
         if [[ -n "$selection" ]]; then
           # Copy the (potentially edited) selection back to clipboard
           echo "$selection" | clip.exe 2>/dev/null || echo "$selection" | powershell.exe -Command "Set-Clipboard" 2>/dev/null || true
         fi
       else
-        printf '%s\n' "Windows clipboard is empty." | ${popup}/bin/tmux-fzf-popup --prompt='Clipboard: ' || true
+        printf '%s\n' "Windows clipboard is empty." | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Clipboard: ' || true
+
       fi
     fi
   '';
@@ -191,7 +182,7 @@
       CLIP_TYPE="windows"
     fi
 
-    selection=$(unipicker --command "${popup}/bin/tmux-fzf-popup --prompt='Unicode: '") || true
+    selection=$(unipicker --command "${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='Unicode: '") || true
     if [[ -n "$selection" ]]; then
       if [ "$HAS_CLIPBOARD" = "true" ]; then
         if [ "$CLIP_TYPE" = "wayland" ]; then
@@ -215,7 +206,7 @@
     else
       options="Suspend\nRestart\nShutdown\nHibernate"
     fi
-    selection=$(echo -e "$options" | ${popup}/bin/tmux-fzf-popup --prompt='System: ') || true
+    selection=$(echo -e "$options" | ${pkgs.fzf}/bin/fzf --tmux 50%,border-native --no-preview --prompt='System: ') || true
     [ -z "$selection" ] && exit 0
     case "$selection" in
       "Lock") ${pkgs.swaylock}/bin/swaylock ;;
@@ -242,7 +233,6 @@ in
   pkgs.symlinkJoin {
     name = "tmux-fzf-tools";
     paths = [
-      popup
       appLauncher
       cliphist
       unicode

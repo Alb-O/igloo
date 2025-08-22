@@ -1,7 +1,10 @@
 # Global font configuration
 # Centralized font definitions and home-manager configuration for consistent typography
-{ pkgs, globals, ... }:
-let
+{
+  pkgs,
+  globals,
+  ...
+}: let
   # Font definitions with packages and sizes
   fontDefs = rec {
     mono = {
@@ -70,8 +73,7 @@ let
       ];
     };
   };
-in
-{
+in {
   # Export font definitions for use by other modules
   _module.args.fonts = fontDefs;
 
