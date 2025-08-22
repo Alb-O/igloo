@@ -6,4 +6,5 @@ pkgs: {
   tmux-fzf-tools = pkgs.callPackage ./tmux-fzf-tools.nix {};
   opencode-bin = pkgs.callPackage ./opencode-bin.nix {};
   opencode-src = pkgs.callPackage ./opencode-src.nix {};
+  file-preview = pkgs.callPackage ./file-preview.nix {};
 }

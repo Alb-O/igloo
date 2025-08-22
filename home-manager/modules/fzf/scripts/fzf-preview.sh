@@ -26,6 +26,12 @@ if [[ ! -r $file ]]; then
   fi
 fi
 
+# If the file is a directory, use broot for preview
+if [[ -d "$file" ]]; then
+  broot -c :pt "$file"
+  exit
+fi
+
 type=$(file --brief --dereference --mime -- "$file")
 
 if [[ ! $type =~ image/ ]]; then

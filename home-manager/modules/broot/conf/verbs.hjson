@@ -23,13 +23,39 @@ verbs: [
     #  a content search.
     # Examples depending on your favourite editor:
     #    execution: "nvim +{line} {file}"
-    #    execution: "helix {file}:{line}"
+    #    execution: "hx {file}:{line}"
     {
         invocation: edit
         shortcut: e
-        key: ctrl-e
+        key: enter
         apply_to: text_file
-        execution: "$EDITOR {file}"
+        execution: "hx {file}:{line}"
+        leave_broot: false
+    }
+
+    {
+        invocation: focus
+        key: right
+        execution: ":focus"
+    }
+    {
+        invocation: parent
+        key: left
+        execution: ":parent"
+    }
+
+
+
+    {
+        invocation: move_divider_left
+        key: alt-<
+        execution: ":move_panel_divider 0 -1"
+        leave_broot: false
+    }
+    {
+        invocation: move_divider_right
+        key: alt->
+        execution: ":move_panel_divider 0 1"
         leave_broot: false
     }
 
@@ -140,10 +166,10 @@ verbs: [
 
     # If you develop using git, you might like to often switch
     # to the git status filter:
-    # {
-    #     key: alt-g
-    #     execution: ":toggle_git_status"
-    # }
+    {
+        key: alt-g
+        execution: ":toggle_git_status"
+    }
 
     # You can reproduce the bindings of Norton Commander
     # on copying or moving to the other panel:

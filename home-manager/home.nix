@@ -48,7 +48,7 @@ in {
       unison
       nb
       rucola
-      tree
+      lsd
       imagemagick
       poppler-utils
       unipicker
@@ -79,6 +79,7 @@ in {
         '';
       })
       pkgs.opencode-src
+      pkgs.file-preview
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Custom graphical packages
