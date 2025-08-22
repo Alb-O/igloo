@@ -28,6 +28,7 @@ globals: let
         secondary = theme.palette.neutral."100";
         tertiary = theme.palette.neutral."200";
         inverse = theme.palette.neutral."500";
+        onPrimary = theme.palette.onPrimary or theme.palette.neutral."500";
       };
 
       interactive = {

@@ -18,5 +18,6 @@
     info = "#89b4fa";
     highlight = "#fab387";
     muted = "#94e2d5";
+    onPrimary = "#11111b";
   };
 }
