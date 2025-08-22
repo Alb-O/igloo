@@ -68,6 +68,9 @@ in {
       # Clipboard tools for Wayland
       wl-clipboard
       cliphist
+# Input configuration
+      solaar
+      libinput
     ]
     ++ [
       # Custom packages
