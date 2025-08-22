@@ -6,7 +6,8 @@ local function fzf_grep()
         --bind "enter:become:echo {1}:{2}" \
         --bind 'alt-a:select-all,alt-d:deselect-all,ctrl-/:toggle-preview' \
         --delimiter : \
-        --preview 'file-preview {1}:{2}'
+        --preview 'file-preview {1}:{2}' \
+        --preview-window '+{2}/2'
   ]]
   local handle = io.popen("bash -c " .. vim.fn.shellescape(script))
   local result = handle:read("*a")
