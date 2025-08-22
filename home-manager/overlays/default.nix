@@ -36,4 +36,7 @@
 
   # helix-gpt overlay
   inputs.helix-gpt.overlays.default
+
+  # neovim-nightly overlay
+  inputs.neovim-nightly-overlay.overlays.default
 ]

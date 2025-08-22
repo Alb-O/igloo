@@ -18,6 +18,7 @@
       ./bat
       ./codex.nix
       ./helix
+      ./neovim
       ./languages
       ./wsl.nix
     ]

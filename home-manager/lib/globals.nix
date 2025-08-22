@@ -39,7 +39,7 @@ in {
   };
 
   # Default applications
-  editor = "hx";
+  editor = "nvim";
   terminal = "foot";
   browser = "firefox";
 }

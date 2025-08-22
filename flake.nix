@@ -35,7 +35,7 @@
     helix-gpt.url = "github:SilverCoder/helix-gpt/nix-flake";
 
     # Neovim nightly overlay
-    #neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
   outputs = {
@@ -48,7 +48,7 @@
     nix-userstyles,
     nixos-wsl,
     helix-gpt,
-    #neovim-nightly-overlay,
+    neovim-nightly-overlay,
     ...
   } @ inputs: let
     inherit (self) outputs;

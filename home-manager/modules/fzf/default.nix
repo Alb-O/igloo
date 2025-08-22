@@ -26,7 +26,7 @@
     "--color=hl+:${colors.ui.status.error}"
     "--color=border:${colors.ui.border.primary}"
     "--color=label:${colors.ui.foreground.primary}"
-    "--tmux 90%,100%,border-native"
+    "--tmux 90%,100%"
   ];
 in {
   options.igloo.fzf.enable =
