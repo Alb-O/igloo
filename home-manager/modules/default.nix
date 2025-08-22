@@ -14,7 +14,7 @@
       ./broot
       ./git.nix
       ./tmux
-      ./fzf.nix
+      ./fzf
       ./bat
       ./codex.nix
       ./helix

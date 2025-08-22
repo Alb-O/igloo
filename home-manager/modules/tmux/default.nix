@@ -74,6 +74,8 @@ in {
         set-environment -g COLORTERM "truecolor"
         set-option -sa terminal-features ',*:RGB'
 
+        set -g allow-passthrough all
+
         set-environment -g TMUX_PLUGIN_MANAGER_PATH '${globals.dirs.localShare}/tmux/plugins'
 
         # Move tmux data to XDG-compliant location

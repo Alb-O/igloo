@@ -5,12 +5,12 @@
   config,
   ...
 }: let
-  colors = import ../lib/themes/default.nix globals;
+  colors = import ../../lib/themes globals;
 
   fzfOptions = [
     "--style=minimal"
     "--border=none"
-    "--preview='bat -n --color=always {}'"
+    "--preview='sh ${./scripts/fzf-preview.sh} {}'"
     "--color=bg+:-1"
     "--color=bg:-1"
     "--color=gutter:-1"
@@ -43,5 +43,13 @@ in {
     home.sessionVariables = {
       FZF_DEFAULT_OPTS = lib.concatStringsSep " " fzfOptions;
     };
+
+    # Write fzf configuration to profile sources directory for easy sourcing
+    home.file.".local/state/profile-sources/fzf.sh".text = ''
+      # FZF configuration
+      if command -v fzf >/dev/null 2>&1; then
+        export FZF_DEFAULT_OPTS="${lib.concatStringsSep " " fzfOptions}"
+      fi
+    '';
   };
 }
