@@ -7,9 +7,6 @@ vim.opt.relativenumber = true
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
 
--- Cursorline
-vim.opt.cursorline = true
-
 -- Show whitespace characters
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
@@ -40,3 +37,10 @@ vim.opt.undofile = true
 
 -- Set the default border for all floating windows
 vim.opt.winborder = 'rounded'
+
+-- Enable 24-bit RGB colors (required for cursor colors in terminal)
+vim.opt.termguicolors = true
+
+-- Scroll padding - keep cursor away from screen edges
+vim.opt.scrolloff = 8
+vim.opt.sidescrolloff = 8
