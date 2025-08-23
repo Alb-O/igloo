@@ -72,11 +72,9 @@
     };
   };
 
-  # Host-specific SDDM theme override
+  # Display manager configuration
   services.displayManager.sddm = {
     package = pkgs.kdePackages.sddm;
-    extraPackages = with pkgs; [sddm-astronaut];
-    theme = "sddm-astronaut-theme";
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion

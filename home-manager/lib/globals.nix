@@ -10,13 +10,6 @@
   homeDir = "/home/${username}";
   configDir = "${homeDir}/.config/home-manager";
 in {
-  # Colorscheme
-  theme = "catppuccin";
-  # GTK theme
-  gtkTheme = "Adwaita-dark";
-  iconTheme = "Adwaita";
-  cursorTheme = "Adwaita";
-
   user = {
     inherit username name email;
     homeDirectory = homeDir;

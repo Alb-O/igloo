@@ -6,9 +6,7 @@
   inputs,
   globals,
   ...
-}: let
-  colors = import ./lib/themes globals;
-in {
+}: {
   # Import modular configuration
   imports = [
     # Custom modules
@@ -68,7 +66,7 @@ in {
       # Clipboard tools for Wayland
       wl-clipboard
       cliphist
-# Input configuration
+      # Input configuration
       solaar
       libinput
     ]

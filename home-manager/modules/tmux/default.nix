@@ -5,7 +5,6 @@
   config,
   ...
 }: let
-  theme = import ../../lib/themes/default.nix globals;
   capabilities = import ../../lib/capabilities.nix {inherit pkgs globals;};
 in {
   options.igloo.tmux.enable =
@@ -57,11 +56,7 @@ in {
         set -g prefix f2
         bind f2 send-prefix
 
-        # Color theme from semantic theme system
-        highlight_color='${theme.ui.interactive.primary}'
-        muted_color='${theme.ui.border.secondary}'
-        text_color='${theme.ui.foreground.primary}'
-        bg_color='${theme.ui.background.primary}'
+
 
         # Set base index to 1 (easier to navigate)
         set -g base-index 1
@@ -87,31 +82,14 @@ in {
         # Easy config reload
         bind-key R source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded."
 
-        # Comprehensive theming
-        set -g mode-style "fg=$bg_color,bg=$highlight_color"
-        set -g message-style "fg=$bg_color,bg=$highlight_color"
-        set -g message-command-style "fg=$bg_color,bg=$highlight_color"
-        set -g clock-mode-colour "$highlight_color"
-
-        # Pane identification - clearer active pane indication
-        set -g pane-border-style "fg=$muted_color"
-        set -g pane-active-border-style "fg=$highlight_color"
-
-        # Pane titles to show which is active
-        set -g pane-border-status top
-        set -g pane-border-format "#{?pane_active,#[fg=$highlight_color],#[fg=$muted_color]} #{pane_index} #[default]"
-
         # Status bar at top showing windows/tabs
         set -g status on
         set -g status-position top
-        set -g status-style "bg=default,fg=$text_color"
         set -g status-justify absolute-centre
         set -g status-left-length 50
         set -g status-right-length 50
-        set -g status-left "#[fg=${theme.ui.foreground.tertiary}]#S #(cd #{pane_current_path}; git branch --show-current 2>/dev/null) "
-        set -g status-right "#[fg=${theme.ui.foreground.tertiary}]%m/%d %I:%M %p #{tmux_mode_indicator}"
-        set -g window-status-current-style "bg=$highlight_color,fg=$bg_color,bold"
-        set -g window-status-style "fg=$text_color"
+        set -g status-left "#S #(cd #{pane_current_path}; git branch --show-current 2>/dev/null) "
+        set -g status-right "%m/%d %I:%M %p #{tmux_mode_indicator}"
         set -g window-status-format ' #I:#W '
         set -g window-status-current-format ' #I:#W '
 

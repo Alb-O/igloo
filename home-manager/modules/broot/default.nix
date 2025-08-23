@@ -1,15 +1,4 @@
-{
-  pkgs,
-  #globals,
-  ...
-}:
-#let
-# Import the colorscheme system
-#colors = import ../../lib/themes globals;
-# Generate the HJSON skin content with colorscheme variables
-#skinContent = import ./skins/dark-blue.nix { inherit colors; };
-#in
-{
+{pkgs, ...}: {
   home.packages = with pkgs; [
     broot
   ];
@@ -17,7 +6,6 @@
   xdg.configFile."broot/conf.hjson".source = ./conf/conf.hjson;
   xdg.configFile."broot/verbs.hjson".source = ./conf/verbs.hjson;
   xdg.configFile."broot/launcher/select.hjson".source = ./launcher/select.hjson;
-  xdg.configFile."broot/skin.hjson".source = ./skins/catppuccin-mocha.hjson;
 
   # Download and install the vscode font for broot icons
   home.file.".local/share/fonts/vscode.ttf".source = pkgs.fetchurl {

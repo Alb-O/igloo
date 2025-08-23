@@ -6,12 +6,10 @@
   globals,
   ...
 }: let
-  colors = import ../../lib/themes globals;
-
   # Import modular configurations
   inputConfig = import ./input.nix;
   outputsConfig = import ./outputs.nix;
-  layoutConfig = import ./layout.nix {inherit colors;};
+  layoutConfig = import ./layout.nix {};
   bindsConfig = import ./binds.nix {
     inherit config pkgs globals;
   };

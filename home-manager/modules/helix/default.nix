@@ -2,7 +2,6 @@
   programs.helix = {
     enable = true;
     settings = {
-      theme = "dark_plus_transparent";
       editor = {
         true-color = true;
         line-number = "relative";
@@ -77,12 +76,6 @@
             HANDLER = builtins.getEnv "HANDLER";
           };
         };
-      };
-    };
-    themes = {
-      dark_plus_transparent = {
-        "inherits" = "dark_plus";
-        "ui.background" = {};
       };
     };
   };

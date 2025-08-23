@@ -1,5 +1,5 @@
 # Layout settings for Niri
-{colors}: {
+{}: {
   layout = {
     gaps = 16;
     center-focused-column = "never";
@@ -16,16 +16,16 @@
 
     focus-ring = {
       width = 2;
-      active.color = colors.ui.interactive.primary;
-      inactive.color = colors.ui.foreground.secondary;
+      active.color = "#ffffff";
+      inactive.color = "#888888";
     };
 
     border = {
       enable = false;
       width = 4;
-      active.color = colors.ui.interactive.accent;
-      inactive.color = colors.ui.border.primary;
-      urgent.color = colors.ui.status.error;
+      active.color = "#ffffff";
+      inactive.color = "#444444";
+      urgent.color = "#ff0000";
     };
 
     shadow = {
