@@ -1,50 +1,52 @@
 {
   config,
   pkgs,
-  globals,
+  lib,
+  inputs,
   ...
 }: {
+  # Import neovim-nightly overlay for this module
+  nixpkgs.overlays = [inputs.neovim-nightly-overlay.overlays.default];
+
   programs.neovim = {
     enable = true;
-    package = pkgs.neovim;
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
 
-    extraLuaConfig = ''
-      -- Basic settings
-      vim.opt.number = true
-      vim.opt.relativenumber = true
-      vim.opt.expandtab = true
-      vim.opt.shiftwidth = 2
-      vim.opt.tabstop = 2
-      vim.opt.smartindent = true
-      vim.opt.wrap = false
-      vim.opt.ignorecase = true
-      vim.opt.smartcase = true
-      vim.opt.termguicolors = true
+    # Use nightly neovim from overlay
+    package = pkgs.neovim;
 
-      -- Set leader key
-      vim.g.mapleader = " "
+    extraLuaConfig = builtins.readFile ./init.lua;
 
-      -- Add plugins using vim.pack
-      vim.pack.add({ "https://github.com/Mofiqul/vscode.nvim" })
-      vim.pack.add({ "https://github.com/nvim-treesitter/nvim-treesitter" })
+    extraPackages = with pkgs; [
+      # Language servers
+      lua-language-server
 
-      -- Setup default colorscheme
-      vim.cmd[[colorscheme vscode]]
-
-      -- Custom FZF picker functions
-      local fzf_files = dofile('${./scripts/fzf-files.lua}')
-      local fzf_grep = dofile('${./scripts/fzf-grep.lua}')
-
-      -- Basic keymaps
-      vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save file" })
-      vim.keymap.set("n", "<leader>q", ":q<CR>", { desc = "Quit" })
-      vim.keymap.set("n", "<leader>h", ":nohlsearch<CR>", { desc = "Clear highlights" })
-      vim.keymap.set("n", "<leader>ff", fzf_files, { desc = "Find files" })
-      vim.keymap.set("n", "<leader>fg", fzf_grep, { desc = "Live grep" })
-    '';
+      # Additional tools that might be needed
+      ripgrep
+      fd
+    ];
   };
+
+  # Copy Lua configuration files to the right location
+  xdg.configFile."nvim/lua" = {
+    source = ./lua;
+    recursive = true;
+  };
+
+  # Copy LSP configuration files
+  xdg.configFile."nvim/lsp" = {
+    source = ./lsp;
+    recursive = true;
+  };
+
+  # Install nvimpager
+  home.packages = with pkgs; [
+    nvimpager
+  ];
+
+  # Configure nvimpager with colorscheme only
+  xdg.configFile."nvimpager/init.lua".text = builtins.readFile ./lua/config/colorscheme.lua;
 }

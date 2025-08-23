@@ -35,7 +35,6 @@
       gh
       just
       unzip
-      chafa
       xdg-ninja
       lm_sensors
       ffmpeg
@@ -47,7 +46,6 @@
       nb
       rucola
       lsd
-      imagemagick
       poppler-utils
       unipicker
       # prettier  # Temporarily disabled due to LICENSE file conflict with helix-gpt
