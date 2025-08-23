@@ -15,7 +15,7 @@
       ./git.nix
       ./tmux
       ./fzf
-      ./bat
+
       ./codex.nix
       ./helix
       ./neovim

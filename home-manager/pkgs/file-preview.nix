@@ -6,7 +6,7 @@ pkgs.writeShellScriptBin "file-preview" ''
   # Works with any terminal-based preview context.
   #
   # Dependencies:
-  # - https://github.com/sharkdp/bat
+  # - nvimpager (assumed to be available in PATH)
   # - https://github.com/hpjansson/chafa
   # - https://iterm2.com/utilities/imgcat
 
@@ -42,14 +42,15 @@ pkgs.writeShellScriptBin "file-preview" ''
       exit
     fi
 
-    if command -v ${pkgs.bat}/bin/bat > /dev/null; then
-      batname="${pkgs.bat}/bin/bat"
+    if command -v nvimpager > /dev/null; then
+      if [[ ''${center:-0} -gt 0 ]]; then
+        nvimpager -c "+''${center}" -- "$file"
+      else
+        nvimpager -c -- "$file"
+      fi
     else
-      ${pkgs.coreutils}/bin/cat "$1"
-      exit
+      ${pkgs.coreutils}/bin/cat "$file"
     fi
-
-    ''${batname} --style="''${BAT_STYLE:-numbers}" --color=always --pager=never --highlight-line="''${center:-0}" -- "$file"
     exit
   fi
 
