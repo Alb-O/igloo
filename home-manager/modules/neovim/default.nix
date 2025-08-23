@@ -47,6 +47,13 @@
     nvimpager
   ];
 
+  # Symlink the colorscheme plugin from main neovim config
+  xdg.configFile."nvimpager/pack/deps/start/tokyonight.nvim" = {
+    source = config.xdg.dataHome + "/nvim/site/pack/deps/opt/tokyonight.nvim";
+  };
+
   # Configure nvimpager with colorscheme only
-  xdg.configFile."nvimpager/init.lua".text = builtins.readFile ./lua/config/colorscheme.lua;
+  xdg.configFile."nvimpager/init.lua".text = ''
+    vim.cmd[[colorscheme tokyonight-night]]
+  '';
 }
