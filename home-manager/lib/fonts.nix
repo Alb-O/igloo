@@ -1,16 +1,13 @@
 # Global font configuration
-# Centralized font definitions and home-manager configuration for consistent typography
 {
   pkgs,
   globals,
   ...
 }: let
-  # Font definitions with packages and sizes
   fontDefs = rec {
     mono = {
-      # Use Hack font with nerd symbols as fallback
-      name = "Jetbrains Mono";
-      package = pkgs.jetbrains-mono;
+      name = "JetBrainsMono Nerd Font";
+      package = pkgs.nerd-fonts.jetbrains-mono;
       size = {
         small = 11;
         normal = 13;
@@ -45,9 +42,8 @@
       noto-fonts-cjk-sans
       noto-fonts-emoji
 
-      # Personal fonts with nerd symbol support via fallback
-      nerd-fonts.symbols-only
-      jetbrains-mono
+      # Personal fonts
+      nerd-fonts.jetbrains-mono
       inter
       crimson-pro
 
@@ -59,7 +55,6 @@
     defaultFonts = {
       monospace = [
         mono.name
-        "Symbols Nerd Font Mono"
       ];
       sansSerif = [
         sansSerif.name

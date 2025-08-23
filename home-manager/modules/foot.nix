@@ -7,7 +7,7 @@
     enable = true;
     settings = {
       main = {
-        font = "${fonts.mono.name}:size=${toString fonts.mono.size.large}, Symbols Nerd Font Mono";
+        font = "${fonts.mono.name}:size=${toString fonts.mono.size.large}";
         line-height = "24";
         term = "xterm-256color";
         dpi-aware = true;
