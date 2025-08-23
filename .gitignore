@@ -2,3 +2,4 @@
 *.local.*
 .last_flake_update
 /secrets/
+/tmp
