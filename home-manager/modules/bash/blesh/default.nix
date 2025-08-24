@@ -55,10 +55,9 @@ in {
           # Load prompt modules immediately so sequences are available
           ble-import prompt-git
           ble-import prompt-vim-mode
-          ble-import prompt-elapsed
 
           # Configure prompts after modules are loaded
-          bleopt prompt_rps1='\g{fg=69,italic}\q{contrib/elapsed} \q{contrib/git-info}'
+          bleopt prompt_rps1='\g{fg=69,italic}\q{contrib/git-info}'
           bleopt keymap_vi_mode_show:=
           PS1='[\u@\h \W]\q{contrib/vim-mode}\$ '
 
@@ -70,9 +69,6 @@ in {
           ble-import -df scheme/catppuccin_mocha
 
           # Additional useful configurations - use force flag for optional modules
-          ble-import -df config/execmark
-          ble-import -df config/github481-elapsed-mark-without-command
-          ble-import -df config/github483-elapsed-mark-on-error
         fi
       '';
     };
