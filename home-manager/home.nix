@@ -50,11 +50,8 @@
       unipicker
       nodejs
       gcc
-      bun
-      typescript-language-server
-      helix-gpt
-      # Neovim from nvix flake
-      inputs.nvix.packages.${pkgs.system}.default
+      # NixCats neovim configuration
+      inputs.nixCats-nvim.packages.${pkgs.system}.nixCats
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)

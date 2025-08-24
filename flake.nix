@@ -20,8 +20,8 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nvix flake for Neovim configuration
-    nvix.url = "github:Alb-O/nvix";
+    # Neovim nixCats flake
+    nixCats-nvim.url = "path:./flakes/nixCats-nvim";
   };
 
   outputs = {
@@ -30,7 +30,7 @@
     home-manager,
     niri-flake,
     nixos-wsl,
-    nvix,
+    nixCats-nvim,
     ...
   } @ inputs: let
     inherit (self) outputs;
