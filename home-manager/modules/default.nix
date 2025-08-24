@@ -9,7 +9,7 @@
     [
       ./xdg.nix
       ../lib/fonts.nix
-      ./shell/bash.nix
+      ./bash
       ./shell-tools.nix
       ./broot
       ./git.nix
