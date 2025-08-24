@@ -3,10 +3,25 @@
 # A clean, dark theme that celebrates the lights of Downtown Tokyo at night.
 # Custom theme for blesh terminal
 
-ble-import contrib/scheme/default
-
 function ble/contrib/scheme:tokyonight/initialize {
-  ble/contrib/scheme:default/initialize
+  # Reset all faces to default first (replaces the default scheme dependency)
+  ble-face -r region region_@
+  ble-face -r disabled
+  ble-face -r overwrite_mode
+  ble-face -r vbell vbell_@
+  ble-face -r syntax_@
+  ble-face -r command_@
+  ble-face -r filename_@
+  ble-face -r varname_@
+  ble-face -r argument_@
+  ble-face -r prompt_status_line
+  ble-face -r cmdinfo_cd_cdpath
+  ble-face -r auto_complete
+  ble-face -r menu_filter_fixed
+  ble-face -r menu_filter_input
+  ble-face -r menu_desc_default
+  ble-face -r menu_desc_type
+  ble-face -r menu_desc_quote
   
   # Debug: Print message when theme loads
   echo "Tokyo Night theme is being loaded..." >&2

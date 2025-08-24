@@ -65,8 +65,11 @@ in {
           ble-import -d integration/nix-completion
           ble-import -d integration/zoxide
 
-          # Color scheme
-          ble-import -d scheme/tokyonight
+          # Color scheme - source directly, no dependencies
+          if [[ -f "${blesh-contrib}/share/blesh-contrib/scheme/tokyonight.bash" ]]; then
+            source "${blesh-contrib}/share/blesh-contrib/scheme/tokyonight.bash"
+            ble/contrib/scheme:tokyonight/initialize 2>/dev/null || true
+          fi
 
           # Additional useful configurations - use force flag for optional modules
         fi
