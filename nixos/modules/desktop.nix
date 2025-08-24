@@ -15,15 +15,6 @@
   # udev packages for desktop integration
   services.udev.packages = with pkgs; [gnome-settings-daemon];
 
-  # Portal configuration following Niri wiki recommendations
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk # Required fallback portal
-      xdg-desktop-portal-gnome # Required for screencasting and file choosers
-    ];
-  };
-
   # Environment variables for desktop
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";

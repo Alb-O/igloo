@@ -14,7 +14,7 @@
   config = lib.mkIf config.igloo.yazi.enable {
     programs.yazi = {
       enable = true;
-      
+
       flavors = {
         tokyo-night = pkgs.fetchFromGitHub {
           owner = "BennyOe";
@@ -23,7 +23,7 @@
           sha256 = "4aNPlO5aXP8c7vks6bTlLCuyUQZ4Hx3GWtGlRmbhdto=";
         };
       };
-      
+
       settings = {
         yazi = {
           manager = {
@@ -35,21 +35,27 @@
             sort_dir_first = true;
           };
         };
-        
+
         theme = {
           status = {
-            sep_left = { open = ""; close = ""; };
-            sep_right = { open = ""; close = ""; };
+            sep_left = {
+              open = "";
+              close = "";
+            };
+            sep_right = {
+              open = "";
+              close = "";
+            };
           };
         };
       };
     };
-    
+
     # Create theme.toml separately to use the flavor
     home.file.".config/yazi/theme.toml".text = ''
       [flavor]
       dark = "tokyo-night"
-      
+
       [status]
       sep_left = { open = "", close = "" }
       sep_right = { open = "", close = "" }

@@ -29,6 +29,76 @@
 
   # Create necessary directories and shell configuration
   home.file = {
+    # Terminal file chooser configuration
+    ".config/xdg-desktop-portal-termfilechooser/config".text = ''
+      [filechooser]
+      cmd=yazi-wrapper.sh
+      default_dir=$HOME
+      env=TERMCMD=${pkgs.foot}/bin/foot --title 'XDG File Picker'
+      open_mode=suggested
+      save_mode=suggested
+    '';
+
+    # XDG Desktop Portal configuration - prefer terminal file chooser
+    ".config/xdg-desktop-portal/portals.conf".text = ''
+      [preferred]
+      org.freedesktop.impl.portal.FileChooser=termfilechooser
+    '';
+
+    # Custom yazi wrapper script with Nix paths
+    ".config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+        # Custom wrapper script for xdg-desktop-portal-termfilechooser with Nix paths
+
+        set -e
+
+        if [ "$6" -ge 4 ]; then
+            set -x
+        fi
+
+        multiple="$1"
+        directory="$2"
+        save="$3"
+        path="$4"
+        out="$5"
+
+        cmd="${pkgs.yazi}/bin/yazi"
+        termcmd="''${TERMCMD:-${pkgs.foot}/bin/foot -T 'File Picker'}"
+
+        if [ "$save" = "1" ]; then
+            # save a file
+            set -- --chooser-file="$out" "$path"
+        elif [ "$directory" = "1" ]; then
+            # upload files from a directory
+            set -- --chooser-file="$out" --cwd-file="$out"".1" "$path"
+        elif [ "$multiple" = "1" ]; then
+            # upload multiple files
+            set -- --chooser-file="$out" "$path"
+        else
+            # upload only 1 file
+            set -- --chooser-file="$out" "$path"
+        fi
+
+        command="$termcmd $cmd"
+        for arg in "$@"; do
+            # escape double quotes
+            escaped=$(printf "%s" "$arg" | sed 's/"/\\"/g')
+            command="$command \"$escaped\""
+        done
+
+        ${pkgs.bash}/bin/sh -c "$command"
+
+        if [ "$directory" = "1" ] &&
+            [ ! -s "$out" ] &&
+            [ -s "$out"".1" ];
+        then
+            cat "$out"".1" > "$out"
+            rm "$out"".1"
+        fi
+      '';
+    };
     # Python startup script for history management
     ".config/python/pythonrc".text = ''
       #!/usr/bin/env python3

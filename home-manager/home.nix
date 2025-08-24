@@ -61,6 +61,7 @@
       foot
       hydrus
       vesktop
+      xdg-desktop-portal-termfilechooser
       # Clipboard tools for Wayland
       wl-clipboard
       cliphist

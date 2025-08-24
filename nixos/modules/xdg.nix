@@ -1,4 +1,6 @@
-{
+{pkgs, ...}: {
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-termfilechooser];
   # XDG Base Directory support for NixOS
   # Enables XDG compliance for system-level Nix operations
   nix.settings.use-xdg-base-directories = true;

@@ -1,6 +1,19 @@
 # Window rules for Niri
 {
   window-rules = [
+    # File picker - float and center
+    {
+      matches = [
+        {
+          app-id = "foot";
+          title = "XDG File Picker";
+        }
+      ];
+      default-column-width = {
+        proportion = 0.6;
+      };
+      open-floating = true;
+    }
     # WezTerm workaround
     {
       matches = [{app-id = "^org\\.wezfurlong\\.wezterm$";}];
