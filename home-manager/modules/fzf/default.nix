@@ -8,7 +8,7 @@
   fzfOptions = [
     "--style=minimal"
     "--border=none"
-    "--preview='sh ${./scripts/fzf-preview.sh} {}'"
+    "--preview='file-preview {}'"
     "--tmux 90%,100%"
   ];
 in {

@@ -7,18 +7,20 @@
 }: let
   blesh-contrib = pkgs.callPackage ./pkgs {};
 in {
-  options.igloo.bash.blesh.enable = 
+  options.igloo.bash.blesh.enable =
     lib.mkEnableOption "Enable ble.sh with contrib extensions"
     // {
       default = true;
     };
 
   config = lib.mkIf config.igloo.bash.blesh.enable {
-    home.packages = with pkgs.unstable; [
-      blesh
-    ] ++ [
-      blesh-contrib
-    ];
+    home.packages = with pkgs.unstable;
+      [
+        blesh
+      ]
+      ++ [
+        blesh-contrib
+      ];
 
     # Override the basic blesh configuration from bash/config with full contrib setup
     home.file.".local/state/profile-sources/blesh.sh" = lib.mkForce {
@@ -41,18 +43,18 @@ in {
 
           # FZF integration - configure fzf base if needed
           _ble_contrib_fzf_base="${pkgs.fzf}/share/fzf"
-          
+
           # FZF integrations
           ble-import -d integration/fzf-completion
           ble-import -d integration/fzf-key-bindings
-          
+
           # Configure FZF git bindings
           _ble_contrib_fzf_git_config=key-binding:sabbrev:arpeggio
           ble-import -d integration/fzf-git
 
           # Load prompt modules immediately so sequences are available
           ble-import prompt-git
-          ble-import prompt-vim-mode  
+          ble-import prompt-vim-mode
           ble-import prompt-elapsed
 
           # Configure prompts after modules are loaded

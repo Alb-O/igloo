@@ -12,10 +12,10 @@ in
 
     installPhase = ''
       runHook preInstall
-      
+
       mkdir -p $out/share/blesh-contrib
       cp -r * $out/share/blesh-contrib/
-      
+
       runHook postInstall
     '';
 

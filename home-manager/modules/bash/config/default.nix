@@ -9,7 +9,7 @@
     ./starship.nix
   ];
 
-  options.igloo.bash.enable = 
+  options.igloo.bash.enable =
     lib.mkEnableOption "Enable Bash configuration"
     // {
       default = true;
