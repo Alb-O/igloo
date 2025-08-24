@@ -15,6 +15,7 @@
       ./git.nix
       ./tmux
       ./fzf
+      ./yazi
 
       ./codex.nix
       ./helix

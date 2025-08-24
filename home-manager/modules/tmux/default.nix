@@ -35,6 +35,7 @@ in {
         tmuxPlugins.resurrect
         tmuxPlugins.continuum
         tmuxPlugins.tmux-sessionx
+        tmuxPlugins.tokyo-night-tmux
       ];
 
       extraConfig = let
@@ -82,16 +83,7 @@ in {
         # Easy config reload
         bind-key R source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded."
 
-        # Status bar at top showing windows/tabs
-        set -g status on
-        set -g status-position top
-        set -g status-justify absolute-centre
-        set -g status-left-length 50
-        set -g status-right-length 50
-        set -g status-left "#S #(cd #{pane_current_path}; git branch --show-current 2>/dev/null) "
-        set -g status-right "%m/%d %I:%M %p #{tmux_mode_indicator}"
-        set -g window-status-format ' #I:#W '
-        set -g window-status-current-format ' #I:#W '
+
 
         # Key bindings from vim-style config
         bind-key : command-prompt
