@@ -46,6 +46,7 @@
       nb
       rucola
       lsd
+      onefetch
       poppler-utils
       unipicker
       nodejs
@@ -91,17 +92,18 @@
   home.stateVersion = globals.system.stateVersion;
 
   # Environment variables from .env file (loaded during build)
-  home.sessionVariables = {
-    COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
-    COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
-    HANDLER = builtins.getEnv "HANDLER";
-  }
-  // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_DIR" != "") {
-    NIXCATS_BASH_DIR = builtins.getEnv "NIXCATS_BASH_DIR";
-  })
-  // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_THEME" != "") {
-    NIXCATS_BASH_THEME = builtins.getEnv "NIXCATS_BASH_THEME";
-  });
+  home.sessionVariables =
+    {
+      COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
+      COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
+      HANDLER = builtins.getEnv "HANDLER";
+    }
+    // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_DIR" != "") {
+      NIXCATS_BASH_DIR = builtins.getEnv "NIXCATS_BASH_DIR";
+    })
+    // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_THEME" != "") {
+      NIXCATS_BASH_THEME = builtins.getEnv "NIXCATS_BASH_THEME";
+    });
 
   # Ensure login shells source Home Manager session vars from XDG-friendly paths
   # and avoid legacy ~/.nix-profile references.

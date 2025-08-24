@@ -31,7 +31,6 @@ in {
 
       plugins = with pkgs; [
         tmuxPlugins.better-mouse-mode
-        tmuxPlugins.mode-indicator
         tmuxPlugins.resurrect
         tmuxPlugins.continuum
         tmuxPlugins.tmux-sessionx
@@ -57,8 +56,6 @@ in {
         set -g prefix f2
         bind f2 send-prefix
 
-
-
         # Set base index to 1 (easier to navigate)
         set -g base-index 1
 
@@ -82,8 +79,6 @@ in {
 
         # Easy config reload
         bind-key R source-file ~/.config/tmux/tmux.conf \; display-message "tmux.conf reloaded."
-
-
 
         # Key bindings from vim-style config
         bind-key : command-prompt
@@ -147,7 +142,7 @@ in {
         bind x kill-pane
         bind & kill-window
 
-          ${pickerBinds}
+        ${pickerBinds}
 
         # Set window notifications
         setw -g monitor-activity on
@@ -160,8 +155,8 @@ in {
         set -g @continuum-restore 'on'
         set -g @continuum-save-interval '5'
 
-        # Force plugin initialization
-        run-shell '${pkgs.tmuxPlugins.mode-indicator}/share/tmux-plugins/mode-indicator/mode_indicator.tmux'
+        # tokyo-night-tmux preferences
+        set -g @tokyo-night-tmux_time_format 12H
       '';
     };
 
