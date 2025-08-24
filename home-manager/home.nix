@@ -52,6 +52,8 @@
       gcc
       # NixCats neovim configuration
       inputs.nixCats-nvim.packages.${pkgs.system}.nixCats
+      # NixCats bash (ble.sh) wrapper
+      inputs.nixCats-bash.packages.${pkgs.system}.nixCats-bash
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)
@@ -93,7 +95,13 @@
     COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
     COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
     HANDLER = builtins.getEnv "HANDLER";
-  };
+  }
+  // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_DIR" != "") {
+    NIXCATS_BASH_DIR = builtins.getEnv "NIXCATS_BASH_DIR";
+  })
+  // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_THEME" != "") {
+    NIXCATS_BASH_THEME = builtins.getEnv "NIXCATS_BASH_THEME";
+  });
 
   # Ensure login shells source Home Manager session vars from XDG-friendly paths
   # and avoid legacy ~/.nix-profile references.
@@ -153,7 +161,20 @@
        if [ -n "''${HISTFILE:-}" ]; then
          mkdir -p "$(dirname -- "''${HISTFILE}")"
          [ -e "''${HISTFILE}" ] || : > "''${HISTFILE}"
-       fi
+      fi
+
+      # nixCats-bash defaults (live-edit from repo)
+      if [ -z "''${NIXCATS_BASH_DIR:-}" ]; then
+        for cand in "$HOME/dev/igloo/flakes/nixCats-bash/rc" "$HOME/.config/nixCats-bash"; do
+          if [ -d "$cand" ]; then
+            export NIXCATS_BASH_DIR="$cand"
+            break
+          fi
+        done
+      fi
+      if [ -z "''${NIXCATS_BASH_THEME:-}" ]; then
+        export NIXCATS_BASH_THEME="catppuccin-mocha"
+      fi
 
        # Add Windows PATH for WSL interoperability
        if [ "''${IS_WSL:-}" = "true" ]; then

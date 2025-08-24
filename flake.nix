@@ -22,6 +22,9 @@
 
     # Neovim nixCats flake
     nixCats-nvim.url = "path:./flakes/nixCats-nvim";
+
+    # Bash nixCats flake (ble.sh + XDG config)
+    nixCats-bash.url = "path:./flakes/nixCats-bash";
   };
 
   outputs = {
@@ -31,6 +34,7 @@
     niri-flake,
     nixos-wsl,
     nixCats-nvim,
+    nixCats-bash,
     ...
   } @ inputs: let
     inherit (self) outputs;
