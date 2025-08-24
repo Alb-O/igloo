@@ -16,10 +16,7 @@
       ./tmux
       ./fzf
       ./yazi
-
       ./codex.nix
-      ./helix
-      ./neovim
       ./languages
       ./wsl.nix
     ]

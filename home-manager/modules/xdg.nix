@@ -32,7 +32,7 @@
     # Terminal file chooser configuration
     ".config/xdg-desktop-portal-termfilechooser/config".text = ''
       [filechooser]
-      cmd=yazi-wrapper.sh
+      cmd=$HOME/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
       default_dir=$HOME
       env=TERMCMD=${pkgs.foot}/bin/foot --title 'XDG File Picker'
       open_mode=suggested
@@ -49,14 +49,8 @@
     ".config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh" = {
       executable = true;
       text = ''
-        #!/bin/sh
+        #!/usr/bin/env sh
         # Custom wrapper script for xdg-desktop-portal-termfilechooser with Nix paths
-
-        set -e
-
-        if [ "$6" -ge 4 ]; then
-            set -x
-        fi
 
         multiple="$1"
         directory="$2"
@@ -64,31 +58,17 @@
         path="$4"
         out="$5"
 
-        cmd="${pkgs.yazi}/bin/yazi"
-        termcmd="''${TERMCMD:-${pkgs.foot}/bin/foot -T 'File Picker'}"
-
         if [ "$save" = "1" ]; then
-            # save a file
             set -- --chooser-file="$out" "$path"
         elif [ "$directory" = "1" ]; then
-            # upload files from a directory
             set -- --chooser-file="$out" --cwd-file="$out"".1" "$path"
         elif [ "$multiple" = "1" ]; then
-            # upload multiple files
             set -- --chooser-file="$out" "$path"
         else
-            # upload only 1 file
             set -- --chooser-file="$out" "$path"
         fi
 
-        command="$termcmd $cmd"
-        for arg in "$@"; do
-            # escape double quotes
-            escaped=$(printf "%s" "$arg" | sed 's/"/\\"/g')
-            command="$command \"$escaped\""
-        done
-
-        ${pkgs.bash}/bin/sh -c "$command"
+        exec ${pkgs.foot}/bin/foot --title 'XDG File Picker' ${pkgs.yazi}/bin/yazi "$@"
 
         if [ "$directory" = "1" ] &&
             [ ! -s "$out" ] &&

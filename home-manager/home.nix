@@ -48,12 +48,13 @@
       lsd
       poppler-utils
       unipicker
-      # prettier  # Temporarily disabled due to LICENSE file conflict with helix-gpt
       nodejs
       gcc
       bun
       typescript-language-server
       helix-gpt
+      # Neovim from nvix flake
+      inputs.nvix.packages.${pkgs.system}.default
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)

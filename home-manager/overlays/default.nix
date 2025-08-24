@@ -1,8 +1,5 @@
 # This file defines overlays
 {inputs, ...}: [
-  # VSCode extensions overlay - use the nix-vscode-extensions overlay
-  inputs.nix-vscode-extensions.overlays.default
-
   # This one brings our custom packages from the 'pkgs' directory
   (final: _prev: import ../pkgs final.pkgs)
 
@@ -24,16 +21,10 @@
     };
   })
 
-  # NUR (Nix User Repository) overlay
-  inputs.nur.overlays.default
-
   # Larger stack size for compiling niri on WSL
   (self: super: {
     niri = super.niri.overrideAttrs (oldAttrs: {
       RUST_MIN_STACK = "16777216";
     });
   })
-
-  # helix-gpt overlay
-  inputs.helix-gpt.overlays.default
 ]

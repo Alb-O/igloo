@@ -13,42 +13,24 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # NUR (Nix User Repository)
-    nur.url = "github:nix-community/NUR";
-
-    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
-
-    # Niri flake for advanced configuration
+    # Niri flake
     niri-flake.url = "github:sodiboo/niri-flake";
-
-    # nix-colors for color scheme management
-    nix-colors.url = "github:misterio77/nix-colors";
-
-    # nix-userstyles for website theming
-    nix-userstyles.url = "github:knoopx/nix-userstyles";
 
     # NixOS-WSL for Windows Subsystem for Linux support
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
 
-    # helix-gpt integration
-    helix-gpt.url = "github:SilverCoder/helix-gpt/nix-flake";
-
-    # Neovim nightly overlay
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    # nvix flake for Neovim configuration
+    nvix.url = "github:Alb-O/nvix";
   };
 
   outputs = {
     self,
     nixpkgs,
     home-manager,
-    nix-vscode-extensions,
     niri-flake,
-    nix-colors,
-    nix-userstyles,
     nixos-wsl,
-    helix-gpt,
-    neovim-nightly-overlay,
+    nvix,
     ...
   } @ inputs: let
     inherit (self) outputs;
