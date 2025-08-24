@@ -54,12 +54,9 @@ in {
 
           # Load prompt modules immediately so sequences are available
           ble-import prompt-git
-          ble-import prompt-vim-mode
 
           # Configure prompts after modules are loaded
           bleopt prompt_rps1='\g{fg=69,italic}\q{contrib/git-info}'
-          bleopt keymap_vi_mode_show:=
-          PS1='[\u@\h \W]\q{contrib/vim-mode}\$ '
 
           # Other integrations can be loaded asynchronously
           ble-import -d integration/nix-completion

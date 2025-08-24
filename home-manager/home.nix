@@ -135,10 +135,13 @@
         . "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh"
       fi
 
-      # Ensure XDG_RUNTIME_DIR exists for tools that expect it (e.g., ble.sh)
-      if [ -z "''${XDG_RUNTIME_DIR:-}" ]; then
-        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-      fi
+       # Bash history control
+       export HISTCONTROL="ignoreboth:erasedups"
+
+       # Ensure XDG_RUNTIME_DIR exists for tools that expect it (e.g., ble.sh)
+       if [ -z "''${XDG_RUNTIME_DIR:-}" ]; then
+         export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+       fi
       if [ ! -d "$XDG_RUNTIME_DIR" ]; then
         # Fallback to a private dir if systemd runtime dir is unavailable (e.g., TTY/tmux)
         export XDG_RUNTIME_DIR="$HOME/.xdg-runtime"
@@ -169,9 +172,6 @@
       # Interactive-only setup
       case $- in
         *i*)
-          # Starship prompt
-          eval "$(starship init bash)"
-
           # direnv
           eval "$(direnv hook bash)"
 
