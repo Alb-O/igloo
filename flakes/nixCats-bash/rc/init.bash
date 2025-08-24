@@ -37,14 +37,14 @@ __ncb_try_source() { [ -r "$1" ] && . "$1"; }
 # bash-completion
 __ncb_try_source "/etc/bash_completion" || __ncb_try_source "/run/current-system/sw/etc/bash_completion"
 
-# fzf integration (completion + keybindings)
+## fzf integration handled via ble.sh contrib after ble loads
+## (fallback to vanilla fzf scripts if ble.sh is unavailable)
+_ncb_fzf_share=""
 if command -v fzf-share >/dev/null 2>&1; then
   _ncb_fzf_share="$(fzf-share 2>/dev/null)"
 elif [ -n "${NIXCATS_FZF_SHARE:-}" ] && [ -d "$NIXCATS_FZF_SHARE" ]; then
   _ncb_fzf_share="$NIXCATS_FZF_SHARE"
 fi
-[ -n "${_ncb_fzf_share:-}" ] && __ncb_try_source "$_ncb_fzf_share/completion.bash"
-[ -n "${_ncb_fzf_share:-}" ] && __ncb_try_source "$_ncb_fzf_share/key-bindings.bash"
 
 # direnv
 if command -v direnv >/dev/null 2>&1; then
@@ -68,6 +68,9 @@ if [ -n "${NIXCATS_BLESH_DIR:-}" ] && [ -r "$NIXCATS_BLESH_DIR/ble.sh" ]; then
   
   # User ble.sh config hooks (safe to edit in repo) - MUST come first
   [ -r "$_NCB_CFG_DIR/blesh.init.bash" ] && . "$_NCB_CFG_DIR/blesh.init.bash"
+
+  # fzf integration via ble.sh contrib (modular, conflict-free)
+  [ -r "$_NCB_CFG_DIR/blesh.fzf.bash" ] && . "$_NCB_CFG_DIR/blesh.fzf.bash"
   
   # Optional theme (env: NIXCATS_BASH_THEME=catppuccin-mocha|onedark|...) - AFTER blesh init
   if [ -n "${NIXCATS_BASH_THEME:-}" ] && [ -r "$_NCB_CFG_DIR/themes/${NIXCATS_BASH_THEME}.bash" ]; then
@@ -76,6 +79,12 @@ if [ -n "${NIXCATS_BLESH_DIR:-}" ] && [ -r "$NIXCATS_BLESH_DIR/ble.sh" ]; then
   
   # Prompt setup (after ble.sh and theme)
   [ -r "$_NCB_CFG_DIR/prompt.bash" ] && . "$_NCB_CFG_DIR/prompt.bash"
+fi
+
+# If ble.sh failed to load for any reason, fall back to vanilla fzf bindings
+if [ -z "${BLE_VERSION:-}" ] && [ -n "${_ncb_fzf_share:-}" ]; then
+  __ncb_try_source "$_ncb_fzf_share/completion.bash"
+  __ncb_try_source "$_ncb_fzf_share/key-bindings.bash"
 fi
 
 #

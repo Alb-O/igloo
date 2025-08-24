@@ -12,19 +12,18 @@ __ncb_git_branch() {
   [ -n "$b" ] && printf "[%s] " "$b"
 }
 
-# Compose PS1. Use classic escapes; ble.sh will process/optimize.
-# Two-line prompt: user@host:cwd [branch]\n$ 
-_PS1='\u@\h:\w '"\$(__ncb_git_branch)"'\n$ '
+# Compose PS1
+# - For ble.sh sessions, avoid command substitutions inside PS1 and use
+#   contrib sequences (safer rendering, fewer redraw artifacts).
+# - For plain Bash fallback, use a simple prompt without VCS info.
 
 if [ -n "${BLE_VERSION:-}" ]; then
-  # Apply via ble options
-  bleopt prompt_ps1_final="$_PS1"
-  # Optional right prompt (time). Uncomment to enable.
-  # bleopt prompt_rps1='\t'
+  # Left prompt: user@host:cwd and git branch via contrib sequence
+  # No right prompt by default (see NIXCATS_BASH_RPROMPT in blesh.init.bash)
+  PS1='\u@\h:\w \q{contrib/git-branch}\n$ '
+  bleopt prompt_rps1=
   ble/prompt/update
 else
-  # Fallback for plain bash
-  PS1="$_PS1"
+  # Plain bash: keep it simple (no $(...) to avoid redraw issues)
+  PS1='\u@\h:\w\n$ '
 fi
-
-unset _PS1
