@@ -66,7 +66,7 @@ in {
           ble-import -d integration/zoxide
 
           # Color scheme
-          ble-import -df scheme/catppuccin_mocha
+          ble-import -d scheme/tokyonight
 
           # Additional useful configurations - use force flag for optional modules
         fi
