@@ -34,7 +34,7 @@ in {
 
           source ${pkgs.unstable.blesh}/share/blesh/ble.sh
 
-          # Basic blesh options
+          # Turn off EoL markers
           bleopt prompt_eol_mark=""
 
           # Share history across shells/panes in real time
@@ -51,12 +51,6 @@ in {
           # Configure FZF git bindings
           _ble_contrib_fzf_git_config=key-binding:sabbrev:arpeggio
           ble-import -d integration/fzf-git
-
-          # Load prompt modules immediately so sequences are available
-          ble-import prompt-git
-
-          # Configure prompts after modules are loaded
-          bleopt prompt_rps1='\g{fg=69,italic}\q{contrib/git-info}'
 
           # Other integrations can be loaded asynchronously
           ble-import -d integration/nix-completion

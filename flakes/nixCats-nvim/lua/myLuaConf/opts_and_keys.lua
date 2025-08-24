@@ -62,6 +62,10 @@ vim.o.completeopt = 'menu,preview,noselect'
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
+-- Cursor settings to match foot terminal
+-- Normal/visual/command modes: solid block, insert modes: blinking beam
+vim.o.guicursor = 'n-v-c:block-Cursor/lCursor,i-ci:ver25-Cursor/lCursor-blinkwait750-blinkoff400-blinkon250,r-cr:hor20-Cursor/lCursor'
+
 -- [[ Disable auto comment on enter ]]
 -- See :help formatoptions
 vim.api.nvim_create_autocmd("FileType", {

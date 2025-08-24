@@ -9,8 +9,8 @@
           title = "XDG File Picker";
         }
       ];
-      default-column-width = { proportion = 0.65; };
-      default-window-height = { proportion = 0.8; };
+      default-column-width = {proportion = 0.65;};
+      default-window-height = {proportion = 0.8;};
       open-floating = true;
     }
     # WezTerm workaround

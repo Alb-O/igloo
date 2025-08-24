@@ -23,7 +23,6 @@
       };
 
       colors = {
-        cursor = "c0caf5 2e3c64";
         foreground = "c0caf5";
         background = "1a1b26";
         selection-foreground = "c0caf5";
