@@ -10,6 +10,7 @@
       ./xdg.nix
       ../lib/fonts.nix
       ./bash
+      ./nixCats-fish.nix
       ./shell-tools.nix
       ./broot
       ./git.nix

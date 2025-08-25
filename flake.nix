@@ -25,6 +25,9 @@
 
     # Bash nixCats flake (ble.sh + XDG config)
     nixCats-bash.url = "path:./flakes/nixCats-bash";
+
+    # Fish nixCats flake (modern Fish shell + fzf integration)
+    nixCats-fish.url = "path:./flakes/nixCats-fish";
   };
 
   outputs = {
@@ -35,6 +38,7 @@
     nixos-wsl,
     nixCats-nvim,
     nixCats-bash,
+    nixCats-fish,
     ...
   } @ inputs: let
     inherit (self) outputs;

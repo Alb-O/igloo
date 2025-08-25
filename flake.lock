@@ -122,10 +122,24 @@
       },
       "parent": []
     },
+    "nixCats-fish": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "path": "./flakes/nixCats-fish",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/nixCats-fish",
+        "type": "path"
+      },
+      "parent": []
+    },
     "nixCats-nvim": {
       "inputs": {
         "nixCats": "nixCats",
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "path": "./flakes/nixCats-nvim",
@@ -225,6 +239,22 @@
     },
     "nixpkgs_3": {
       "locked": {
+        "lastModified": 1755615617,
+        "narHash": "sha256-HMwfAJBdrr8wXAkbGhtcby1zGFvs+StOp19xNsbqdOg=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "20075955deac2583bb12f07151c2df830ef346b4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_4": {
+      "locked": {
         "lastModified": 1755268003,
         "narHash": "sha256-nNaeJjo861wFR0tjHDyCnHs1rbRtrMgxAKMoig9Sj/w=",
         "owner": "nixos",
@@ -239,7 +269,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1755615617,
         "narHash": "sha256-HMwfAJBdrr8wXAkbGhtcby1zGFvs+StOp19xNsbqdOg=",
@@ -260,9 +290,10 @@
         "home-manager": "home-manager",
         "niri-flake": "niri-flake",
         "nixCats-bash": "nixCats-bash",
+        "nixCats-fish": "nixCats-fish",
         "nixCats-nvim": "nixCats-nvim",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
     },

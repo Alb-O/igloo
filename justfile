@@ -233,6 +233,18 @@ init:
     @echo "Run 'just home-switch' to build the home configuration"
 
 # ========================================
+# SHELLS - Alternative Shell Environments  
+# ========================================
+
+# Launch nixCats-fish (modern Fish shell with fzf integration)
+fish:
+    nix run ./flakes/nixCats-fish --impure
+
+# Launch nixCats-bash (ble.sh powered Bash)  
+bash:
+    nix run ./flakes/nixCats-bash --impure
+
+# ========================================
 # ALIASES - Shorter Commands
 # ========================================
 
