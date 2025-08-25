@@ -2,7 +2,7 @@
 sel=$(
   eza --recurse -1 --absolute --icons=always -d \
     | grep -vE '(^$|:$)' \
-    | fzf \
+    | fzf --keep-right --wrap \
     | cut -c2- \
     | tr -d '[:space:]' \
     | iconv -c
