@@ -25,7 +25,6 @@
       if globals.system.isGraphical
       then [
         ./niri
-        ./swww.nix
         ./mako.nix
         ./firefox
         ./sillytavern.nix
