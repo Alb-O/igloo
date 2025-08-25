@@ -6,11 +6,12 @@
   inputs,
   globals,
   ...
-}: {
+}:
+{
   # Import modular configuration
   imports = [
     # Custom modules
-    (import ./modules {inherit inputs globals;})
+    (import ./modules { inherit inputs globals; })
 
     # Example external modules (commented out):
     # outputs.homeManagerModules.example
@@ -30,7 +31,8 @@
   };
 
   # User packages
-  home.packages = with pkgs.unstable;
+  home.packages =
+    with pkgs.unstable;
     [
       # CLI Tools (always included)
       jq
@@ -48,7 +50,7 @@
       unison
       nb
       rucola
-      lsd
+      eza
       onefetch
       poppler-utils
       unipicker
@@ -79,7 +81,7 @@
       # Custom packages
       (pkgs.writeShellApplication {
         name = "codex";
-        runtimeInputs = [pkgs.nodejs];
+        runtimeInputs = [ pkgs.nodejs ];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
@@ -98,18 +100,17 @@
   home.stateVersion = globals.system.stateVersion;
 
   # Environment variables from .env file (loaded during build)
-  home.sessionVariables =
-    {
-      COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
-      COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
-      HANDLER = builtins.getEnv "HANDLER";
-    }
-    // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_DIR" != "") {
-      NIXCATS_BASH_DIR = builtins.getEnv "NIXCATS_BASH_DIR";
-    })
-    // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_THEME" != "") {
-      NIXCATS_BASH_THEME = builtins.getEnv "NIXCATS_BASH_THEME";
-    });
+  home.sessionVariables = {
+    COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
+    COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
+    HANDLER = builtins.getEnv "HANDLER";
+  }
+  // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_DIR" != "") {
+    NIXCATS_BASH_DIR = builtins.getEnv "NIXCATS_BASH_DIR";
+  })
+  // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_THEME" != "") {
+    NIXCATS_BASH_THEME = builtins.getEnv "NIXCATS_BASH_THEME";
+  });
 
   # Ensure login shells source Home Manager session vars from XDG-friendly paths
   # and avoid legacy ~/.nix-profile references.
