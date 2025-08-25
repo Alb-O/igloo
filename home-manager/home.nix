@@ -20,6 +20,9 @@
   # Enable tmux fzf-tools even in non-graphical environments
   igloo.tmux.pickers.enable = true;
 
+  # Enable nixCats-fish for modern shell experience
+  igloo.nixCats-fish.enable = true;
+
   # Basic user information
   home = {
     username = globals.user.username;
@@ -165,17 +168,35 @@
          [ -e "''${HISTFILE}" ] || : > "''${HISTFILE}"
       fi
 
-      # nixCats-bash defaults (live-edit from repo)
+      # nixCats-bash defaults (dynamic discovery)
       if [ -z "''${NIXCATS_BASH_DIR:-}" ]; then
-        for cand in "$HOME/dev/igloo/flakes/nixCats-bash/rc" "$HOME/.config/nixCats-bash"; do
-          if [ -d "$cand" ]; then
-            export NIXCATS_BASH_DIR="$cand"
+        # Try to find nixCats-bash config dynamically
+        for candidate in \
+          "''${FLAKE_ROOT:-}/flakes/nixCats-bash/rc" \
+          "./flakes/nixCats-bash/rc" \
+          "../flakes/nixCats-bash/rc" \
+          "$HOME/.config/nixCats-bash"; do
+          if [ -d "$candidate" ]; then
+            export NIXCATS_BASH_DIR="$candidate"
             break
           fi
         done
       fi
       if [ -z "''${NIXCATS_BASH_THEME:-}" ]; then
         export NIXCATS_BASH_THEME="catppuccin-mocha"
+      fi
+      
+      # Auto-discover flake root if not set (for nixCats configs)
+      if [ -z "''${FLAKE_ROOT:-}" ]; then
+        # Try to find flake root by looking for flake.nix
+        current_dir="$(pwd)"
+        while [ "$current_dir" != "/" ]; do
+          if [ -f "$current_dir/flake.nix" ]; then
+            export FLAKE_ROOT="$current_dir"
+            break
+          fi
+          current_dir="$(dirname "$current_dir")"
+        done
       fi
 
        # Add Windows PATH for WSL interoperability

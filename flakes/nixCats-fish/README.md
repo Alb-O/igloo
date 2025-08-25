@@ -1,83 +1,240 @@
 # nixCats-fish
 
-An opinionated, nix-native way to manage a modern Fish shell environment with the same architecture principles as nixCats-nvim:
+A Fish shell configuration manager inspired by [nixCats-nvim](https://github.com/BirdeeHub/nixCats-nvim), bringing the same powerful category-based architecture to Fish shell management.
 
-- Nix handles meta concerns: fetch, pin, compose, and wrap tools.
-- Day-to-day shell customization lives as editable scripts under XDG config — no Nix rebuilds for tweaking your shell.
-- Clean separation between immutable toolchain and mutable user config.
+## Philosophy
 
-## Goals
+**Nix is for downloading. Fish is for configuring.**
 
-- Fast, modern Fish shell with sane defaults.
-- Excellent fzf integration with vi keybindings.
-- XDG-first layout: `~/.config/nixCats-fish`, `~/.local/state/nixCats-fish`, `~/.cache/nixCats-fish`.
-- No-rebuild config: edit Fish files, restart shell.
-- Optional Home Manager/NixOS modules to install and (optionally) set shell.
+nixCats-fish follows the same core principle as nixCats-nvim: use Nix to manage dependencies and tooling, while keeping your Fish configuration in readable Fish scripts. The category system allows you to build multiple variations of your shell configuration from a single set of definitions.
 
-## Config Resolution
+## 🌟 Key Features
 
-At runtime, `fishcat` resolves your config in this order:
+### 📦 **Category-Based Architecture**
+- Define dependencies and features in categories
+- Enable/disable entire feature sets per package
+- Query enabled categories from Fish scripts with `fishCats <category>`
 
-1) `NIXCATS_FISH_DIR/config.fish` if the env var is set. This is the preferred, nixCats-style workflow: point it at your repo directory so you can edit scripts live without rebuilds.
-2) `$XDG_CONFIG_HOME/nixCats-fish/config.fish` if you maintain a user config outside the repo.
-3) Built-in default config from the Nix store (read-only fallback).
+### 🔄 **Multiple Package Definitions**  
+- `fishCats` - Full-featured configuration
+- `minimalFish` - Minimal configuration for servers
+- `devFish` - Development-focused live configuration
 
-Recommended setup (live-edit in this repo):
+### 🎯 **Wrapped vs Unwrapped Modes**
+- **Wrapped** (`wrapRc = true`): Immutable config from Nix store - perfect for reproducibility
+- **Unwrapped** (`wrapRc = false`): Live-editable config - great for development and customization
 
-- Set an env var, e.g. in your `.env` used by this repo: `NIXCATS_FISH_DIR=/home/you/dev/igloo/flakes/nixCats-fish/config`
-- Then `fishcat` will source `config/config.fish`, which loads:
-  - `config/conf.d/fzf.fish` for fzf integration
-  - `config/functions/fish_prompt.fish` for prompt configuration
-  - Any other `config/conf.d/*.fish` snippets
+### 🔍 **Runtime Querying**
+- `fishCats fzf` - Check if fzf category is enabled
+- `fishCats modern.core` - Check subcategories  
+- `fishCats --list` - List all enabled categories
+- `fishCats --get theme` - Get values from extra config
 
-## Package
+### 🎨 **Theme-Aware Configuration**
+- Automatic color schemes based on theme selection
+- FZF integration respects theme colors
+- Consistent theming across all components
 
-The package exposes an executable `fishcat` which launches Fish with our configuration. It puts the following tools on PATH:
+## 🚀 Quick Start
 
-- `fish` — the Fish shell
-- `fzf` — fuzzy finder with key bindings
-- `direnv` — directory-based environment management
-- `zoxide` — smart cd replacement
-- `fd`, `ripgrep`, `bat`, `eza` — modern CLI tools
+### Try It Now
+```bash
+# Try the full configuration
+nix run github:yourusername/nixCats-fish
 
-## Features
+# Or try minimal configuration  
+nix run github:yourusername/nixCats-fish#minimalFish
 
-- **Vi keybindings** by default (easily changeable to emacs mode)
-- **FZF integration** with:
-  - `Ctrl+R`: History search
-  - `Ctrl+T`: File search
-  - `Alt+C`: Directory search
-  - `Ctrl+G`: Git file search
-- **Modern aliases**: `ls` → `eza`, `cat` → `bat`, `grep` → `rg`, `find` → `fd`
-- **Git-aware prompt** with branch display
-- **SSH-aware prompt** shows hostname when connected remotely
-- **XDG compliance** for all state and cache files
-
-## Editing Your Shell
-
-Edit files under your repo `flakes/nixCats-fish/config` (or wherever `NIXCATS_FISH_DIR` points). Examples:
-
-- Change prompt: edit `functions/fish_prompt.fish`
-- Add keybindings: create `conf.d/keybindings.fish`
-- Customize fzf: edit `conf.d/fzf.fish`
-- Toggle vi/emacs mode: change `fish_key_bindings` in `config.fish`
-
-No rebuild/switch needed — open a new shell or run `fishcat`.
-
-## Installation
-
-Add to your flake inputs:
-
-```nix
-inputs.nixCats-fish.url = "path:./flakes/nixCats-fish";
+# Or development configuration with live editing
+nix run github:yourusername/nixCats-fish#devFish
 ```
 
-Then use in Home Manager:
+### Using in Your Config
 
+Add to your flake inputs:
 ```nix
+inputs.nixCats-fish.url = "github:yourusername/nixCats-fish";
+```
+
+Then in your configuration:
+```nix
+# Direct package usage
+home.packages = [ inputs.nixCats-fish.packages.${system}.fishCats ];
+
+# Or via Home Manager module (future)
 programs.nixCats-fish = {
   enable = true;
-  setAsDefaultShell = true;  # Optional
-  seedConfig = true;         # Seeds config template on first run
+  packageName = "fishCats";  # or "minimalFish" or "devFish"
 };
+```
+
+## 🏗️ Architecture
+
+### Category Definitions
+```nix
+categoryDefinitions = { pkgs, settings, categories, extra, name, ... }: {
+  runtimeDeps = {
+    general = with pkgs; [ fish ];
+    modern.core = with pkgs; [ eza bat fd ripgrep ];
+    modern.extended = with pkgs; [ dust procs bottom ];
+    fzf = with pkgs; [ fzf ];
+    navigation = with pkgs; [ zoxide broot ];
+    development = with pkgs; [ git direnv jq ];
+  };
+};
+```
+
+### Package Definitions  
+```nix
+packageDefinitions = {
+  fishCats = { pkgs, name, ... }: {
+    settings = {
+      wrapRc = true;
+      configDirName = "nixCats-fish";
+    };
+    categories = {
+      general = true;
+      modern = true;  # Enables all modern subcategories
+      fzf = true;
+      navigation = true;
+      development = true;
+    };
+    extra = {
+      theme = "tokyonight-night";
+      editor = "nvim";
+    };
+  };
+};
+```
+
+### Fish Configuration
+```fish
+# config.fish - Uses category system
+if fishCats modern.core
+    alias ls eza
+    alias cat bat
+end
+
+if fishCats development  
+    alias gs "git status"
+    alias gc "git commit"
+end
+
+# Get theme from extra config
+set -l theme (fishCats --get theme)
+```
+
+## 📁 Directory Structure
+
+```
+flakes/nixCats-fish/
+├── flake.nix                    # Main flake with category system
+├── README.md                    # This file
+└── config/
+    ├── config.fish             # Main configuration with category logic
+    ├── conf.d/
+    │   └── fzf.fish           # Category-specific config (fzf)
+    └── functions/
+        ├── fish_prompt.fish    # Theme-aware prompt
+        └── fish_right_prompt.fish  # Right-side prompt
+```
+
+## 🎛️ Configuration Examples
+
+### Check Categories in Fish
+```fish
+# Check if category is enabled
+if fishCats fzf
+    echo "FZF is available!"
+end
+
+# Check subcategories
+if fishCats modern.core
+    alias ls eza
+end
+
+# List all enabled categories
+fishCats --list
+
+# Get configuration values
+set -l theme (fishCats --get theme)
+set -l editor (fishCats --get editor)
+```
+
+### Custom Package Definition
+```nix
+myCustomFish = { pkgs, name, ... }: {
+  settings = {
+    wrapRc = false;  # Live configuration
+    configDirName = "my-fish";
+    unwrappedCfgPath = "/path/to/my/config";
+  };
+  
+  categories = {
+    general = true;
+    fzf = true;
+    # Only enable core modern tools, not extended
+    modern.core = true;
+  };
+  
+  extra = {
+    theme = "catppuccin-mocha";
+    customSetting = "my-value";
+  };
+};
+```
+
+## 🔧 Available Categories
+
+- **`general`** - Core Fish shell
+- **`modern.core`** - Essential modern CLI tools (eza, bat, fd, rg)
+- **`modern.extended`** - Additional modern tools (dust, procs, bottom)
+- **`fzf`** - Fuzzy finder with Fish integration
+- **`navigation`** - Smart directory navigation (zoxide, broot)  
+- **`development`** - Development tools (git, direnv, jq)
+- **`utilities`** - Shell utilities (tealdeer, nix-tree)
+- **`wsl`** - WSL-specific tools
+
+## 🎨 Themes
+
+- `tokyonight-night` - Dark theme with Tokyo Night colors
+- `catppuccin-mocha` - Dark theme with Catppuccin colors  
+- `default` - Fish default colors
+
+## 🔑 Key Bindings (FZF)
+
+- `Ctrl+R` - History search
+- `Ctrl+T` - File search
+- `Alt+C` - Directory search  
+- `Ctrl+G` - Git files search
+
+## 🤝 Comparison with nixCats-nvim
+
+| Feature | nixCats-nvim | nixCats-fish |
+|---------|--------------|--------------|
+| Category System | ✅ | ✅ |
+| Multiple Packages | ✅ | ✅ |
+| Wrapped/Unwrapped | ✅ | ✅ |
+| Runtime Querying | `nixCats('category')` | `fishCats category` |
+| Live Configuration | ✅ | ✅ |
+| Theme Integration | ✅ | ✅ |
+
+## 📚 Learn More
+
+This project is directly inspired by the excellent [nixCats-nvim](https://github.com/BirdeeHub/nixCats-nvim). Check out their documentation to understand the underlying philosophy and architecture patterns that nixCats-fish inherits.
+
+## 🧪 Development
+
+```bash
+# Clone and try
+git clone <your-repo>
+cd nixCats-fish
+
+# Try different packages
+nix run .#fishCats       # Full configuration
+nix run .#minimalFish    # Minimal
+nix run .#devFish        # Development with live config
+
+# Development shell
+nix develop
 ```

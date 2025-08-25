@@ -5,6 +5,11 @@
   globals,
   ...
 }: {
+  # Import the nixCats-fish module at the top level
+  imports = [
+    inputs.nixCats-fish.homeModules.default
+  ];
+
   options.igloo.nixCats-fish.enable =
     lib.mkEnableOption "Enable nixCats-fish shell"
     // {
@@ -12,11 +17,6 @@
     };
 
   config = lib.mkIf config.igloo.nixCats-fish.enable {
-    # Import the nixCats-fish Home Manager module
-    imports = [
-      inputs.nixCats-fish.homeModules.default
-    ];
-
     # Enable nixCats-fish
     programs.nixCats-fish = {
       enable = true;
@@ -26,8 +26,27 @@
     };
 
     # Set environment variable to point to repo config for live editing
-    home.sessionVariables = lib.mkIf (config.igloo.nixCats-fish.enable) {
-      NIXCATS_FISH_DIR = "${globals.user.homeDirectory}/dev/igloo/flakes/nixCats-fish/config";
+    # This enables the nixCats philosophy: edit configs in repo, no rebuilds needed
+    # Use a dynamic discovery approach instead of hardcoded paths
+    home.sessionVariables = {
+      # Set a hint about where to look for nixCats configs, but don't hardcode
+      NIXCATS_CONFIG_DISCOVERY = "true";
+    };
+    
+    # Add a shell alias that dynamically finds the config
+    home.shellAliases = lib.mkIf (config.igloo.nixCats-fish.enable) {
+      fishcat-live = ''
+        if [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-fish/config" ]; then
+          NIXCATS_FISH_DIR="$FLAKE_ROOT/flakes/nixCats-fish/config" fishCats
+        elif [ -d "./flakes/nixCats-fish/config" ]; then
+          NIXCATS_FISH_DIR="./flakes/nixCats-fish/config" fishCats  
+        elif [ -d "../flakes/nixCats-fish/config" ]; then
+          NIXCATS_FISH_DIR="../flakes/nixCats-fish/config" fishCats
+        else
+          echo "nixCats-fish config not found. Run from repo root or set NIXCATS_FISH_DIR"
+          fishCats
+        fi
+      '';
     };
   };
 }

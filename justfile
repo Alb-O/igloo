@@ -236,13 +236,37 @@ init:
 # SHELLS - Alternative Shell Environments  
 # ========================================
 
-# Launch nixCats-fish (modern Fish shell with fzf integration)
+# Launch nixCats-fish (modern Fish shell with fzf integration)  
 fish:
-    nix run ./flakes/nixCats-fish --impure
+    #!/usr/bin/env bash
+    # Auto-discover nixCats-fish config location
+    if [ -d "./flakes/nixCats-fish/config" ]; then
+        export NIXCATS_FISH_DIR="$(pwd)/flakes/nixCats-fish/config"
+        nix run ./flakes/nixCats-fish --impure
+    elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-fish/config" ]; then
+        export NIXCATS_FISH_DIR="$FLAKE_ROOT/flakes/nixCats-fish/config"  
+        nix run $FLAKE_ROOT/flakes/nixCats-fish --impure
+    else
+        echo "Error: nixCats-fish config not found!"
+        echo "Make sure you're in the flake root directory or set FLAKE_ROOT"
+        exit 1
+    fi
 
-# Launch nixCats-bash (ble.sh powered Bash)  
+# Launch nixCats-bash (ble.sh powered Bash)
 bash:
-    nix run ./flakes/nixCats-bash --impure
+    #!/usr/bin/env bash
+    # Auto-discover nixCats-bash config location
+    if [ -d "./flakes/nixCats-bash/rc" ]; then
+        export NIXCATS_BASH_DIR="$(pwd)/flakes/nixCats-bash/rc"
+        nix run ./flakes/nixCats-bash --impure
+    elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-bash/rc" ]; then
+        export NIXCATS_BASH_DIR="$FLAKE_ROOT/flakes/nixCats-bash/rc"
+        nix run $FLAKE_ROOT/flakes/nixCats-bash --impure  
+    else
+        echo "Error: nixCats-bash config not found!"
+        echo "Make sure you're in the flake root directory or set FLAKE_ROOT"
+        exit 1
+    fi
 
 # ========================================
 # ALIASES - Shorter Commands
