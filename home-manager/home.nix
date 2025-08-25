@@ -63,6 +63,8 @@
       # Graphical Tools (only when isGraphical = true)
       hyprpicker
       foot
+      kitty
+      windowtolayer
       hydrus
       vesktop
       xdg-desktop-portal-termfilechooser
@@ -88,6 +90,7 @@
     ++ lib.optionals globals.system.isGraphical [
       # Custom graphical packages
       pkgs.blender-daily
+      pkgs.setup-background-terminals
     ];
 
   # State version - don't change this
@@ -185,7 +188,7 @@
       if [ -z "''${NIXCATS_BASH_THEME:-}" ]; then
         export NIXCATS_BASH_THEME="catppuccin-mocha"
       fi
-      
+
       # Auto-discover flake root if not set (for nixCats configs)
       if [ -z "''${FLAKE_ROOT:-}" ]; then
         # Try to find flake root by looking for flake.nix

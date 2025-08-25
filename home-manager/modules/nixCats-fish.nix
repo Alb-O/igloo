@@ -32,14 +32,14 @@
       # Set a hint about where to look for nixCats configs, but don't hardcode
       NIXCATS_CONFIG_DISCOVERY = "true";
     };
-    
+
     # Add a shell alias that dynamically finds the config
     home.shellAliases = lib.mkIf (config.igloo.nixCats-fish.enable) {
       fishcat-live = ''
         if [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-fish/config" ]; then
           NIXCATS_FISH_DIR="$FLAKE_ROOT/flakes/nixCats-fish/config" fishCats
         elif [ -d "./flakes/nixCats-fish/config" ]; then
-          NIXCATS_FISH_DIR="./flakes/nixCats-fish/config" fishCats  
+          NIXCATS_FISH_DIR="./flakes/nixCats-fish/config" fishCats
         elif [ -d "../flakes/nixCats-fish/config" ]; then
           NIXCATS_FISH_DIR="../flakes/nixCats-fish/config" fishCats
         else

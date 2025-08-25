@@ -29,6 +29,7 @@
         ./firefox
         ./sillytavern.nix
         ./foot.nix
+        ./foot-server.nix
         ./polkit.nix
         ./clipboard.nix
       ]

@@ -194,12 +194,12 @@
 
           # Determine config directory with smart discovery
           configDir=""
-          
+
           # Priority 1: Explicit NIXCATS_FISH_DIR
           if [ -n "''${NIXCATS_FISH_DIR:-}" ] && [ -d "''${NIXCATS_FISH_DIR}" ]; then
             configDir="$NIXCATS_FISH_DIR"
             echo "Using explicit nixCats-fish config from: $configDir"
-          
+
           # Priority 2: Auto-discover in common locations (for live editing)
           elif [ -z "$configDir" ]; then
             for candidate in \
@@ -208,7 +208,7 @@
               "$(dirname "$PWD")/flakes/nixCats-fish/config" \
               "$HOME/flakes/nixCats-fish/config" \
               "$HOME/dev/*/flakes/nixCats-fish/config"; do
-              
+
               if [ -d "$candidate" ]; then
                 configDir="$candidate"
                 echo "Auto-discovered nixCats-fish config at: $configDir"
@@ -216,7 +216,7 @@
               fi
             done
           fi
-          
+
           # Priority 3: Wrapped mode or fallback
           if [ -z "$configDir" ]; then
             if [ "${toString (settings.wrapRc or true)}" = "true" ]; then
@@ -226,7 +226,7 @@
             else
               # Fallback: use/create home directory config
               configDir="$HOME/.config/${settings.configDirName or "nixCats-fish"}"
-              
+
               # Seed config directory if it doesn't exist
               if [ ! -d "$configDir" ]; then
                 echo "Seeding nixCats-fish config at: $configDir"
