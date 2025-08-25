@@ -23,7 +23,7 @@ in {
       ];
 
     # Override the basic blesh configuration from bash/config with full contrib setup
-    home.file.".local/state/profile-sources/blesh.sh" = lib.mkForce {
+    home.file.".local/share/rc/blesh.sh" = lib.mkForce {
       text = ''
         # ble.sh line editor configuration with contrib extensions
         if [ -n "''${PS1:-}" ] && [ -f "${pkgs.unstable.blesh}/share/blesh/ble.sh" ]; then

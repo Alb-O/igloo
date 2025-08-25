@@ -206,9 +206,9 @@
         ;;
       esac
 
-      # Source all files from profile sources directory for easy reloading
-      if [ -d "$HOME/.local/state/profile-sources" ]; then
-        for file in "$HOME/.local/state/profile-sources"/*.sh; do
+      # Source all files from rc directory for easy reloading
+      if [ -d "$HOME/.local/share/rc" ]; then
+        for file in "$HOME/.local/share/rc"/*.sh; do
           [ -r "$file" ] && [ -f "$file" ] && . "$file"
         done
       fi

@@ -33,8 +33,8 @@ in {
       FZF_CTRL_T_COMMAND = "rg --files";
     };
 
-    # Write fzf configuration to profile sources directory for easy sourcing
-    home.file.".local/state/profile-sources/fzf.sh".text = ''
+    # Write fzf configuration to rc directory for easy sourcing
+    home.file.".local/share/rc/fzf.sh".text = ''
       # FZF configuration
       if command -v fzf >/dev/null 2>&1; then
         export FZF_DEFAULT_OPTS="${lib.concatStringsSep " " fzfOptions}"

@@ -26,7 +26,7 @@
     programs.bash.enable = lib.mkIf config.igloo.bash.enable (lib.mkForce false);
 
     # Basic blesh configuration (only if blesh contrib module is disabled)
-    home.file.".local/state/profile-sources/blesh.sh" = lib.mkIf (config.igloo.bash.enable && !config.igloo.bash.blesh.enable) {
+    home.file.".local/share/rc/blesh.sh" = lib.mkIf (config.igloo.bash.enable && !config.igloo.bash.blesh.enable) {
       text = ''
         # Basic ble.sh line editor configuration
         if [ -n "''${PS1:-}" ] && [ -f "${pkgs.unstable.blesh}/share/blesh/ble.sh" ]; then

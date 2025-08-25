@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   models-dev,
 }: let
-  version = "0.5.13";
+  version = "0.5.24";
 
   # Target mapping for bun --target
   bunTarget =
@@ -28,7 +28,7 @@
     repo = "opencode";
     rev = "v${version}";
     # Upstream source tarball hash
-    hash = "sha256-CzVzBvuK/RRYxFA4wOhkIXuXjoxWHHRnzUpGuvl9kQU=";
+    hash = "sha256-HGEBRmtmMDLW71AVWrgrEjVrYPsviYQwWbAqgjwQRCY=";
   };
 
   # Build TUI (Go) first
@@ -38,7 +38,7 @@
 
     modRoot = "packages/tui";
     # Go modules vendor hash
-    vendorHash = "sha256-acDXCL7ZQYW5LnEqbMgDwpTbSgtf4wXnMMVtQI1Dv9s=";
+    vendorHash = "sha256-78MfWF0HSeLFLGDr1Zh74XeyY71zUmmazgG2MnWPucw=";
     subPackages = ["cmd/opencode"];
     env.CGO_ENABLED = 0;
     ldflags = [
@@ -72,7 +72,7 @@
     '';
     dontFixup = true;
     # Node modules fixed-output hash
-    outputHash = "sha256-c7RKGylufbE2NTFIzQft3TD1Nn3TxHKGJwZtJPf698Y=";
+    outputHash = "sha256-N6un5+Bb39+0WLcAVUGUR4+69aL9bhxZSqfgPCtM7Pw=";
     outputHashMode = "recursive";
   };
 in
