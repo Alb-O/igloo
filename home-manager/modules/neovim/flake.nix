@@ -7,22 +7,29 @@
     neovim-nightly-overlay.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, neovim-nightly-overlay }:
-    let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-    in
-    {
-      homeManagerModules.default = { config, pkgs, lib, ... }: {
-        # Apply neovim nightly overlay
-        nixpkgs.overlays = [ neovim-nightly-overlay.overlays.default ];
+  outputs = {
+    self,
+    nixpkgs,
+    neovim-nightly-overlay,
+  }: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in {
+    homeManagerModules.default = {
+      config,
+      pkgs,
+      lib,
+      ...
+    }: {
+      # Apply neovim nightly overlay
+      nixpkgs.overlays = [neovim-nightly-overlay.overlays.default];
 
-        # Configure neovim
-        programs.neovim = {
-          enable = true;
-          package = pkgs.neovim;
-          defaultEditor = true;
-        };
+      # Configure neovim
+      programs.neovim = {
+        enable = true;
+        package = pkgs.neovim;
+        defaultEditor = true;
       };
     };
+  };
 }

@@ -7,4 +7,4 @@ let
     neovim-nightly-overlay = builtins.getFlake "github:nix-community/neovim-nightly-overlay";
   };
 in
-neovim-module.homeManagerModules.default
+  neovim-module.homeManagerModules.default

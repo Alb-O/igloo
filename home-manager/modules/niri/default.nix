@@ -7,4 +7,4 @@ let
     niri = builtins.getFlake "github:sodiboo/niri-flake";
   };
 in
-niri-module.homeManagerModules.default
+  niri-module.homeManagerModules.default
