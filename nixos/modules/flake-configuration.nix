@@ -2,6 +2,7 @@
 {
   inputs,
   lib,
+  globals,
   ...
 }: {
   nix = let
@@ -14,6 +15,9 @@
       flake-registry = "";
       # Workaround for https://github.com/NixOS/nix/issues/9574
       # nix-path = config.nix.nixPath;
+      
+      # Add user as trusted for binary caches
+      trusted-users = ["root" globals.user.username];
     };
     # Opinionated: disable channels
     channel.enable = false;

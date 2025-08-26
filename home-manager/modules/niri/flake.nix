@@ -39,8 +39,8 @@
 
       # Enable binary cache for niri
       nix.settings = {
-        substituters = lib.mkAfter ["https://niri.cachix.org"];
-        trusted-public-keys = lib.mkAfter ["niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl5me6UKLqjlUKjpj9EQ="];
+        substituters = lib.mkAfter ["https://cache.nixos.org" "https://niri.cachix.org"];
+        trusted-public-keys = lib.mkAfter ["cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl5me6UKLqjlUKjpj9EQ="];
       };
 
       # Apply niri overlay
