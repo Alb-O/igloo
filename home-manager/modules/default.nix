@@ -28,8 +28,7 @@
         ./mako.nix
         ./firefox
         ./sillytavern.nix
-        ./foot.nix
-        ./foot-server.nix
+        ./kitty.nix
         ./polkit.nix
         ./clipboard.nix
       ]

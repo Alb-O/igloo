@@ -64,9 +64,6 @@
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)
       hyprpicker
-      foot
-      kitty
-      windowtolayer
       hydrus
       vesktop
       xdg-desktop-portal-termfilechooser

@@ -5,7 +5,7 @@
     wget
     just
     firefox
-    foot
+    kitty
     helix
     # Display manager
     sddm-astronaut

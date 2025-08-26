@@ -5,7 +5,7 @@
     {
       matches = [
         {
-          app-id = "foot";
+          app-id = "kitty";
           title = "XDG File Picker";
         }
       ];

@@ -33,6 +33,6 @@ in {
 
   # Default applications
   editor = "nvim";
-  terminal = "footclient";
+  terminal = "kitty";
   browser = "firefox";
 }
