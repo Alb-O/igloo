@@ -1,16 +1,10 @@
-{
-pkgs,
-...
-}:
+# Neovim Configuration
+# Self-contained module using sub-flake for nightly overlay
 let
-  neovim-nightly = (import (builtins.fetchTarball {
-    url = "https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz";
-  })) pkgs pkgs;
-in
-{
-  programs.neovim = {
-    enable = true;
-    package = neovim-nightly.neovim;
-    defaultEditor = true;
+  neovim-module = (import ./flake.nix).outputs {
+    self = null;
+    nixpkgs = import <nixpkgs> {};
+    neovim-nightly-overlay = builtins.getFlake "github:nix-community/neovim-nightly-overlay";
   };
-}
+in
+neovim-module.homeManagerModules.default

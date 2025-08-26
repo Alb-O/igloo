@@ -13,9 +13,6 @@
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Niri flake
-    niri-flake.url = "github:sodiboo/niri-flake";
-
     # NixOS-WSL for Windows Subsystem for Linux support
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +22,6 @@
     self,
     nixpkgs,
     home-manager,
-    niri-flake,
     nixos-wsl,
     ...
   } @ inputs: let
@@ -145,18 +141,11 @@
         };
         modules = [
           ./home-manager/home.nix
-          niri-flake.homeModules.config
         ];
       };
     };
 
     # Export custom packages
     packages = forAllSystems (system: import ./home-manager/pkgs (pkgsFor system));
-
-    # Optionally, add Cachix binary cache for claude-code
-    nixConfig = {
-      substituters = ["https://claude-code.cachix.org"];
-      trusted-public-keys = ["claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk="];
-    };
   };
 }
