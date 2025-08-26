@@ -9,9 +9,8 @@
     markdownlint-cli # Markdown linter
     pandoc # Document converter
 
-    # Preview and utilities
-    glow # Terminal markdown viewer
-    mdcat # Markdown viewer with syntax highlighting
+    # Preview
+    glow
 
     # Spell checking
     hunspell

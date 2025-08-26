@@ -61,7 +61,7 @@
     # will not apply to module imports
     # as that will have your system values
     extra_pkg_config = {
-      # allowUnfree = true;
+      allowUnfree = true;
     };
     # management of the system variable is one of the harder parts of using flakes.
 
@@ -143,6 +143,9 @@
           inherit (pkgs) nix-doc lua-language-server nixd;
           # and each will be its own sub category
         };
+        ai = with pkgs; [
+          copilot-language-server-fhs
+        ];
       };
 
       # This is for plugins that will load at startup without using packadd:
@@ -258,6 +261,9 @@
             # pkgs.neovimPlugins.hlargs
           ];
         };
+        ai = with pkgs.vimPlugins; [
+          copilot-vim
+        ];
       };
 
       # shared libraries to be added to LD_LIBRARY_PATH
@@ -375,6 +381,7 @@
           lint = true;
           format = true;
           neonixdev = true;
+          ai = true;
           test = {
             subtest1 = true;
           };
