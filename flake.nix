@@ -19,15 +19,6 @@
     # NixOS-WSL for Windows Subsystem for Linux support
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
-
-    # Neovim nixCats flake
-    nixCats-nvim.url = "path:./flakes/nixCats-nvim";
-
-    # Bash nixCats flake (ble.sh + XDG config)
-    nixCats-bash.url = "path:./flakes/nixCats-bash";
-
-    # Fish nixCats flake (modern Fish shell + fzf integration)
-    nixCats-fish.url = "path:./flakes/nixCats-fish";
   };
 
   outputs = {
@@ -36,9 +27,6 @@
     home-manager,
     niri-flake,
     nixos-wsl,
-    nixCats-nvim,
-    nixCats-bash,
-    nixCats-fish,
     ...
   } @ inputs: let
     inherit (self) outputs;

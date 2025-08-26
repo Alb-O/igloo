@@ -21,9 +21,6 @@
   # Enable tmux fzf-tools even in non-graphical environments
   igloo.tmux.pickers.enable = true;
 
-  # Enable nixCats-fish for modern shell experience
-  igloo.nixCats-fish.enable = true;
-
   # Basic user information
   home = {
     username = globals.user.username;
@@ -56,10 +53,6 @@
       unipicker
       nodejs
       gcc
-      # NixCats neovim configuration
-      inputs.nixCats-nvim.packages.${pkgs.system}.nixCats
-      # NixCats bash (ble.sh) wrapper
-      inputs.nixCats-bash.packages.${pkgs.system}.nixCats-bash
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)
@@ -228,7 +221,7 @@
         ;;
       esac
 
-      # Source all files from rc directory for easy reloading
+      # Source all files from rc directory
       if [ -d "$HOME/.local/share/rc" ]; then
         for file in "$HOME/.local/share/rc"/*.sh; do
           [ -r "$file" ] && [ -f "$file" ] && . "$file"
