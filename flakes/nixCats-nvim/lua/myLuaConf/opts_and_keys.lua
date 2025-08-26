@@ -29,14 +29,25 @@ vim.wo.number = true
 vim.o.mouse = 'a'
 
 -- Indent
--- vim.o.smarttab = true
 vim.opt.cpoptions:append('I')
 vim.o.expandtab = true
--- vim.o.smartindent = true
--- vim.o.autoindent = true
--- vim.o.tabstop = 4
--- vim.o.softtabstop = 4
--- vim.o.shiftwidth = 4
+vim.o.smartindent = true
+vim.o.autoindent = true
+-- Set default indentation to 2 spaces
+vim.o.tabstop = 2
+vim.o.softtabstop = 2
+vim.o.shiftwidth = 2
+
+-- Nix-specific indentation
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "nix",
+  callback = function()
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end,
+})
 
 -- stops line wrapping from being confusing
 vim.o.breakindent = true
