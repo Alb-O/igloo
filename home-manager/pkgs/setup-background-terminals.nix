@@ -12,17 +12,12 @@
         exit 1
     fi
 
-    echo "Found monitors: $MONITORS"
-
     # For each monitor, create a background terminal using kitten panel
     for MONITOR in $MONITORS; do
-        echo "Setting up background terminal on monitor: $MONITOR"
-
         # Use kitten panel to spawn background terminal with tmux
-        WAYLAND_DISPLAY="$WAYLAND_DISPLAY" ${pkgs.kitty}/bin/kitten panel --edge=background ${pkgs.tmux}/bin/tmux &
+        ${pkgs.kitty}/bin/kitten panel --output-name $MONITOR --focus-policy on-demand --detach=yes --edge=background
     done
     wait
-    echo "Background terminal setup complete"
   '';
 in
   setupScript
