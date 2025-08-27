@@ -29,6 +29,21 @@
         enable = true;
         package = pkgs.neovim;
         defaultEditor = true;
+        
+        # LSP servers and development tools
+        extraPackages = with pkgs; [
+          # LSP servers
+          lua-language-server        # luals
+          nixd                       # nix
+          rust-analyzer              # rust
+          pyright                    # python
+          typescript-language-server # typescript/javascript
+          
+          # Additional tools
+          ripgrep               # for telescope
+          fd                    # for telescope
+          nodejs                # for many LSPs
+        ];
       };
     };
   };
