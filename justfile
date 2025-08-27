@@ -236,7 +236,7 @@ init:
 # SHELLS - Alternative Shell Environments  
 # ========================================
 
-# Launch nixCats-fish (modern Fish shell with fzf integration)  
+# Launch nixCats-fish (modern Fish shell)  
 fish:
     #!/usr/bin/env bash
     # Auto-discover nixCats-fish config location

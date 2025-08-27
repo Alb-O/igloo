@@ -13,7 +13,6 @@
       ./shell-tools.nix
       ./mako.nix
       ./git.nix
-      ./fzf
       ./yazi
       ./codex.nix
       ./languages

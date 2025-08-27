@@ -1,3 +1,0 @@
-[submodule "flakes/nixCats-bash/rc/blesh-contrib"]
-	path = flakes/nixCats-bash/rc/blesh-contrib
-	url = https://github.com/akinomyoga/blesh-contrib
