@@ -37,6 +37,7 @@
       ffmpeg
       yt-dlp
       ripgrep
+      skim
       fd
       file
       unison
@@ -72,7 +73,6 @@
         '';
       })
       pkgs.opencode-src
-      pkgs.file-preview
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Custom graphical packages

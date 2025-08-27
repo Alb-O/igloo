@@ -11,7 +11,7 @@
       ../lib/fonts.nix
       ./bash
       ./shell-tools.nix
-      ./broot
+      ./mako.nix
       ./git.nix
       ./fzf
       ./yazi
@@ -24,7 +24,6 @@
       if globals.system.isGraphical
       then [
         ./niri
-        ./mako.nix
         ./firefox
         ./sillytavern.nix
         ./kitty.nix
