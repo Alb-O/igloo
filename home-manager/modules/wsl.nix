@@ -116,23 +116,5 @@ in {
         credential.helper = "/mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe";
       };
     };
-
-    # Configure tmux for WSL
-    programs.tmux = lib.mkIf config.programs.tmux.enable {
-      extraConfig = ''
-        # WSL-specific tmux configuration
-
-        # Use Windows clipboard for copy operations
-        if-shell 'test -f /mnt/c/Windows/System32/clip.exe' \
-          'bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "${windowsClipboard}/bin/wsl-clipboard copy"'
-
-        # Set terminal title properly in WSL
-        set-option -g set-titles on
-        set-option -g set-titles-string '#T - #W'
-
-        # Handle focus events from Windows Terminal
-        set-option -g focus-events on
-      '';
-    };
   };
 }

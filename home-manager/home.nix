@@ -17,9 +17,6 @@
     # inputs.nix-colors.homeManagerModules.default
   ];
 
-  # Enable tmux fzf-tools even in non-graphical environments
-  igloo.tmux.pickers.enable = true;
-
   # Basic user information
   home = {
     username = globals.user.username;

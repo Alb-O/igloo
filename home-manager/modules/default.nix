@@ -13,7 +13,6 @@
       ./shell-tools.nix
       ./broot
       ./git.nix
-      ./tmux
       ./fzf
       ./yazi
       ./codex.nix
