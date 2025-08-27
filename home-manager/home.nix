@@ -72,6 +72,14 @@
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
       })
+      # Custom packages
+      (pkgs.writeShellApplication {
+        name = "gemini";
+        runtimeInputs = [pkgs.nodejs];
+        text = ''
+          exec ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@"
+        '';
+      })
       pkgs.opencode-src
     ]
     ++ lib.optionals globals.system.isGraphical [
