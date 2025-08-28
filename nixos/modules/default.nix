@@ -20,5 +20,11 @@
     );
 
   # Set environment variables for system-wide use
-  environment.sessionVariables = globals.env or {};
+  environment.sessionVariables = {
+    TIMEZONE = globals.env.timezone;
+    DEFAULT_LOCALE = globals.env.locale;
+    LC_LOCALE = globals.env.locale;
+    HOSTNAME = globals.env.hostname;
+    USERNAME = globals.env.username;
+  };
 }

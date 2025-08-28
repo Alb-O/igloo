@@ -139,7 +139,7 @@ home-check:
         source .env
         set +a
     fi
-    nix flake check --impure .#homeConfigurations
+    nix flake check --impure
 
 # List home-manager generations
 home-generations:

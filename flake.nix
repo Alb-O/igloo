@@ -26,6 +26,10 @@
     ...
   } @ inputs: let
     inherit (self) outputs;
+    
+    # Single source of environment configuration
+    env = import ./lib/env.nix;
+    
     # Supported systems for your flake packages, shell, etc.
     systems = [
       "x86_64-linux"
@@ -66,9 +70,9 @@
       }:
         nixpkgs.lib.nixosSystem {
           specialArgs = {
-            inherit inputs outputs;
+            inherit inputs outputs env;
             globals = import ./lib/globals.nix {
-              inherit userProfile hostProfile;
+              inherit env userProfile hostProfile;
             };
           };
           modules = modules;
@@ -92,50 +96,31 @@
       };
 
       # Get current machine configuration
-      machineId = let
-        id = builtins.getEnv "MACHINE_ID";
-      in
-        if id != ""
-        then id
-        else "desktop";
-      currentHostname = let
-        h = builtins.getEnv "HOSTNAME";
-      in
-        if h != ""
-        then h
-        else "desktop";
-      currentConfig = machineConfigs.${machineId} or machineConfigs.desktop;
+      currentConfig = machineConfigs.${env.machineId} or machineConfigs.desktop;
     in ({
         # Generic configuration types for reference
         desktop = mkSystem machineConfigs.desktop;
         server = mkSystem machineConfigs.server;
       }
-      // nixpkgs.lib.optionalAttrs (currentHostname != "desktop" && currentHostname != "server") {
+      // nixpkgs.lib.optionalAttrs (env.hostname != "desktop" && env.hostname != "server") {
         # Current hostname configuration (only if different from generic names)
-        ${currentHostname} = mkSystem currentConfig;
+        ${env.hostname} = mkSystem currentConfig;
       });
 
     # Home Manager configurations
     homeConfigurations = let
-      # Load dynamic user configuration from .env file
-      envConfig = import ./home-manager/lib/env-loader.nix;
       pkgs = pkgsFor "x86_64-linux";
 
       # User globals configuration
       homeGlobals = import ./home-manager/lib/globals.nix {
-        inherit (envConfig) username;
-        name = envConfig.fullName;
-        email = envConfig.email;
-        hostname = envConfig.hostname;
-        # Disable graphical features in WSL
-        isGraphical = !envConfig.isWSL;
+        inherit env;
       };
     in {
       # Primary configuration with user@hostname
-      "${envConfig.username}@${envConfig.hostname}" = home-manager.lib.homeManagerConfiguration {
+      "${env.username}@${env.hostname}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         extraSpecialArgs = {
-          inherit inputs;
+          inherit inputs env;
           outputs = self;
           globals = homeGlobals;
         };

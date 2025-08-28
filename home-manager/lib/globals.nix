@@ -1,27 +1,21 @@
 {
-  username,
-  name,
-  email,
-  hostname,
-  architecture ? "x86_64-linux",
-  stateVersion ? "25.05",
-  isGraphical ? true,
+  env,
 }: let
-  homeDir = "/home/${username}";
+  homeDir = "/home/${env.username}";
   configDir = "${homeDir}/.config/home-manager";
 in {
   user = {
-    inherit username name email;
+    username = env.username;
+    name = env.fullName;
+    email = env.email;
     homeDirectory = homeDir;
   };
 
   system = {
-    inherit
-      hostname
-      architecture
-      stateVersion
-      isGraphical
-      ;
+    hostname = env.hostname;
+    architecture = "x86_64-linux";
+    stateVersion = "25.05";
+    isGraphical = env.isGraphical;
   };
 
   dirs = {

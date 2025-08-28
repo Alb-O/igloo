@@ -28,21 +28,28 @@
   networking.networkmanager.enable = true;
 
   # Set your time zone.
-  time.timeZone = globals.env.TIMEZONE or "UTC";
+  time.timeZone = globals.env.timezone;
 
   # Select internationalisation properties.
-  i18n.defaultLocale = globals.env.DEFAULT_LOCALE or "en_US.UTF-8";
+  i18n.defaultLocale = globals.env.locale;
+
+  # Generate all locales needed
+  i18n.supportedLocales = [
+    "en_US.UTF-8/UTF-8"
+    "en_AU.UTF-8/UTF-8"
+    "C.UTF-8/UTF-8"
+  ];
 
   i18n.extraLocaleSettings = {
-    LC_ADDRESS = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_IDENTIFICATION = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_MEASUREMENT = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_MONETARY = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_NAME = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_NUMERIC = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_PAPER = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_TELEPHONE = globals.env.LC_LOCALE or "en_US.UTF-8";
-    LC_TIME = globals.env.LC_LOCALE or "en_US.UTF-8";
+    LC_ADDRESS = globals.env.locale;
+    LC_IDENTIFICATION = globals.env.locale;
+    LC_MEASUREMENT = globals.env.locale;
+    LC_MONETARY = globals.env.locale;
+    LC_NAME = globals.env.locale;
+    LC_NUMERIC = globals.env.locale;
+    LC_PAPER = globals.env.locale;
+    LC_TELEPHONE = globals.env.locale;
+    LC_TIME = globals.env.locale;
   };
 
   # Configure console keymap
