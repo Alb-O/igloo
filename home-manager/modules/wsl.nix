@@ -83,22 +83,6 @@ in {
       "pbcopy" = "${windowsClipboard}/bin/wsl-clipboard copy";
       "pbpaste" = "${windowsClipboard}/bin/wsl-clipboard paste";
       "clip" = "${windowsClipboard}/bin/wsl-clipboard copy";
-
-      # Windows integration
-      "open" = ''f() { /mnt/c/Windows/System32/cmd.exe /c start "$(wslpath -w "$1")" 2>/dev/null & }; f'';
-      "explorer" = ''f() { /mnt/c/Windows/explorer.exe "$(wslpath -w "''${1:-.}")" 2>/dev/null & }; f'';
-      "notepad" = ''f() { /mnt/c/Windows/System32/notepad.exe "$(wslpath -w "$1")" 2>/dev/null & }; f'';
-
-      # Quick Windows navigation
-      "cdhome" = "cd /mnt/c/Users/$USER";
-      "cddownloads" = "cd /mnt/c/Users/$USER/Downloads";
-      "cddesktop" = "cd /mnt/c/Users/$USER/Desktop";
-      "cddocuments" = "cd /mnt/c/Users/$USER/Documents";
-
-      # Windows tools
-      "cmd" = "/mnt/c/Windows/System32/cmd.exe";
-      "powershell" = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
-      "pwsh" = "powershell.exe"; # Modern PowerShell if installed
     };
 
     # Git configuration for WSL

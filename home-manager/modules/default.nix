@@ -18,6 +18,8 @@
       ./languages
       ./wsl.nix
       ./neovim
+      ./atuin.nix
+      ./fish
     ]
     ++ (
       if globals.system.isGraphical

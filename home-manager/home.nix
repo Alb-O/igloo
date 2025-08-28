@@ -38,6 +38,7 @@
       yt-dlp
       ripgrep
       skim
+      atuin
       fd
       file
       unison
@@ -49,6 +50,7 @@
       unipicker
       nodejs
       gcc
+      gnumake
     ]
     ++ lib.optionals globals.system.isGraphical [
       # Graphical Tools (only when isGraphical = true)
@@ -222,6 +224,11 @@
 
           # XDG-compliant aliases
           alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
+
+          # Launch fish if available and not already in fish
+          if command -v fish >/dev/null 2>&1 && [ "$0" != "fish" ] && [ -z "$FISH_VERSION" ]; then
+            exec fish
+          fi
         ;;
       esac
 
@@ -235,3 +242,4 @@
     force = true;
   };
 }
+
