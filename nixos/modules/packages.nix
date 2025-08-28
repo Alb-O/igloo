@@ -6,8 +6,6 @@
     just
     firefox
     kitty
-    helix
-    # Display manager
-    sddm-astronaut
+    neovim
   ];
 }
