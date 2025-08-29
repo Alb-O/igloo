@@ -7,7 +7,7 @@
   boot.kernelParams = [
     "nvidia-drm.modeset=1"
     "nvidia-drm.fbdev=0"
-    # "nvidia.NVreg_PreserveVideoMemoryAllocations=1"  # Temporarily disabled due to display detection issues
+    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
   ];
   hardware.nvidia = {
     modesetting.enable = true;

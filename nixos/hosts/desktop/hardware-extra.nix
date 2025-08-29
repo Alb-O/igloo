@@ -11,31 +11,42 @@
     description = "Generate fancontrol config with correct hwmon indices";
     wantedBy = ["multi-user.target"];
     before = ["fancontrol.service"];
-    serviceConfig.Type = "oneshot";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
     script = ''
             set -e
-            # Find the hwmon index for nct6779
+            # Find the hwmon indices
+            nct_idx=""
+            k10temp_idx=""
             for d in /sys/class/hwmon/hwmon*/name; do
-              if grep -q nct6779 "$d"; then
-                idx=$(basename $(dirname "$d"))
-                break
-              fi
+              name=$(cat "$d")
+              idx=$(basename $(dirname "$d"))
+              case "$name" in
+                nct6779) nct_idx="$idx" ;;
+                k10temp) k10temp_idx="$idx" ;;
+              esac
             done
-            if [ -z "$idx" ]; then
+            if [ -z "$nct_idx" ]; then
               echo "nct6779 hwmon device not found!" >&2
+              exit 1
+            fi
+            if [ -z "$k10temp_idx" ]; then
+              echo "k10temp hwmon device not found!" >&2
               exit 1
             fi
             cat > /run/fancontrol.conf <<EOF
       # Generated at boot
       INTERVAL=10
-      DEVPATH=hwmon1=devices/pci0000:00/0000:00:18.3 $idx=devices/platform/nct6775.656
-      DEVNAME=hwmon1=k10temp $idx=nct6779
-      FCTEMPS=$idx/pwm2=hwmon1/temp1_input $idx/pwm3=hwmon1/temp1_input
-      FCFANS=$idx/pwm2=$idx/fan2_input
-      MINTEMP=$idx/pwm2=65 $idx/pwm3=65
-      MAXTEMP=$idx/pwm2=90 $idx/pwm3=90
-      MINSTART=$idx/pwm2=30 $idx/pwm3=30
-      MINSTOP=$idx/pwm2=20 $idx/pwm3=20
+      DEVPATH=$k10temp_idx=devices/pci0000:00/0000:00:18.3 $nct_idx=devices/platform/nct6775.656
+      DEVNAME=$k10temp_idx=k10temp $nct_idx=nct6779
+      FCTEMPS=$nct_idx/pwm2=$k10temp_idx/temp1_input $nct_idx/pwm3=$k10temp_idx/temp1_input
+      FCFANS=$nct_idx/pwm2=$nct_idx/fan2_input
+      MINTEMP=$nct_idx/pwm2=65 $nct_idx/pwm3=65
+      MAXTEMP=$nct_idx/pwm2=90 $nct_idx/pwm3=90
+      MINSTART=$nct_idx/pwm2=30 $nct_idx/pwm3=30
+      MINSTOP=$nct_idx/pwm2=20 $nct_idx/pwm3=20
       EOF
     '';
   };
