@@ -31,7 +31,6 @@
       ffmpeg
       yt-dlp
       ripgrep
-      skim
       atuin
       fd
       file
@@ -149,37 +148,6 @@
          [ -e "''${HISTFILE}" ] || : > "''${HISTFILE}"
       fi
 
-      # nixCats-bash defaults (dynamic discovery)
-      if [ -z "''${NIXCATS_BASH_DIR:-}" ]; then
-        # Try to find nixCats-bash config dynamically
-        for candidate in \
-          "''${FLAKE_ROOT:-}/flakes/nixCats-bash/rc" \
-          "./flakes/nixCats-bash/rc" \
-          "../flakes/nixCats-bash/rc" \
-          "$HOME/.config/nixCats-bash"; do
-          if [ -d "$candidate" ]; then
-            export NIXCATS_BASH_DIR="$candidate"
-            break
-          fi
-        done
-      fi
-      if [ -z "''${NIXCATS_BASH_THEME:-}" ]; then
-        export NIXCATS_BASH_THEME="catppuccin-mocha"
-      fi
-
-      # Auto-discover flake root if not set (for nixCats configs)
-      if [ -z "''${FLAKE_ROOT:-}" ]; then
-        # Try to find flake root by looking for flake.nix
-        current_dir="$(pwd)"
-        while [ "$current_dir" != "/" ]; do
-          if [ -f "$current_dir/flake.nix" ]; then
-            export FLAKE_ROOT="$current_dir"
-            break
-          fi
-          current_dir="$(dirname "$current_dir")"
-        done
-      fi
-
        # Add Windows PATH for WSL interoperability
        if [ "''${IS_WSL:-}" = "true" ]; then
          WIN_PATHS="/mnt/c/Windows/System32:/mnt/c/Windows:/mnt/c/Windows/System32/Wbem:/mnt/c/Windows/System32/WindowsPowerShell/v1.0"
@@ -193,6 +161,13 @@
            *) export PATH="$PATH:$WIN_PATHS" ;;
          esac
        fi
+
+      # Source all files from rc directory
+      if [ -d "$HOME/.local/share/rc" ]; then
+        for file in "$HOME/.local/share/rc"/*.sh; do
+          [ -r "$file" ] && [ -f "$file" ] && . "$file"
+        done
+      fi
 
       # Interactive-only setup
       case $- in
@@ -212,13 +187,6 @@
           fi
         ;;
       esac
-
-      # Source all files from rc directory
-      if [ -d "$HOME/.local/share/rc" ]; then
-        for file in "$HOME/.local/share/rc"/*.sh; do
-          [ -r "$file" ] && [ -f "$file" ] && . "$file"
-        done
-      fi
     '';
     force = true;
   };

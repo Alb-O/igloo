@@ -27,6 +27,7 @@ in {
       ./wsl.nix
       ./neovim
       ./atuin.nix
+      ./fzf.nix
       ./fish
     ]
     ++ (
