@@ -1,10 +1,5 @@
 # Nix flakes configuration
-{
-  inputs,
-  lib,
-  globals,
-  ...
-}: {
+{ inputs, lib, user, ... }: {
   nix = let
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
@@ -17,7 +12,7 @@
       # nix-path = config.nix.nixPath;
 
       # Add user as trusted for binary caches
-      trusted-users = ["root" globals.user.username];
+      trusted-users = ["root" user.username];
     };
     # Opinionated: disable channels
     channel.enable = false;

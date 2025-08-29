@@ -50,7 +50,7 @@ while (( tries < max_tries )); do
   tries=$((tries+1))
   echo "Build attempt $tries…" >&2
   set +e
-  out=$(nix build .#opencode-src --impure 2>&1)
+  out=$(nix build .#opencode-src 2>&1)
   code=$?
   set -e
 
@@ -91,4 +91,3 @@ if (( tries == max_tries )); then
 fi
 
 echo "Done. You can now run: just home-switch" >&2
-

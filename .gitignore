@@ -1,5 +1,4 @@
-/.env
-*.local.*
-.last_flake_update
-/secrets/
+/secrets
 /tmp
+nixos/hosts/local.nix
+users.local.nix

@@ -6,6 +6,7 @@
     just
     firefox
     kitty
+    alacritty
     neovim
   ];
 }

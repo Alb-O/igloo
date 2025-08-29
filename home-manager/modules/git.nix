@@ -1,14 +1,8 @@
-{
-  pkgs,
-  lib,
-  globals,
-  inputs,
-  ...
-}: {
+{ pkgs, lib, user, prefs, inputs, ... }: {
   programs.git = {
     enable = true;
-    userName = globals.user.name;
-    userEmail = globals.user.email;
+    userName = user.name;
+    userEmail = user.email;
 
     aliases = {
       # Compound commands
@@ -26,7 +20,7 @@
         # Core settings
         init.defaultBranch = "main";
         core = {
-          editor = globals.editor;
+          editor = prefs.editor;
           autocrlf = false;
           safecrlf = true;
           filemode = true;
@@ -81,26 +75,7 @@
         # GitHub CLI credential helpers
         credential."https://github.com".helper = "${lib.getExe pkgs.gh} auth git-credential";
         credential."https://gist.github.com".helper = "${lib.getExe pkgs.gh} auth git-credential";
-      }
-      # Git signing configuration (if signing key is available in environment)
-      // (
-        let
-          signingKey = builtins.getEnv "SIGNING_KEY";
-        in
-          if signingKey != ""
-          then {
-            gpg = {
-              format = "ssh";
-            };
-            commit = {
-              gpgsign = true;
-            };
-            user = {
-              signingKey = signingKey;
-            };
-          }
-          else {}
-      );
+      };
 
     ignores = [
       # OS files

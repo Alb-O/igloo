@@ -18,7 +18,7 @@
     homeManagerModules.default = {
       config,
       pkgs,
-      globals,
+      prefs,
       lib,
       ...
     }: let
@@ -27,7 +27,7 @@
       outputsConfig = import ./outputs.nix;
       layoutConfig = import ./layout.nix {};
       bindsConfig = import ./binds.nix {
-        inherit config pkgs globals;
+        inherit config pkgs prefs;
       };
       windowRulesConfig = import ./window-rules.nix;
       miscConfig = import ./misc.nix;

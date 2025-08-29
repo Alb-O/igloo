@@ -6,12 +6,7 @@
 # - Clean WSL environment without graphical components
 # - Multi-user support via parameterized globals
 # - Bootstrap-ready for first run
-{
-  lib,
-  pkgs,
-  globals,
-  ...
-}: {
+{ lib, pkgs, user, host, ... }: {
   imports = [
     # Import our modular NixOS configuration
     ../../modules
@@ -28,7 +23,7 @@
     network = {
       generateHosts = true;
       generateResolvConf = true;
-      hostname = globals.system.hostname;
+      hostname = host.hostname;
     };
 
     # Boot configuration
@@ -78,12 +73,12 @@
   security.sudo.wheelNeedsPassword = false;
 
   # System configuration
-  system.stateVersion = globals.system.stateVersion;
-  networking.hostName = globals.system.hostname;
+  system.stateVersion = host.stateVersion;
+  networking.hostName = host.hostname;
 
   # Time zone and locale
-  time.timeZone = globals.env.timezone;
-  i18n.defaultLocale = globals.env.locale;
+  time.timeZone = host.timeZone;
+  i18n.defaultLocale = host.locale;
   
   # Generate all locales needed
   i18n.supportedLocales = [
@@ -93,19 +88,19 @@
   ];
   
   i18n.extraLocaleSettings = {
-    LC_ADDRESS = globals.env.locale;
-    LC_IDENTIFICATION = globals.env.locale;
-    LC_MEASUREMENT = globals.env.locale;
-    LC_MONETARY = globals.env.locale;
-    LC_NAME = globals.env.locale;
-    LC_NUMERIC = globals.env.locale;
-    LC_PAPER = globals.env.locale;
-    LC_TELEPHONE = globals.env.locale;
-    LC_TIME = globals.env.locale;
+    LC_ADDRESS = host.locale;
+    LC_IDENTIFICATION = host.locale;
+    LC_MEASUREMENT = host.locale;
+    LC_MONETARY = host.locale;
+    LC_NAME = host.locale;
+    LC_NUMERIC = host.locale;
+    LC_PAPER = host.locale;
+    LC_TELEPHONE = host.locale;
+    LC_TIME = host.locale;
   };
 
   # Platform configuration
-  nixpkgs.hostPlatform = globals.system.architecture;
+  nixpkgs.hostPlatform = host.architecture;
 
   # Enable experimental features (using mkForce to override module conflicts)
   nix.settings.experimental-features = lib.mkForce [

@@ -1,10 +1,4 @@
-{
-  pkgs,
-  config,
-  globals,
-  lib,
-  ...
-}: {
+{ pkgs, config, lib, ... }: {
   options.igloo.fish.enable =
     lib.mkEnableOption "Enable Fish shell configuration"
     // {

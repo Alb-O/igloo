@@ -1,9 +1,5 @@
 # Firefox configuration for WSL - headless/configuration-only setup
-{
-  lib,
-  globals,
-  ...
-}: let
+{ lib, user, ... }: let
   # Import modular configurations (same as main firefox module)
   policiesConfig = import ./policies.nix {};
   extensionsConfig = import ./extensions.nix {};
@@ -20,10 +16,10 @@ in {
       };
 
     # User profile configuration
-    profiles.${globals.user.username} = {
+    profiles.${user.username} = {
       id = 0;
       isDefault = true;
-      path = globals.user.username; # Explicitly set profile path
+      path = user.username; # Explicitly set profile path
 
       # Profile settings
       settings = profileConfig.profileSettings;

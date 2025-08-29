@@ -1,5 +1,5 @@
 # NixOS modules aggregation
-{globals, ...}: {
+{ host, ... }: {
   imports =
     [
       ./xdg.nix
@@ -12,19 +12,11 @@
     ]
     ++ (
       # Only import desktop modules for graphical systems
-      if globals.system.isGraphical
+      if host.isGraphical
       then [
         ./desktop.nix
       ]
       else []
     );
 
-  # Set environment variables for system-wide use
-  environment.sessionVariables = {
-    TIMEZONE = globals.env.timezone;
-    DEFAULT_LOCALE = globals.env.locale;
-    LC_LOCALE = globals.env.locale;
-    HOSTNAME = globals.env.hostname;
-    USERNAME = globals.env.username;
-  };
 }

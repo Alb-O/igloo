@@ -1,9 +1,5 @@
 # SillyTavern LLM frontend configuration
-{
-  pkgs,
-  globals,
-  ...
-}: {
+{ pkgs, dirs, ... }: {
   # Package installation
   home.packages = with pkgs.unstable; [
     sillytavern
@@ -13,7 +9,7 @@
   home.file.".local/bin/sillytavern-start" = {
     text = ''
       #!${pkgs.bash}/bin/bash
-      export SILLYTAVERN_DATAROOT="${globals.dirs.localShare}/sillytavern"
+      export SILLYTAVERN_DATAROOT="${dirs.localShare}/sillytavern"
       mkdir -p "$SILLYTAVERN_DATAROOT"
       cd ${pkgs.unstable.sillytavern}/opt/sillytavern
       exec ${pkgs.nodejs}/bin/node server.js "$@"
@@ -27,7 +23,7 @@
       name = "SillyTavern";
       comment = "LLM Frontend for Power Users";
       icon = "applications-games"; # Generic game icon, can be customized
-      exec = "kitty ${globals.dirs.localBin}/sillytavern-start";
+      exec = "kitty ${dirs.localBin}/sillytavern-start";
       categories = [
         "Network"
         "Chat"

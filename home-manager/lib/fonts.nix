@@ -1,9 +1,5 @@
 # Global font configuration
-{
-  pkgs,
-  globals,
-  ...
-}: let
+{ pkgs, ... }: let
   fontDefs = rec {
     mono = {
       name = "JetBrainsMono Nerd Font";

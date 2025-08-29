@@ -1,0 +1,11 @@
+{
+  # Define your primary user.
+  # Copy to lib/users.local.nix and edit the values (not tracked by git).
+  primary = rec {
+    username = "john";
+    name = "John Doe";
+    email = "johndoe@example.com";
+    homeDirectory = "/home/${username}";
+  };
+}
+

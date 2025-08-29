@@ -1,16 +1,10 @@
 # Home Manager configuration
 # Main entry point for user environment configuration
-{
-  pkgs,
-  lib,
-  inputs,
-  globals,
-  ...
-}: {
+{ pkgs, lib, inputs, user, host, ... }: {
   # Import modular configuration
   imports = [
     # Custom modules
-    (import ./modules {inherit inputs globals;})
+    ./modules
 
     # Example external modules (commented out):
     # outputs.homeManagerModules.example
@@ -19,8 +13,8 @@
 
   # Basic user information
   home = {
-    username = globals.user.username;
-    homeDirectory = globals.user.homeDirectory;
+    username = user.username;
+    homeDirectory = user.homeDirectory;
   };
 
   # User packages
@@ -52,7 +46,7 @@
       gcc
       gnumake
     ]
-    ++ lib.optionals globals.system.isGraphical [
+    ++ lib.optionals host.isGraphical [
       # Graphical Tools (only when isGraphical = true)
       hyprpicker
       hydrus
@@ -84,7 +78,7 @@
       })
       pkgs.opencode-src
     ]
-    ++ lib.optionals globals.system.isGraphical [
+    ++ lib.optionals host.isGraphical [
       # Custom graphical packages
       pkgs.blender-daily
       pkgs.setup-background-terminals
@@ -92,21 +86,8 @@
 
   # State version - don't change this
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = globals.system.stateVersion;
+  home.stateVersion = host.stateVersion;
 
-  # Environment variables from .env file (loaded during build)
-  home.sessionVariables =
-    {
-      COPILOT_API_KEY = builtins.getEnv "COPILOT_API_KEY";
-      COPILOT_MODEL = builtins.getEnv "COPILOT_MODEL";
-      HANDLER = builtins.getEnv "HANDLER";
-    }
-    // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_DIR" != "") {
-      NIXCATS_BASH_DIR = builtins.getEnv "NIXCATS_BASH_DIR";
-    })
-    // (lib.optionalAttrs (builtins.getEnv "NIXCATS_BASH_THEME" != "") {
-      NIXCATS_BASH_THEME = builtins.getEnv "NIXCATS_BASH_THEME";
-    });
 
   # Ensure login shells source Home Manager session vars from XDG-friendly paths
   # and avoid legacy ~/.nix-profile references.
@@ -242,4 +223,3 @@
     force = true;
   };
 }
-

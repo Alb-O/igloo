@@ -1,10 +1,4 @@
-{
-  pkgs,
-  lib,
-  globals,
-  config,
-  ...
-}: {
+{ pkgs, lib, config, ... }: {
   options.igloo.yazi.enable =
     lib.mkEnableOption "Enable yazi file manager with sane defaults"
     // {

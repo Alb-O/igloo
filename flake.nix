@@ -1,5 +1,5 @@
 {
-  description = "Dynamic NixOS configuration with environment-based secrets management";
+  description = "Pure NixOS + Home Manager configuration (no env-based eval)";
 
   inputs = {
     # Nixpkgs
@@ -26,9 +26,6 @@
     ...
   } @ inputs: let
     inherit (self) outputs;
-    
-    # Single source of environment configuration
-    env = import ./lib/env.nix;
     
     # Supported systems for your flake packages, shell, etc.
     systems = [
@@ -60,7 +57,10 @@
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#configuration-name'
     nixosConfigurations = let
-      users = import ./lib/users.nix;
+      usersBase = import ./lib/users.nix;
+      usersLocal = if builtins.pathExists ./lib/users.local.nix then import ./lib/users.local.nix else {};
+      users = usersBase // usersLocal;
+      primaryUser = if users ? primary then users.primary else users.default;
       hosts = import ./lib/hosts.nix;
 
       mkSystem = {
@@ -70,65 +70,68 @@
       }:
         nixpkgs.lib.nixosSystem {
           specialArgs = {
-            inherit inputs outputs env;
-            globals = import ./lib/globals.nix {
-              inherit env userProfile hostProfile;
-            };
+            inherit inputs outputs;
+            user = userProfile;
+            host = hostProfile;
           };
           modules = modules;
         };
 
-      # Configuration mapping based on MACHINE_ID environment variable
-      machineConfigs = {
-        desktop = {
-          userProfile = users.default;
-          hostProfile = hosts.desktop;
-          modules = [./nixos/hosts/desktop/configuration.nix];
-        };
-        server = {
-          userProfile = users.admin;
-          hostProfile = hosts.server;
-          modules = [
-            ./nixos/hosts/server/configuration.nix
-            nixos-wsl.nixosModules.wsl
-          ];
-        };
+      desktopCfg = {
+        userProfile = primaryUser;
+        hostProfile = hosts.desktop;
+        modules = [
+          ./nixos/hosts/desktop/configuration.nix
+        ] ++ (nixpkgs.lib.optionals (builtins.pathExists ./nixos/hosts/local.nix) [
+          ./nixos/hosts/local.nix
+        ]);
       };
-
-      # Get current machine configuration
-      currentConfig = machineConfigs.${env.machineId} or machineConfigs.desktop;
-    in ({
-        # Generic configuration types for reference
-        desktop = mkSystem machineConfigs.desktop;
-        server = mkSystem machineConfigs.server;
-      }
-      // nixpkgs.lib.optionalAttrs (env.hostname != "desktop" && env.hostname != "server") {
-        # Current hostname configuration (only if different from generic names)
-        ${env.hostname} = mkSystem currentConfig;
-      });
+      serverCfg = {
+        userProfile = users.admin;
+        hostProfile = hosts.server;
+        modules = [
+          ./nixos/hosts/server/configuration.nix
+          nixos-wsl.nixosModules.wsl
+        ] ++ (nixpkgs.lib.optionals (builtins.pathExists ./nixos/hosts/local.nix) [
+          ./nixos/hosts/local.nix
+        ]);
+      };
+    in {
+      desktop = mkSystem desktopCfg;
+      server = mkSystem serverCfg;
+    };
 
     # Home Manager configurations
     homeConfigurations = let
       pkgs = pkgsFor "x86_64-linux";
+      usersBase = import ./lib/users.nix;
+      usersLocal = if builtins.pathExists ./lib/users.local.nix then import ./lib/users.local.nix else {};
+      users = usersBase // usersLocal;
+      hosts = import ./lib/hosts.nix;
 
-      # User globals configuration
-      homeGlobals = import ./home-manager/lib/globals.nix {
-        inherit env;
-      };
-    in {
-      # Primary configuration with user@hostname
-      "${env.username}@${env.hostname}" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        extraSpecialArgs = {
-          inherit inputs env;
-          outputs = self;
-          globals = homeGlobals;
+      mkHome = name: userProfile: hostProfile:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inputs = inputs;
+            outputs = self;
+            user = userProfile;
+            host = hostProfile;
+          };
+          modules = [
+            ./home-manager/home.nix
+          ];
         };
-        modules = [
-          ./home-manager/home.nix
-        ];
-      };
-    };
+    in
+      {
+        "default@desktop" = mkHome "default@desktop" users.default hosts.desktop;
+        "admin@server" = mkHome "admin@server" users.admin hosts.server;
+      }
+      // (nixpkgs.lib.optionalAttrs (users ? primary) (
+        let u = users.primary; in {
+          "${u.username}@desktop" = mkHome "${u.username}@desktop" u hosts.desktop;
+        }
+      ));
 
     # Export custom packages
     packages = forAllSystems (system: import ./home-manager/pkgs (pkgsFor system));

@@ -1,10 +1,18 @@
 # Home Manager modules aggregation
-{
-  inputs,
-  globals,
-  ...
-}: {
-  _module.args = {inherit inputs globals;};
+{ inputs, user, host, lib, pkgs, ... }: let
+  homeDir = user.homeDirectory;
+  dirs = {
+    localBin = "${homeDir}/.local/bin";
+    localShare = "${homeDir}/.local/share";
+    cargoBin = "${homeDir}/.local/share/cargo/bin";
+  };
+  prefs = {
+    editor = "nvim";
+    terminal = "kitty";
+    browser = "firefox";
+  };
+in {
+  _module.args = { inherit inputs user host dirs prefs; };
   imports =
     [
       ./xdg.nix
@@ -22,7 +30,7 @@
       ./fish
     ]
     ++ (
-      if globals.system.isGraphical
+      if host.isGraphical
       then [
         ./niri
         ./firefox
@@ -39,17 +47,14 @@
   programs.home-manager.enable = true;
 
   # Use standard home-manager session variables
-  home.sessionPath = [
-    globals.dirs.localBin
-    globals.dirs.cargoBin
-  ];
+  home.sessionPath = [ dirs.localBin dirs.cargoBin ];
 
   home.sessionVariables = {
-    USERNAME = globals.user.username;
-    HOSTNAME = globals.system.hostname;
-    EDITOR = globals.editor;
-    TERMINAL = globals.terminal;
-    TERM = globals.terminal;
-    BROWSER = globals.browser;
+    USERNAME = user.username;
+    HOSTNAME = host.hostname;
+    EDITOR = prefs.editor;
+    TERMINAL = prefs.terminal;
+    TERM = prefs.terminal;
+    BROWSER = prefs.browser;
   };
 }

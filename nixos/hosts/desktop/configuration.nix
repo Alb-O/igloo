@@ -1,9 +1,5 @@
 # NixOS system configuration
-{
-  pkgs,
-  globals,
-  ...
-}: {
+{ pkgs, user, host, ... }: {
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
@@ -27,11 +23,11 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  # Set your time zone.
-  time.timeZone = globals.env.timezone;
+  # Time zone
+  time.timeZone = host.timeZone;
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = globals.env.locale;
+  # Locale
+  i18n.defaultLocale = host.locale;
 
   # Generate all locales needed
   i18n.supportedLocales = [
@@ -41,15 +37,15 @@
   ];
 
   i18n.extraLocaleSettings = {
-    LC_ADDRESS = globals.env.locale;
-    LC_IDENTIFICATION = globals.env.locale;
-    LC_MEASUREMENT = globals.env.locale;
-    LC_MONETARY = globals.env.locale;
-    LC_NAME = globals.env.locale;
-    LC_NUMERIC = globals.env.locale;
-    LC_PAPER = globals.env.locale;
-    LC_TELEPHONE = globals.env.locale;
-    LC_TIME = globals.env.locale;
+    LC_ADDRESS = host.locale;
+    LC_IDENTIFICATION = host.locale;
+    LC_MEASUREMENT = host.locale;
+    LC_MONETARY = host.locale;
+    LC_NAME = host.locale;
+    LC_NUMERIC = host.locale;
+    LC_PAPER = host.locale;
+    LC_TELEPHONE = host.locale;
+    LC_TIME = host.locale;
   };
 
   # Configure console keymap
@@ -59,13 +55,13 @@
   security.sudo.wheelNeedsPassword = false;
 
   # Set your system hostname
-  networking.hostName = globals.system.hostname;
+  networking.hostName = host.hostname;
 
   # Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {
-    ${globals.user.username} = {
+    ${user.username} = {
       isNormalUser = true;
-      description = globals.user.name;
+      description = user.name;
       openssh.authorizedKeys.keys = [
         # TODO: Add your SSH public key(s) here, if you plan on using SSH to connect
       ];
@@ -85,8 +81,8 @@
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = globals.system.stateVersion;
+  system.stateVersion = host.stateVersion;
 
   # Platform configuration
-  nixpkgs.hostPlatform = globals.system.architecture;
+  nixpkgs.hostPlatform = host.architecture;
 }

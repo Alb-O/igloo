@@ -1,26 +1,10 @@
-# User profile definitions
-# Keep personal information separate from system configuration
+# User profile definitions (pure, static)
 {
-  # Default user profile - customize via environment or override
+  # Default user profile - edit to match your system user
   default = rec {
-    username = let
-      u = builtins.getEnv "USERNAME";
-    in
-      if u != ""
-      then u
-      else "user";
-    name = let
-      n = builtins.getEnv "NAME";
-    in
-      if n != ""
-      then n
-      else "Default User";
-    email = let
-      e = builtins.getEnv "EMAIL";
-    in
-      if e != ""
-      then e
-      else "user@localhost";
+    username = "user";
+    name = "Default User";
+    email = "user@localhost";
     homeDirectory = "/home/${username}";
   };
 

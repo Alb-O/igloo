@@ -1,12 +1,10 @@
 # NixOS and Home Manager Configuration Management
 # Run `just` to see available commands
 
-# Load environment variables from .env file if it exists
-set dotenv-load := true
-
-# Default user and hostname with env file fallbacks
-user := env_var_or_default('USERNAME', env_var_or_default('USER', 'user'))
-hostname := env_var_or_default('HOSTNAME', `hostname`)
+# No .env sourcing; keep things pure.
+# Avoid shell lookups that can fail when user is missing from passwd.
+user := env_var_or_default('USER', 'unknown')
+hostname := env_var_or_default('HOSTNAME', 'unknown')
 
 # List all available commands
 default:
@@ -17,64 +15,39 @@ default:
 # ========================================
 
 # Rebuild NixOS system configuration
-system-rebuild host="auto":
+system-rebuild host="desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
+    TARGET_HOST="{{host}}"
     echo "Rebuilding system configuration for host: $TARGET_HOST"
-    sudo -E nixos-rebuild switch --flake .#$TARGET_HOST --impure
+    sudo -E nixos-rebuild switch --flake path:.#$TARGET_HOST
 
 # Rebuild with verbose output
-system-rebuild-verbose host="auto":
+system-rebuild-verbose host="desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
-    sudo -E nixos-rebuild switch --flake .#$TARGET_HOST --show-trace --verbose --impure
+    TARGET_HOST="{{host}}"
+    sudo -E nixos-rebuild switch --flake path:.#$TARGET_HOST --show-trace --verbose
 
 # Test build without activation
-system-test host="auto":
+system-test host="desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
-    sudo -E nixos-rebuild test --flake .#$TARGET_HOST --impure
+    TARGET_HOST="{{host}}"
+    sudo -E nixos-rebuild test --flake path:.#$TARGET_HOST
 
 # Build configuration without switching
-system-build host="auto":
+system-build host="desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
-    sudo -E nixos-rebuild build --flake .#$TARGET_HOST --impure
+    TARGET_HOST="{{host}}"
+    sudo -E nixos-rebuild build --flake path:.#$TARGET_HOST
 
 # Check system flake validity
 system-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    nix flake check --impure
+    nix flake check path:.
 
 # List system generations
 system-generations:
@@ -89,57 +62,50 @@ system-info:
     @echo "System: $(uname -a)"
     @echo "Nix version: $(nix --version)"
     @echo "Available hosts:"
-    @nix eval --json .#nixosConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No hosts found"
+    @nix eval --json path:.#nixosConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No hosts found"
 
 # Build ISO image
-system-iso host="auto":
+system-iso host="desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    TARGET_HOST=$( [ "{{host}}" = "auto" ] && echo "${HOSTNAME:-desktop}" || echo "{{host}}" )
-    nix build .#nixosConfigurations.$TARGET_HOST.config.system.build.isoImage
+    TARGET_HOST="{{host}}"
+    nix build path:.#nixosConfigurations.$TARGET_HOST.config.system.build.isoImage
 
 # =====================================
 # HOME - Home Manager Configuration
 # =====================================
 
 # Build and activate home-manager configuration
-home-switch:
+home-switch target="default@desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
+    TARGET="{{target}}"
+    AVAIL=$(nix eval --json path:.#homeConfigurations --apply builtins.attrNames)
+    if ! echo "$AVAIL" | jq -e --arg t "$TARGET" '.[] | select(. == $t)' >/dev/null; then
+      echo "Unknown home target '$TARGET'. Available:" >&2
+      echo "$AVAIL" | jq -r '.[]' | sed 's/^/  /' >&2
+      exit 1
     fi
-    TARGET="${USERNAME}@${HOSTNAME}"
-    env USER="${USERNAME}" HOME="/home/${USERNAME}" nix run github:nix-community/home-manager/master -- switch --flake ".#${TARGET}" --impure
+    nix run github:nix-community/home-manager/master -- switch --flake "path:.#${TARGET}" --impure
 
 # Build configuration without activation
-home-build:
+home-build target="default@desktop":
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
+    TARGET="{{target}}"
+    AVAIL=$(nix eval --json path:.#homeConfigurations --apply builtins.attrNames)
+    if ! echo "$AVAIL" | jq -e --arg t "$TARGET" '.[] | select(. == $t)' >/dev/null; then
+      echo "Unknown home target '$TARGET'. Available:" >&2
+      echo "$AVAIL" | jq -r '.[]' | sed 's/^/  /' >&2
+      exit 1
     fi
-    home-manager build --flake ".#${USERNAME}@${HOSTNAME}" --impure
+    home-manager build --flake "path:.#${TARGET}" --impure
 
 # Check home-manager flake validity  
 home-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ -f .env ]; then
-        set -a
-        source .env
-        set +a
-    fi
-    nix flake check --impure
+    nix flake check path:.
 
 # List home-manager generations
 home-generations:
@@ -151,7 +117,7 @@ home-info:
     @echo "Hostname: {{hostname}}"
     @echo "Home Manager version: $(home-manager --version 2>/dev/null || echo 'not installed')"
     @echo "Available configurations:"
-    @nix eval --impure --json .#homeConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No configurations found"
+    @nix eval --json path:.#homeConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No configurations found"
 
 # Show home-manager news
 home-news:
@@ -214,11 +180,11 @@ gc:
 
 # Show flake info (system)
 show:
-    nix flake show
+    nix flake show path:.
 
 # Show home-manager flake info
 home-show:
-    nix flake show
+    nix flake show path:.
 
 # Check both system and home configurations
 check-all:
@@ -242,10 +208,10 @@ fish:
     # Auto-discover nixCats-fish config location
     if [ -d "./flakes/nixCats-fish/config" ]; then
         export NIXCATS_FISH_DIR="$(pwd)/flakes/nixCats-fish/config"
-        nix run ./flakes/nixCats-fish --impure
+        nix run ./flakes/nixCats-fish
     elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-fish/config" ]; then
         export NIXCATS_FISH_DIR="$FLAKE_ROOT/flakes/nixCats-fish/config"  
-        nix run $FLAKE_ROOT/flakes/nixCats-fish --impure
+        nix run $FLAKE_ROOT/flakes/nixCats-fish
     else
         echo "Error: nixCats-fish config not found!"
         echo "Make sure you're in the flake root directory or set FLAKE_ROOT"
@@ -258,10 +224,10 @@ bash:
     # Auto-discover nixCats-bash config location
     if [ -d "./flakes/nixCats-bash/rc" ]; then
         export NIXCATS_BASH_DIR="$(pwd)/flakes/nixCats-bash/rc"
-        nix run ./flakes/nixCats-bash --impure
+        nix run ./flakes/nixCats-bash
     elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-bash/rc" ]; then
-        export NIXCATS_BASH_DIR="$FLAKE_ROOT/flakes/nixCats-bash/rc"
-        nix run $FLAKE_ROOT/flakes/nixCats-bash --impure  
+        export NIXCATS_BASH_DIR="$FLAKE_ROOT/flakes/nixCats-bash/rc"  
+        nix run $FLAKE_ROOT/flakes/nixCats-bash  
     else
         echo "Error: nixCats-bash config not found!"
         echo "Make sure you're in the flake root directory or set FLAKE_ROOT"

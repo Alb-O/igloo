@@ -1,10 +1,4 @@
-{
-  pkgs,
-  config,
-  globals,
-  lib,
-  ...
-}: {
+{ pkgs, config, lib, ... }: {
   options.igloo.bash.enable =
     lib.mkEnableOption "Enable Bash configuration"
     // {

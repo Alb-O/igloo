@@ -1,17 +1,6 @@
 # Home Manager WSL integration module
-{
-  pkgs,
-  lib,
-  config,
-  globals,
-  ...
-}: let
-  # Detect WSL environment
-  isWSL =
-    (builtins.getEnv "WSL_DISTRO_NAME")
-    != ""
-    || (builtins.getEnv "WSLENV") != ""
-    || (builtins.getEnv "IS_WSL") == "true";
+{ pkgs, lib, config, ... }: let
+  isWSL = false;
 
   # Windows clipboard integration
   windowsClipboard = pkgs.writeShellScriptBin "wsl-clipboard" ''
@@ -56,9 +45,7 @@
 in {
   options.igloo.wsl.enable =
     lib.mkEnableOption "Enable WSL integration features"
-    // {
-      default = isWSL;
-    };
+    // { default = isWSL; };
 
   config = lib.mkIf config.igloo.wsl.enable {
     home.packages = [

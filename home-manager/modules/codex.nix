@@ -1,4 +1,4 @@
-{globals, ...}: {
+{ user, ... }: {
   # Codex AI coding assistant configuration
   # Manages XDG compliance and declarative configuration
 
@@ -8,20 +8,7 @@
   };
 
   # Declaratively manage codex configuration
-  home.file.".local/share/codex/config.toml".text = let
-    # Additional trusted projects from environment variables
-    extraProjects = builtins.getEnv "CODEX_TRUSTED_PROJECTS";
-
-    projectsConfig =
-      if extraProjects != ""
-      then ''
-        "${globals.user.homeDirectory}" = { trust_level = "trusted" }
-        ${extraProjects}
-      ''
-      else ''
-        "${globals.user.homeDirectory}" = { trust_level = "trusted" }
-      '';
-  in ''
+  home.file.".local/share/codex/config.toml".text = ''
     # Codex Configuration
     # Full-auto mode settings
     approval_policy = "on-request"
@@ -29,7 +16,7 @@
 
     # Trusted projects with full workspace access
     [projects]
-    ${projectsConfig}
+    "${user.homeDirectory}" = { trust_level = "trusted" }
 
     # Allow network access in workspace-write mode
     [sandbox_workspace_write]
