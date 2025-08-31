@@ -4,7 +4,7 @@
     ./rust.nix
     ./nix.nix
     ./markdown.nix
-    # ./python.nix
+    ./python.nix
     # ./javascript.nix
     # ./go.nix
     # ./c.nix

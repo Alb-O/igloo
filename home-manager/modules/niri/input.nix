@@ -29,6 +29,10 @@
       # accel-speed = 0.2;
     };
 
-    # focus-follows-mouse.max-scroll-amount = "0%";
+    focus-follows-mouse = {
+      enable = true;
+      max-scroll-amount = "50%";
+    };
+    workspace-auto-back-and-forth = true;
   };
 }

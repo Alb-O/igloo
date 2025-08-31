@@ -144,9 +144,9 @@ opencode-bump version="latest":
     ./scripts/opencode-bump.sh {{version}}
 
 # Update OpenCode to latest and switch
-opencode-update:
+opencode-update target="albert@desktop":
     ./scripts/opencode-bump.sh latest
-    just home-switch
+    just home-switch {{target}}
 
 # Update flake inputs
 update:

@@ -13,6 +13,16 @@
 
       # Add user as trusted for binary caches
       trusted-users = ["root" user.username];
+      
+      # Binary caches
+      substituters = [
+        "https://cache.nixos.org"
+        "https://niri.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl5me6UKLqjlUKjpj9EQ="
+      ];
     };
     # Opinionated: disable channels
     channel.enable = false;

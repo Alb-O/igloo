@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   models-dev,
 }: let
-  version = "0.5.28";
+  version = "0.5.29";
 
   # Target mapping for bun --target
   bunTarget =
@@ -28,7 +28,7 @@
     repo = "opencode";
     rev = "v${version}";
     # Upstream source tarball hash
-    hash = "sha256-g/qIn9s3yw3zvCuxD4ByHiFWmQ3TclrhFurqXEcIYnY=";
+    hash = "sha256-l9yi+98fsFWERKsJPfhNoCTG9vKawE4aKngwBkCJupE=";
   };
 
   # Build TUI (Go) first
@@ -72,7 +72,7 @@
     '';
     dontFixup = true;
     # Node modules fixed-output hash
-    outputHash = "sha256-N6un5+Bb39+0WLcAVUGUR4+69aL9bhxZSqfgPCtM7Pw=";
+    outputHash = "sha256-bnkXVlwrfsEWSVjeMajAFhviGFG8KCZnaml/LLx/2lo=";
     outputHashMode = "recursive";
   };
 in
