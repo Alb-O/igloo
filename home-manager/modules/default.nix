@@ -25,7 +25,6 @@ in {
       ./codex.nix
       ./languages
       ./wsl.nix
-      ./neovim
       ./atuin.nix
       ./fzf.nix
       ./fish

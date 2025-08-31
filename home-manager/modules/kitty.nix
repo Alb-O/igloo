@@ -19,7 +19,7 @@
 
       # Appearance
       background_opacity = "1.0";
-      window_padding_width = "25 20";
+      #window_padding_width = "25 20";
       cursor_shape = "beam";
       cursor_blink_interval = "0.25";
 

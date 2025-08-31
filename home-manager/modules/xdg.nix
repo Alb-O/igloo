@@ -128,7 +128,7 @@
     enable = true;
     userDirs = {
       enable = true;
-      # Developer-friendly lowercase directory names
+      desktop = "$HOME/desktop";
       documents = "$HOME/docs";
       download = "$HOME/dl";
       music = "$HOME/media/music";

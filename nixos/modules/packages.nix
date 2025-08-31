@@ -7,6 +7,6 @@
     firefox
     kitty
     alacritty
-    neovim
+    nano
   ];
 }
