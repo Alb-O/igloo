@@ -130,6 +130,7 @@
       // (nixpkgs.lib.optionalAttrs (users ? primary) (
         let u = users.primary; in {
           "${u.username}@desktop" = mkHome "${u.username}@desktop" u hosts.desktop;
+          "${u.username}@server" = mkHome "${u.username}@server" u hosts.server;
         }
       ));
 

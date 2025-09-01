@@ -4,6 +4,7 @@
     # Essential tools
     wget
     just
+    jq
     firefox
     kitty
     alacritty
