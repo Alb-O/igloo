@@ -9,7 +9,7 @@
   writableTmpDirAsHomeHook,
   models-dev,
 }: let
-  version = "0.5.29";
+  version = "0.6.4";
 
   # Target mapping for bun --target
   bunTarget =
@@ -28,7 +28,7 @@
     repo = "opencode";
     rev = "v${version}";
     # Upstream source tarball hash
-    hash = "sha256-l9yi+98fsFWERKsJPfhNoCTG9vKawE4aKngwBkCJupE=";
+    hash = "sha256-o7SzDGbWgCh8cMNK+PeLxAw0bQMKFouHdedUslpA6gw=";
   };
 
   # Build TUI (Go) first
@@ -38,7 +38,7 @@
 
     modRoot = "packages/tui";
     # Go modules vendor hash
-    vendorHash = "sha256-78MfWF0HSeLFLGDr1Zh74XeyY71zUmmazgG2MnWPucw=";
+    vendorHash = "sha256-8pwVQVraLSE1DRL6IFMlQ/y8HQ8464N/QwAS8Faloq4=";
     subPackages = ["cmd/opencode"];
     env.CGO_ENABLED = 0;
     ldflags = [
