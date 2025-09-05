@@ -1,6 +1,14 @@
 # Home Manager configuration
 # Main entry point for user environment configuration
-{ pkgs, lib, inputs, user, host, ... }: {
+{
+  pkgs,
+  lib,
+  inputs,
+  user,
+  host,
+  ...
+}:
+{
   # Import modular configuration
   imports = [
     # Custom modules
@@ -18,7 +26,8 @@
   };
 
   # User packages
-  home.packages = with pkgs.unstable;
+  home.packages =
+    with pkgs.unstable;
     [
       # CLI Tools (always included)
       jq
@@ -37,6 +46,7 @@
       unison
       nb
       rucola
+      lazysql
       eza
       onefetch
       poppler-utils
@@ -62,7 +72,7 @@
       # Custom packages
       (pkgs.writeShellApplication {
         name = "codex";
-        runtimeInputs = [pkgs.nodejs];
+        runtimeInputs = [ pkgs.nodejs ];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
@@ -70,12 +80,11 @@
       # Custom packages
       (pkgs.writeShellApplication {
         name = "gemini";
-        runtimeInputs = [pkgs.nodejs];
+        runtimeInputs = [ pkgs.nodejs ];
         text = ''
           exec ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@"
         '';
       })
-      pkgs.opencode-src
     ]
     ++ lib.optionals host.isGraphical [
       # Custom graphical packages
@@ -86,7 +95,6 @@
   # State version - don't change this
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = host.stateVersion;
-
 
   # Ensure login shells source Home Manager session vars from XDG-friendly paths
   # and avoid legacy ~/.nix-profile references.

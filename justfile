@@ -139,15 +139,6 @@ home-edit:
 fmt:
     nix fmt
 
-# Bump OpenCode to a specific version (or latest) and auto-fill hashes
-opencode-bump version="latest":
-    ./scripts/opencode-bump.sh {{version}}
-
-# Update OpenCode to latest and switch
-opencode-update target="albert@desktop":
-    ./scripts/opencode-bump.sh latest
-    just home-switch {{target}}
-
 # Update flake inputs
 update:
     nix flake update
