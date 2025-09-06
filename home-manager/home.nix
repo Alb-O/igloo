@@ -69,7 +69,6 @@
       libinput
     ]
     ++ [
-      # Custom packages
       (pkgs.writeShellApplication {
         name = "codex";
         runtimeInputs = [ pkgs.nodejs ];
@@ -77,7 +76,6 @@
           exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
         '';
       })
-      # Custom packages
       (pkgs.writeShellApplication {
         name = "gemini";
         runtimeInputs = [ pkgs.nodejs ];
@@ -88,7 +86,6 @@
     ]
     ++ lib.optionals host.isGraphical [
       # Custom graphical packages
-      pkgs.blender-daily
       pkgs.setup-background-terminals
     ];
 
