@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   # XDG Base Directory Specification
   # Sets up proper XDG environment variables and directory structure
 
@@ -133,12 +134,15 @@
     enable = true;
     userDirs = {
       enable = true;
+      createDirectories = true;
       desktop = "$HOME/desktop";
-      documents = "$HOME/docs";
-      download = "$HOME/dl";
-      music = "$HOME/media/music";
-      pictures = "$HOME/media/pics";
-      videos = "$HOME/media/vids";
+      documents = "$XDG_DESKTOP_DIR/docs";
+      download = "$XDG_DESKTOP_DIR/dl";
+      music = "$XDG_DESKTOP_DIR/music";
+      pictures = "$XDG_DESKTOP_DIR/pics";
+      videos = "$XDG_DESKTOP_DIR/vids";
+      templates = "$XDG_DESKTOP_DIR/templates";
+      publicShare = "$XDG_DESKTOP_DIR/public";
     };
   };
 
