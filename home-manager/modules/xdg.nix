@@ -8,7 +8,12 @@
 
   # XDG base directories are enabled at the system level in NixOS configuration
   # (use-xdg-base-directories is set in nixos/modules/xdg.nix)
+  # Ensure Home Manager itself uses XDG base dirs for its profile management
+  # so that hm-session-vars and home-path land under "$XDG_STATE_HOME/nix/profile"
+  # and Home Manager uses `nix profile` semantics instead of legacy nix-env.
   nix = {
+    enable = true;
+    settings.use-xdg-base-directories = true;
     package = lib.mkDefault pkgs.nix;
   };
 

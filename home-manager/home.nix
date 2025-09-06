@@ -68,22 +68,6 @@
       solaar
       libinput
     ]
-    ++ [
-      (pkgs.writeShellApplication {
-        name = "codex";
-        runtimeInputs = [ pkgs.nodejs ];
-        text = ''
-          exec ${pkgs.nodejs}/bin/npx -y @openai/codex "$@"
-        '';
-      })
-      (pkgs.writeShellApplication {
-        name = "gemini";
-        runtimeInputs = [ pkgs.nodejs ];
-        text = ''
-          exec ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@"
-        '';
-      })
-    ]
     ++ lib.optionals host.isGraphical [
       # Custom graphical packages
       pkgs.setup-background-terminals
@@ -131,6 +115,15 @@
          . "$XDG_STATE_HOME/nix/profile/etc/profile.d/hm-session-vars.sh"
       elif [ -e "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
         . "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh"
+      fi
+
+      # Ensure XDG-based nix profile puts its bin paths on PATH, similar to legacy nix.sh
+      if [ -e "/etc/profiles/per-user/$USER/etc/profile.d/nix.sh" ]; then
+        . "/etc/profiles/per-user/$USER/etc/profile.d/nix.sh"
+      elif [ -n "$XDG_STATE_HOME" ] && [ -e "$XDG_STATE_HOME/nix/profile/etc/profile.d/nix.sh" ]; then
+        . "$XDG_STATE_HOME/nix/profile/etc/profile.d/nix.sh"
+      elif [ -e "$HOME/.local/state/nix/profile/etc/profile.d/nix.sh" ]; then
+        . "$HOME/.local/state/nix/profile/etc/profile.d/nix.sh"
       fi
 
        # Bash history control
