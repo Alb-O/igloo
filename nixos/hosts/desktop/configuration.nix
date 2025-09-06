@@ -1,5 +1,11 @@
 # NixOS system configuration
-{ pkgs, user, host, ... }: {
+{
+  pkgs,
+  user,
+  host,
+  ...
+}:
+{
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
@@ -12,13 +18,35 @@
   ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = false;
+    limine.enable = true;
+    limine.style.interface.resolution = "2560x1440";
+    efi.canTouchEfiVariables = true;
+  };
 
-  boot.supportedFilesystems = ["ntfs"];
+  boot.supportedFilesystems = [ "ntfs" ];
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  services.kmscon.enable = true;
+
+  services.displayManager.ly.enable = true;
+
+  # Enable Niri window manager
+  programs.niri.enable = true;
+
+  # Required for GNOME portal GSettings access
+  programs.dconf.enable = true;
+
+  # udev packages for desktop integration
+  services.udev.packages = with pkgs; [ gnome-settings-daemon ];
+
+  # Environment variables for desktop
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+  };
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -73,11 +101,6 @@
         "docker"
       ];
     };
-  };
-
-  # Display manager configuration
-  services.displayManager.sddm = {
-    package = pkgs.kdePackages.sddm;
   };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion

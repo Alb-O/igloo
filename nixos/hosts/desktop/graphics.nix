@@ -1,12 +1,7 @@
-{...}: {
-  services.xserver.videoDrivers = ["nvidia"];
-
-  hardware.graphics = {
-    enable = true;
-  };
+{ ... }:
+{
+  services.xserver.videoDrivers = [ "nvidia" ];
   boot.kernelParams = [
-    "nvidia-drm.modeset=1"
-    "nvidia-drm.fbdev=0"
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
   ];
   hardware.nvidia = {
@@ -15,10 +10,11 @@
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    forceFullCompositionPipeline = true;
   };
   boot.extraModprobeConfig = ''
     blacklist nouveau
     options nouveau modeset=0
+    options nvidia_drm nvidia_uvm modeset=1 fbdev=1
   '';
+  services.kmscon.enable = true;
 }

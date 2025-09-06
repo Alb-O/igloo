@@ -160,13 +160,6 @@
          esac
        fi
 
-      # Source all files from rc directory
-      if [ -d "$HOME/.local/share/rc" ]; then
-        for file in "$HOME/.local/share/rc"/*.sh; do
-          [ -r "$file" ] && [ -f "$file" ] && . "$file"
-        done
-      fi
-
       # Interactive-only setup
       case $- in
         *i*)
