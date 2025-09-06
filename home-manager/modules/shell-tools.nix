@@ -14,9 +14,10 @@
 
   programs.ssh = {
     enable = true;
-    extraConfig = ''
-      Host *
-          AddKeysToAgent yes
-    '';
+    enableDefaultConfig = false;
+    matchBlocks."*" = {
+      # Explicit default host settings
+      addKeysToAgent = "yes";
+    };
   };
 }
