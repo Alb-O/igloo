@@ -3,6 +3,8 @@
   pkgs,
   user,
   host,
+  lib,
+  fonts,
   ...
 }:
 {
@@ -21,7 +23,6 @@
   boot.loader = {
     systemd-boot.enable = false;
     limine.enable = true;
-    limine.style.interface.resolution = "2560x1440";
     efi.canTouchEfiVariables = true;
   };
 
@@ -30,9 +31,20 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  services.kmscon.enable = true;
+  services.displayManager.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.displayManager.gdm.wayland = true;
 
-  services.displayManager.ly.enable = true;
+  services.kmscon = {
+    enable = true;
+    fonts = [
+      {
+        name = fonts.mono.name;
+        package = fonts.mono.package;
+      }
+    ];
+    extraConfig = "font-size=${toString fonts.mono.size.large}";
+  };
 
   # Enable Niri window manager
   programs.niri.enable = true;
@@ -95,6 +107,7 @@
       ];
       extraGroups = [
         "wheel"
+        "seat"
         "networkmanager"
         "audio"
         "video"

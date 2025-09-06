@@ -16,5 +16,4 @@
     options nouveau modeset=0
     options nvidia_drm nvidia_uvm modeset=1 fbdev=1
   '';
-  services.kmscon.enable = true;
 }

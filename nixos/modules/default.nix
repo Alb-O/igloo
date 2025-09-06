@@ -2,6 +2,7 @@
 { host, ... }:
 {
   imports = [
+    ./fonts.nix
     ./xdg.nix
     ./keyring.nix
     ./packages.nix
