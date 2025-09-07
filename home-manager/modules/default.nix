@@ -38,11 +38,8 @@ in
     ./mako.nix
     ./git.nix
     ./yazi
-    ./codex.nix
-    ./languages
     ./wsl.nix
     ./atuin.nix
-    ./fzf.nix
     ./fish
   ]
   ++ (

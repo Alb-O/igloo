@@ -98,9 +98,4 @@
       "result-*"
     ];
   };
-
-  # lazygit
-  programs.lazygit = {
-    enable = true;
-  };
 }

@@ -1,6 +1,7 @@
 # Firefox profile configuration
 # Settings, UI customization, and feature toggles
-{lib, ...}: {
+{ lib, downloadDir, ... }:
+{
   profileSettings = {
     "browser.startup.homepage" = "about:home";
 
@@ -18,8 +19,7 @@
     "trailhead.firstrun.didSeeAboutWelcome" = true;
     "browser.bookmarks.restore_default_bookmarks" = false;
     "browser.bookmarks.addedImportButton" = true;
-
-    "browser.download.useDownloadDir" = false; # Don't ask for download dir
+    "browser.download.dir" = downloadDir;
 
     # Disable crappy home activity stream page
     "browser.newtabpage.activity-stream.feeds.topsites" = false;
@@ -75,7 +75,7 @@
 
     # Layout
     "browser.uiCustomization.state" = builtins.readFile ./ui-customization-state.json;
-    browser.uidensity = 1; # Compact mode
+    "browser.uidensity" = 1; # Compact mode
 
     # Enable sidebar/vertical tabs
     "sidebar.visibility" = "always-show";

@@ -1,9 +1,13 @@
 # Firefox configuration - modularized
-{ lib, pkgs, user, ... }: let
+{ lib, pkgs, user, config, ... }: let
   # Import modular configurations
   policiesConfig = import ./policies.nix {};
   extensionsConfig = import ./extensions.nix {};
-  profileConfig = import ./profile.nix {inherit lib;};
+  # Resolve absolute download directory from XDG user dirs
+  homeDir = config.home.homeDirectory;
+  desktopDir = lib.replaceStrings ["$HOME"] [homeDir] config.xdg.userDirs.desktop;
+  downloadDir = lib.replaceStrings ["$HOME" "$XDG_DESKTOP_DIR"] [homeDir desktopDir] config.xdg.userDirs.download;
+  profileConfig = import ./profile.nix { inherit lib downloadDir; };
   searchConfig = import ./search.nix {inherit lib pkgs;};
 in {
   programs.firefox = {

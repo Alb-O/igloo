@@ -39,14 +39,12 @@
       lm_sensors
       ffmpeg
       yt-dlp
-      ripgrep
       atuin
       fd
       file
       unison
       nb
       rucola
-      lazysql
       eza
       onefetch
       poppler-utils
@@ -58,7 +56,6 @@
     ++ lib.optionals host.isGraphical [
       # Graphical Tools (only when isGraphical = true)
       hyprpicker
-      hydrus
       vesktop
       xdg-desktop-portal-termfilechooser
       # Clipboard tools for Wayland

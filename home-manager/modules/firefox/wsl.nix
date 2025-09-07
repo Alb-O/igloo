@@ -1,9 +1,13 @@
 # Firefox configuration for WSL - headless/configuration-only setup
-{ lib, user, ... }: let
+{ lib, user, config, ... }: let
   # Import modular configurations (same as main firefox module)
   policiesConfig = import ./policies.nix {};
   extensionsConfig = import ./extensions.nix {};
-  profileConfig = import ./profile.nix {inherit lib;};
+  # Resolve absolute download directory from XDG user dirs
+  homeDir = config.home.homeDirectory;
+  desktopDir = lib.replaceStrings ["$HOME"] [homeDir] config.xdg.userDirs.desktop;
+  downloadDir = lib.replaceStrings ["$HOME" "$XDG_DESKTOP_DIR"] [homeDir desktopDir] config.xdg.userDirs.download;
+  profileConfig = import ./profile.nix { inherit lib downloadDir; };
 in {
   programs.firefox = {
     enable = true;

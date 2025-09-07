@@ -31,6 +31,7 @@
     PYTHONSTARTUP = lib.mkForce "$XDG_CONFIG_HOME/python/pythonrc";
     NBRC_PATH = lib.mkForce "$XDG_CONFIG_HOME/nbrc";
     NB_DIR = lib.mkForce "$XDG_DATA_HOME/nb";
+    CODEX_HOME = "$XDG_DATA_HOME/codex";
   };
 
   # Create necessary directories and shell configuration
