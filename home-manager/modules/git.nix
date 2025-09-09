@@ -15,6 +15,8 @@
       remotes = "remote -v";
     };
 
+    lfs.enable = true;
+  
     extraConfig =
       {
         # Core settings
