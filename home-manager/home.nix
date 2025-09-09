@@ -30,22 +30,14 @@
     with pkgs.unstable;
     [
       # CLI Tools (always included)
-      jq
-      fastfetch
       gh
-      just
       unzip
-      xdg-ninja
       lm_sensors
       ffmpeg
       yt-dlp
       atuin
-      fd
-      file
       unison
-      nb
       rucola
-      eza
       onefetch
       poppler-utils
       unipicker
