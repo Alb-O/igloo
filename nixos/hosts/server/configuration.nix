@@ -14,7 +14,7 @@
 
   # WSL-specific configuration
   wsl.enable = true;
-  wsl.defaultUser = "admin";
+  wsl.defaultUser = user.username;
   wsl.startMenuLaunchers = true;
 
   # Enhanced WSL interoperability
@@ -50,7 +50,7 @@
     };
 
     # User settings
-    user.default = "admin";
+    user.default = user.username;
   };
 
   # Generic admin user configuration
@@ -79,14 +79,14 @@
   # Time zone and locale
   time.timeZone = host.timeZone;
   i18n.defaultLocale = host.locale;
-  
+
   # Generate all locales needed
   i18n.supportedLocales = [
     "en_US.UTF-8/UTF-8"
     "en_AU.UTF-8/UTF-8"
     "C.UTF-8/UTF-8"
   ];
-  
+
   i18n.extraLocaleSettings = {
     LC_ADDRESS = host.locale;
     LC_IDENTIFICATION = host.locale;
