@@ -6,7 +6,14 @@
 # - Clean WSL environment without graphical components
 # - Multi-user support via parameterized globals
 # - Bootstrap-ready for first run
-{ lib, pkgs, user, host, ... }: {
+{
+  lib,
+  pkgs,
+  user,
+  host,
+  ...
+}:
+{
   imports = [
     # Import our modular NixOS configuration
     ../../modules
@@ -79,14 +86,14 @@
   # Time zone and locale
   time.timeZone = host.timeZone;
   i18n.defaultLocale = host.locale;
-  
+
   # Generate all locales needed
   i18n.supportedLocales = [
     "en_US.UTF-8/UTF-8"
     "en_AU.UTF-8/UTF-8"
     "C.UTF-8/UTF-8"
   ];
-  
+
   i18n.extraLocaleSettings = {
     LC_ADDRESS = host.locale;
     LC_IDENTIFICATION = host.locale;
@@ -110,10 +117,6 @@
 
   # Disable legacy channels that cause storePath errors
   nix.channel.enable = lib.mkForce false;
-
-  # Disable display managers and graphical services for WSL
-  services.displayManager.autoLogin.enable = lib.mkForce false;
-  programs.niri.enable = lib.mkForce false;
 
   # Optimize build settings for WSL
   nix.settings = {

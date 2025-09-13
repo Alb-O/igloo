@@ -150,8 +150,5 @@
             "${u.username}@server" = mkHome "${u.username}@server" u hosts.server;
           }
         ));
-
-      # Export custom packages
-      packages = forAllSystems (system: import ./home-manager/pkgs (pkgsFor system));
     };
 }

@@ -32,6 +32,7 @@
     NBRC_PATH = lib.mkForce "$XDG_CONFIG_HOME/nbrc";
     NB_DIR = lib.mkForce "$XDG_DATA_HOME/nb";
     CODEX_HOME = "$XDG_DATA_HOME/codex";
+    XCOMPOSECACHE = "$XDG_CACHE_HOME/X11/xcompose";
   };
 
   # Create necessary directories and shell configuration

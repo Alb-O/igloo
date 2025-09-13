@@ -46,9 +46,6 @@
     extraConfig = "font-size=${toString fonts.mono.size.large}";
   };
 
-  # Enable Niri window manager
-  programs.niri.enable = true;
-
   # Required for GNOME portal GSettings access
   programs.dconf.enable = true;
 

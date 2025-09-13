@@ -45,7 +45,6 @@ in
   ++ (
     if host.isGraphical then
       [
-        ./niri
         ./firefox
         ./sillytavern.nix
         ./kitty.nix

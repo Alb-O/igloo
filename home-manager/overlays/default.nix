@@ -2,7 +2,7 @@
 { inputs, ... }:
 [
   # This one brings our custom packages from the 'pkgs' directory
-  (final: _prev: import ../pkgs final.pkgs)
+  # (final: _prev: import ../pkgs final.pkgs)
 
   # This one contains whatever you want to overlay
   # You can change versions, add patches, set compilation flags, anything really.
@@ -20,12 +20,5 @@
       system = final.system;
       config.allowUnfree = true;
     };
-  })
-
-  # Larger stack size for compiling niri on WSL
-  (self: super: {
-    niri = super.niri.overrideAttrs (oldAttrs: {
-      RUST_MIN_STACK = "16777216";
-    });
   })
 ]

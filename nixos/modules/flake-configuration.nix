@@ -1,40 +1,49 @@
 # Nix flakes configuration
-{ inputs, lib, user, ... }: {
-  nix = let
-    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-  in {
-    settings = {
-      # Enable flakes and new 'nix' command
-      experimental-features = "nix-command flakes";
-      # Opinionated: disable global registry
-      flake-registry = "";
-      # Workaround for https://github.com/NixOS/nix/issues/9574
-      # nix-path = config.nix.nixPath;
+{
+  inputs,
+  lib,
+  user,
+  ...
+}:
+{
+  nix =
+    let
+      flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
+    in
+    {
+      settings = {
+        # Enable flakes and new 'nix' command
+        experimental-features = "nix-command flakes";
+        # Opinionated: disable global registry
+        flake-registry = "";
+        # Workaround for https://github.com/NixOS/nix/issues/9574
+        # nix-path = config.nix.nixPath;
 
-      # Add user as trusted for binary caches
-      trusted-users = ["root" user.username];
-      
-      # Binary caches
-      substituters = [
-        "https://cache.nixos.org"
-        "https://niri.cachix.org"
-      ];
-      trusted-public-keys = [
-        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl5me6UKLqjlUKjpj9EQ="
-      ];
+        # Add user as trusted for binary caches
+        trusted-users = [
+          "root"
+          user.username
+        ];
+
+        # Binary caches
+        substituters = [
+          "https://cache.nixos.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ];
+      };
+      # Opinionated: disable channels
+      channel.enable = false;
+
+      # Opinionated: make flake registry and nix path match flake inputs
+      registry = lib.mapAttrs (_: flake: { inherit flake; }) flakeInputs;
+      nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
     };
-    # Opinionated: disable channels
-    channel.enable = false;
-
-    # Opinionated: make flake registry and nix path match flake inputs
-    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
-    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
-  };
 
   nixpkgs = {
     # You can add overlays here
-    overlays = [];
+    overlays = [ ];
     # Configure your nixpkgs instance
     config = {
       # Disable if you don't want unfree packages

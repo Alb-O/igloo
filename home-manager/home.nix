@@ -56,10 +56,6 @@
       # Input configuration
       solaar
       libinput
-    ]
-    ++ lib.optionals host.isGraphical [
-      # Custom graphical packages
-      pkgs.setup-background-terminals
     ];
 
   # State version - don't change this
