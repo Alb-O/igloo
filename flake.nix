@@ -99,7 +99,7 @@
             ]);
           };
           serverCfg = {
-            userProfile = users.admin;
+            userProfile = users.primary;
             hostProfile = hosts.server;
             modules = [
               ./nixos/hosts/server/configuration.nix

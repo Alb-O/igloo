@@ -39,7 +39,6 @@ in
     ./git.nix
     ./yazi
     ./wsl.nix
-    ./atuin.nix
     ./fish
   ]
   ++ (
