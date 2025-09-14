@@ -3,20 +3,29 @@
   pkgs,
   user,
   host,
-  lib,
+  inputs,
   fonts,
   ...
 }:
+let
+  niri = inputs.kakkle.packages.x86_64-linux.niri;
+in
 {
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
-    ./graphics.nix
+    ./nouveau.nix
+    #./graphics.nix
     ../../modules
   ];
 
   environment.systemPackages = with pkgs; [
+    niri
     lm_sensors
+    inxi
+    lshw
+    pciutils
+    virtualglLib
   ];
 
   # Bootloader.
@@ -31,9 +40,26 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  services.displayManager.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.displayManager.gdm.wayland = true;
+  services.displayManager = {
+    enable = true;
+    sessionPackages = [ niri ];
+    # lemurs = {
+    #   enable = true;
+    #   settings = {
+    #     background.show_background = true;
+    #   };
+    # };
+    ly = {
+      enable = true;
+      settings = {
+        animation = "matrix";
+      };
+    };
+  };
+
+  # services.displayManager.defaultSession = "";
+  # services.displayManager.gdm.enable = true;
+  # services.displayManager.gdm.wayland = true;
 
   services.kmscon = {
     enable = true;

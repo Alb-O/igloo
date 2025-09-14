@@ -16,6 +16,8 @@
     # NixOS-WSL for Windows Subsystem for Linux support
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+
+    kakkle.url = "github:Alb-O/aflake.kakoune";
   };
 
   outputs =
@@ -24,6 +26,7 @@
       nixpkgs,
       home-manager,
       nixos-wsl,
+      kakkle,
       ...
     }@inputs:
     let
