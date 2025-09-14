@@ -14,8 +14,8 @@ in
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
-    # ./nouveau.nix
-    ./nvidia.nix
+    ./nouveau.nix
+    #./nvidia.nix
     ../../modules
   ];
 

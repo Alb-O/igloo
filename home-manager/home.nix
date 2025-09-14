@@ -82,33 +82,37 @@
         . /etc/profile
       fi
 
-      # Prefer canonical per-user profile under /etc (NixOS),
-      # then XDG paths as configured by use-xdg-base-directories.
+      # Prefer canonical per-user profile under /etc (NixOS), then XDG paths.
+      # We source ALL readable *.sh files in the chosen profile's etc/profile.d.
       #
       # Order of preference:
       #  1) /etc/profiles/per-user/$USER/...  (canonical on NixOS)
-       #  2) "$XDG_STATE_HOME"/nix/profile/...  (XDG-compliant user profile)
-       #  3) "$HOME/.local/state"/nix/profile/...       (implicit XDG_STATE_HOME)
-       #
-       # Notes:
-       # - We intentionally do NOT use ~/.nix-profile to avoid legacy paths.
-       # - If a tool still references ~/.nix-profile, create a compat symlink:
-       #     ln -sTf "$\{XDG_STATE_HOME}:-$HOME/.local/state}/nix/profile" "$HOME/.nix-profile"
-       if [ -e "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" ]; then
-         . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
-       elif [ -n "$XDG_STATE_HOME" ] && [ -e "$XDG_STATE_HOME/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
-         . "$XDG_STATE_HOME/nix/profile/etc/profile.d/hm-session-vars.sh"
-      elif [ -e "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh" ]; then
-        . "$HOME/.local/state/nix/profile/etc/profile.d/hm-session-vars.sh"
-      fi
+      #  2) "$XDG_STATE_HOME"/nix/profile/...  (XDG-compliant user profile)
+      #  3) "$HOME/.local/state"/nix/profile/...       (implicit XDG_STATE_HOME)
+      #
+      # Notes:
+      # - We intentionally do NOT use ~/.nix-profile to avoid legacy paths.
+      # - If a tool still references ~/.nix-profile, create a compat symlink:
+      #     ln -sTf "''${XDG_STATE_HOME:-$HOME/.local/state}/nix/profile" "$HOME/.nix-profile"
 
-      # Ensure XDG-based nix profile puts its bin paths on PATH, similar to legacy nix.sh
-      if [ -e "/etc/profiles/per-user/$USER/etc/profile.d/nix.sh" ]; then
-        . "/etc/profiles/per-user/$USER/etc/profile.d/nix.sh"
-      elif [ -n "$XDG_STATE_HOME" ] && [ -e "$XDG_STATE_HOME/nix/profile/etc/profile.d/nix.sh" ]; then
-        . "$XDG_STATE_HOME/nix/profile/etc/profile.d/nix.sh"
-      elif [ -e "$HOME/.local/state/nix/profile/etc/profile.d/nix.sh" ]; then
-        . "$HOME/.local/state/nix/profile/etc/profile.d/nix.sh"
+      source_profiled_dir() {
+        local dir="$1"
+        if [ -d "$dir" ]; then
+          # shellcheck disable=SC2045
+          for f in $(LC_ALL=C ls -1 "$dir"/*.sh 2>/dev/null); do
+            [ -r "$f" ] || continue
+            # shellcheck disable=SC1090
+            . "$f"
+          done
+        fi
+      }
+
+      if [ -d "/etc/profiles/per-user/$USER/etc/profile.d" ]; then
+        source_profiled_dir "/etc/profiles/per-user/$USER/etc/profile.d"
+      elif [ -n "$XDG_STATE_HOME" ] && [ -d "$XDG_STATE_HOME/nix/profile/etc/profile.d" ]; then
+        source_profiled_dir "$XDG_STATE_HOME/nix/profile/etc/profile.d"
+      elif [ -d "$HOME/.local/state/nix/profile/etc/profile.d" ]; then
+        source_profiled_dir "$HOME/.local/state/nix/profile/etc/profile.d"
       fi
 
        # Bash history control
