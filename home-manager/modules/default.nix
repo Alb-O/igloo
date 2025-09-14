@@ -47,7 +47,6 @@ in
       [
         ./firefox
         ./sillytavern.nix
-        ./kitty.nix
         ./polkit.nix
         ./clipboard.nix
       ]

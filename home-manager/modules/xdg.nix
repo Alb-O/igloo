@@ -42,7 +42,7 @@
       [filechooser]
       cmd=$HOME/.config/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
       default_dir=$HOME
-      env=TERMCMD=${pkgs.kitty}/bin/kitty --title 'XDG File Picker'
+      env=TERMCMD=kitty --title 'XDG File Picker'
       open_mode=suggested
       save_mode=suggested
     '';
@@ -76,7 +76,7 @@
             set -- --chooser-file="$out" "$path"
         fi
 
-        exec ${pkgs.kitty}/bin/kitty --title 'XDG File Picker' ${pkgs.yazi}/bin/yazi "$@"
+        exec kitty --title 'XDG File Picker' ${pkgs.yazi}/bin/yazi "$@"
 
         if [ "$directory" = "1" ] &&
             [ ! -s "$out" ] &&
