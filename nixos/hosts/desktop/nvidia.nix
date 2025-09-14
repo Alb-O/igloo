@@ -9,11 +9,9 @@
     powerManagement.enable = true;
     powerManagement.finegrained = false;
     open = false;
-    nvidiaSettings = true;
+    nvidiaSettings = false;
   };
   boot.extraModprobeConfig = ''
-    blacklist nouveau
-    options nouveau modeset=0
     options nvidia_drm nvidia_uvm modeset=1 fbdev=1
   '';
 }

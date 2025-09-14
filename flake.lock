@@ -62,11 +62,11 @@
         "wrapper-manager": "wrapper-manager"
       },
       "locked": {
-        "lastModified": 1757819264,
-        "narHash": "sha256-XPoXq/6k4FAaT+Cc80qpdBfWQnCeIsKBk7Y6QglCbzQ=",
+        "lastModified": 1757833587,
+        "narHash": "sha256-Tkf8Mkx8Nehccn90NbQAqW7BNXuFQM4XnkQQ0DS+r1A=",
         "owner": "Alb-O",
         "repo": "aflake.kakoune",
-        "rev": "08b94abed0fc34356b546862599bef2eeaea9465",
+        "rev": "0d8fd57b2a62783fca66f019eb42c850a598129b",
         "type": "github"
       },
       "original": {
