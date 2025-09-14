@@ -6,8 +6,8 @@
     isGraphical = true;
     architecture = "x86_64-linux";
     profile = "desktop";
-    timeZone = "UTC";
-    locale = "en_US.UTF-8";
+    timeZone = "Australia/Tasmania";
+    locale = "en_AU.UTF-8";
   };
 
   # Server/WSL profile
@@ -17,7 +17,7 @@
     isGraphical = false;
     architecture = "x86_64-linux";
     profile = "server";
-    timeZone = "UTC";
-    locale = "en_US.UTF-8";
+    timeZone = "Australia/Tasmania";
+    locale = "en_AU.UTF-8";
   };
 }
