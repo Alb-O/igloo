@@ -40,6 +40,9 @@ in
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # Disable USB autosuspend to prevent mouse detection issues
+  boot.kernelParams = [ "usbcore.autosuspend=-1" ];
+
   services.displayManager = {
     enable = true;
     sessionPackages = [ niri ];

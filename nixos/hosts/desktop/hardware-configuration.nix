@@ -20,7 +20,7 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-amd"];
+  boot.kernelModules = ["kvm-amd" "hid-logitech-dj" "hid-logitech-hidpp"];
   boot.extraModulePackages = [];
 
   fileSystems."/" = {
