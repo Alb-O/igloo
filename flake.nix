@@ -154,4 +154,7 @@
           }
         ));
     };
+  nixConfig = {
+    warn-dirty = false;
+  };
 }
