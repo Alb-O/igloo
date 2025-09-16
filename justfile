@@ -5,6 +5,7 @@
 # Avoid shell lookups that can fail when user is missing from passwd.
 user := env_var_or_default('USER', 'unknown')
 hostname := env_var_or_default('HOSTNAME', 'unknown')
+home_default := `nix eval --json path:.#homeConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[0]'`
 
 # List all available commands
 default:
@@ -76,7 +77,7 @@ system-iso host="desktop":
 # =====================================
 
 # Build and activate home-manager configuration
-home-switch target="default@desktop":
+home-switch target=home_default:
     #!/usr/bin/env bash
     set -euo pipefail
     TARGET="{{target}}"
@@ -89,7 +90,7 @@ home-switch target="default@desktop":
     nix run github:nix-community/home-manager/master -- switch --flake "path:.#${TARGET}" --impure
 
 # Build configuration without activation
-home-build target="default@desktop":
+home-build target=home_default:
     #!/usr/bin/env bash
     set -euo pipefail
     TARGET="{{target}}"

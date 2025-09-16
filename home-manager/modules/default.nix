@@ -3,8 +3,6 @@
   inputs,
   user,
   host,
-  lib,
-  pkgs,
   ...
 }:
 let
@@ -44,14 +42,14 @@ in
   ++ (
     if host.isGraphical then
       [
-        ./firefox
+        inputs.www.homeModules.firefox
         ./sillytavern.nix
         ./polkit.nix
         ./clipboard.nix
       ]
     else
       [
-        ./firefox/wsl.nix
+        inputs.www.homeModules.wsl
       ]
   );
 
@@ -70,5 +68,10 @@ in
     TERMINAL = prefs.terminal;
     TERM = prefs.terminal;
     BROWSER = prefs.browser;
+  };
+
+  accounts = {
+    calendar.basePath = ".local/share/calendars";
+    contact.basePath = ".local/share/contacts";
   };
 }

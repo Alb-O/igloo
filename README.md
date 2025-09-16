@@ -9,11 +9,11 @@ just system-rebuild    # defaults to host "desktop"
 just rebuild
 ```
 
-Home Manager configuration (pick a defined target, e.g. `default@desktop`):
+Home Manager configuration:
 ```bash
-just home-switch default@desktop
+just home-switch
 # or short alias
-just switch default@desktop
+just switch
 ```
 
 ## Structure
@@ -28,9 +28,10 @@ just switch default@desktop
 
 ## Configuration
 
-- Copy `lib/users.local.nix.example` to `lib/users.local.nix` and set your primary user.
-- Use the predefined hosts in `lib/hosts.nix` (desktop/server) or add more.
-- The flake automatically adds `"<username>@desktop"` if `primary` is defined.
+- The flake ships with anonymised defaults for the primary user and the `desktop`/`server` hosts.
+- Copy `overrides/personal.nix.example` to `overrides/personal.nix` and fill in your real details (the file is gitignored and loaded automatically).
+- The Home Manager target name is derived from `username@hostname`; rerun `just home-switch` after editing the override and it will pick up the new attr.
+- Home Manager expects the runtime user to match the configured username—make sure your override is in place before running `home-manager switch` or `just home-switch`.
 
 ## Commands
 
@@ -44,9 +45,8 @@ just system-check            # Check system config
 
 ### Home Manager
 ```bash
-just home-switch default@desktop   # Build and switch default user
-just home-switch john@desktop      # If you set primary.username = "john"
-just home-build  default@desktop   # Build only
+just home-switch                   # Build and switch (uses override or defaults)
+just home-build                    # Build only
 just home-check                    # Check home config
 ```
 
@@ -61,7 +61,7 @@ just check-all           # Check both configurations
 
 ## Machine Types
 
-Hosts are declared in `lib/hosts.nix`. Provided:
+Hosts are defined inline in `flake.nix`. Provided:
 - `desktop` – graphical workstation
 - `server` – headless/WSL
 

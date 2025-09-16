@@ -1,0 +1,20 @@
+{
+  # Override values used by the flake. Copy this file to `overrides/personal.nix`
+  # (gitignored) and fill in your real details.
+
+  user = {
+    username = "alice";
+    name = "Alice Example";
+    email = "alice@example.com";
+    homeDirectory = "/home/alice";
+  };
+
+  desktopHost = {
+    hostname = "workstation";
+    timeZone = "Etc/UTC";
+  };
+
+  serverHost = {
+    hostname = "server";
+  };
+}
