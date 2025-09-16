@@ -64,6 +64,14 @@ in {
       EDITOR = lib.mkDefault "hx";
     };
 
+    # Extend PATH with common Windows locations
+    home.sessionPath =
+      lib.mkAfter [
+        "/mnt/c/Windows/System32"
+        "/mnt/c/Windows/System32/Wbem"
+        "/mnt/c/Windows/System32/WindowsPowerShell/v1.0"
+      ];
+
     # Enhanced shell aliases for WSL
     home.shellAliases = {
       # Clipboard operations
