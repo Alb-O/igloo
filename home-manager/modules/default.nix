@@ -36,7 +36,6 @@ in
     ./mako.nix
     ./git.nix
     ./yazi
-    ./wsl.nix
     ./fish
   ]
   ++ (
