@@ -32,9 +32,7 @@ in
     ./xdg.nix
     ../lib/fonts.nix
     ./bash
-    ./shell-tools.nix
     ./mako.nix
-    ./git.nix
     ./yazi
     ./fish
   ]
