@@ -12,7 +12,7 @@
   # Import modular configuration
   imports = [
     # Custom modules
-    ./modules
+    ./mod
 
     # Example external modules (commented out):
     # outputs.homeManagerModules.example

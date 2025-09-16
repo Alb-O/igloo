@@ -130,7 +130,7 @@ home-remove-generation gen:
 
 # Edit home configuration with your editor
 home-edit:
-    $EDITOR home-manager/home.nix
+    $EDITOR hm/home.nix
 
 # ========================================
 # SHARED - Common Development Tasks
@@ -163,7 +163,7 @@ dev:
 # Clean build artifacts
 clean:
     rm -rf result result-*
-    cd home-manager && rm -rf result result-*
+    cd hm && rm -rf result result-*
 
 # Garbage collect old generations
 gc:

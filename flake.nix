@@ -43,7 +43,7 @@
         system:
         import nixpkgs {
           inherit system;
-          overlays = import ./home-manager/overlays { inherit inputs; };
+          overlays = import ./hm/overlays { inherit inputs; };
           config.allowUnfree = true;
         };
 
@@ -126,7 +126,7 @@
             host = hostProfile;
           };
           modules = [
-            ./home-manager/home.nix
+            ./hm/home.nix
           ];
         };
     in
@@ -138,7 +138,7 @@
       # Reusable nixos modules you might want to export
       # These are usually stuff you would upstream into nixpkgs
       nixosModules = {
-        default = import ./nixos/modules;
+        default = import ./sys/mod;
       };
 
       # NixOS configuration entrypoint
@@ -148,29 +148,27 @@
           mkSystem {
             userProfile = activeUser;
             hostProfile = activeDesktopHost;
-            modules = (
+            modules =
               [
-                ./nixos/hosts/desktop/configuration.nix
+                ./sys/hosts/desktop/configuration.nix
               ]
-              ++ (nixpkgs.lib.optionals (builtins.pathExists ./nixos/hosts/local.nix) [
-                ./nixos/hosts/local.nix
-              ])
-            );
+              ++ (nixpkgs.lib.optionals (builtins.pathExists ./sys/hosts/local.nix) [
+                ./sys/hosts/local.nix
+              ]);
           };
 
         server =
           mkSystem {
             userProfile = activeUser;
             hostProfile = activeServerHost;
-            modules = (
+            modules =
               [
-                ./nixos/hosts/server/configuration.nix
+                ./sys/hosts/server/configuration.nix
                 nixos-wsl.nixosModules.wsl
               ]
-              ++ (nixpkgs.lib.optionals (builtins.pathExists ./nixos/hosts/local.nix) [
-                ./nixos/hosts/local.nix
-              ])
-            );
+              ++ (nixpkgs.lib.optionals (builtins.pathExists ./sys/hosts/local.nix) [
+                ./sys/hosts/local.nix
+              ]);
           };
       };
 

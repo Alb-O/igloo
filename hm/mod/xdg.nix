@@ -61,7 +61,7 @@ in
   # Sets up proper XDG environment variables and directory structure
 
   # XDG base directories are enabled at the system level in NixOS configuration
-  # (use-xdg-base-directories is set in nixos/modules/xdg.nix)
+  # (use-xdg-base-directories is set in sys/mod/xdg.nix)
   # Ensure Home Manager itself uses XDG base dirs for its profile management
   # so that hm-session-vars and home-path land under "$XDG_STATE_HOME/nix/profile"
   # and Home Manager uses `nix profile` semantics instead of legacy nix-env.

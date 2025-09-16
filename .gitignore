@@ -1,5 +1,4 @@
 /secrets
 /tmp
-nixos/hosts/local.nix
-users.local.nix
+sys/hosts/local.nix
 overrides/personal.nix

@@ -21,9 +21,10 @@ just switch
 ```
 ├── flake.nix          # NixOS + Home Manager flake
 ├── justfile           # Unified build tasks (system + home)
-├── nixos/             # NixOS modules and hosts
-└── home-manager/      # Home Manager configuration
-    └── modules/       # Home Manager modules
+├── sys/               # NixOS hosts + shared modules
+│   └── mod/           # Shared system modules
+└── hm/                # Home Manager configuration
+    └── mod/           # Home Manager modules
 ```
 
 ## Configuration

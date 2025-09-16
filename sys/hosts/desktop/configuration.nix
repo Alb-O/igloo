@@ -16,7 +16,7 @@ in
     ./hardware-extra.nix
     ./nouveau.nix
     #./nvidia.nix
-    ../../modules
+    ../../mod
   ];
 
   environment.systemPackages = with pkgs; [

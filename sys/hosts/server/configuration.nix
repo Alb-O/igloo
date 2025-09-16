@@ -16,7 +16,7 @@
 {
   imports = [
     # Import our modular NixOS configuration
-    ../../modules
+    ../../mod
   ];
 
   # WSL-specific configuration
