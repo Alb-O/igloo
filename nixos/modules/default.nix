@@ -10,5 +10,6 @@
     ./ssh.nix
     ./flake-configuration.nix
     ./wsl.nix
+    ./base-host.nix
   ];
 }

@@ -79,51 +79,13 @@
   # Enable passwordless sudo for wheel group
   security.sudo.wheelNeedsPassword = false;
 
-  # System configuration
-  system.stateVersion = host.stateVersion;
-  networking.hostName = host.hostname;
-
-  # Time zone and locale
-  time.timeZone = host.timeZone;
-  i18n.defaultLocale = host.locale;
-
-  # Generate all locales needed
-  i18n.supportedLocales = [
-    "en_US.UTF-8/UTF-8"
-    "en_AU.UTF-8/UTF-8"
-    "C.UTF-8/UTF-8"
-  ];
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = host.locale;
-    LC_IDENTIFICATION = host.locale;
-    LC_MEASUREMENT = host.locale;
-    LC_MONETARY = host.locale;
-    LC_NAME = host.locale;
-    LC_NUMERIC = host.locale;
-    LC_PAPER = host.locale;
-    LC_TELEPHONE = host.locale;
-    LC_TIME = host.locale;
-  };
-
-  # Platform configuration
-  nixpkgs.hostPlatform = host.architecture;
-
-  # Enable experimental features (using mkForce to override module conflicts)
-  nix.settings.experimental-features = lib.mkForce [
-    "nix-command"
-    "flakes"
-  ];
-
-  # Disable legacy channels that cause storePath errors
-  nix.channel.enable = lib.mkForce false;
-
-  # Optimize build settings for WSL
   nix.settings = {
+    experimental-features = lib.mkForce [ "nix-command" "flakes" ];
     max-jobs = lib.mkDefault 1;
     cores = lib.mkDefault 1;
     sandbox = false;
   };
+  nix.channel.enable = lib.mkForce false;
 
   # Disable services that can cause issues on first boot
   services.openssh.enable = lib.mkForce false;

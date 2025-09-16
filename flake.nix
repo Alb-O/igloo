@@ -62,6 +62,14 @@
         profile = "desktop";
         timeZone = "Etc/UTC";
         locale = "en_US.UTF-8";
+        extraGroups = [
+          "seat"
+          "networkmanager"
+          "audio"
+          "video"
+          "docker"
+        ];
+        extraLocales = [ "en_AU.UTF-8/UTF-8" ];
       };
 
       defaultServerHost = {
@@ -72,6 +80,12 @@
         profile = "server";
         timeZone = "Etc/UTC";
         locale = "en_US.UTF-8";
+        extraGroups = [
+          "networkmanager"
+          "docker"
+          "systemd-journal"
+        ];
+        extraLocales = [ "en_AU.UTF-8/UTF-8" ];
       };
 
       personalOverridesPath = ./overrides/personal.nix;
