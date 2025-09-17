@@ -1,10 +1,5 @@
 # Home Manager modules aggregation
-{
-  inputs,
-  user,
-  host,
-  ...
-}:
+{ lib, inputs, user, host, ... }:
 let
   homeDir = user.homeDirectory;
   dirs = {
@@ -17,31 +12,50 @@ let
     terminal = "wezterm";
     browser = "firefox";
   };
+
+  # Auto-import modules from ../../modules/{programs,services}
+  modulesRoot = ./.;
+  programsDir = modulesRoot + "/programs";
+  servicesDir = modulesRoot + "/services";
+
+  listModules = dir:
+    let
+      entries = builtins.readDir dir;
+      names = builtins.attrNames entries;
+    in
+      builtins.concatMap (
+        name:
+          let
+            type = entries.${name};
+            path = dir + "/${name}";
+          in
+            if lib.strings.hasPrefix "_" name then []
+            else if type == "regular" && lib.strings.hasSuffix ".nix" name then [ path ]
+            else if type == "directory" then [ path ]
+            else []
+      ) names;
+
+  autoImports =
+    (if builtins.pathExists programsDir then listModules programsDir else [])
+    ++ (if builtins.pathExists servicesDir then listModules servicesDir else []);
 in
 {
   _module.args = {
-    inherit
-      inputs
-      user
-      host
-      dirs
-      prefs
-      ;
+    inherit inputs user host dirs prefs;
   };
-  imports = [
-    ./xdg.nix
-    ../lib/fonts.nix
-  ]
-  ++ (
-    if host.isGraphical then
-      [
-        inputs.www.homeModules.firefox
-      ]
-    else
-      [
-        inputs.www.homeModules.wsl
-      ]
-  );
+
+  imports =
+    [
+      ./xdg.nix
+      ../lib/fonts.nix
+    ]
+    ++ (
+      if host.isGraphical then
+        [ inputs.www.homeModules.firefox ]
+      else
+        [ inputs.www.homeModules.wsl ]
+    )
+    ++ autoImports;
 
   programs.home-manager.enable = true;
 
