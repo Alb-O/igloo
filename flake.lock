@@ -59,11 +59,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1757997814,
-        "narHash": "sha256-F+1aoG+3NH4jDDEmhnDUReISyq6kQBBuktTUqCUWSiw=",
+        "lastModified": 1758085625,
+        "narHash": "sha256-D0KVKNgWSDVjYFgPLEtSQvSKchTBT0YqSbNlH7OQ+bo=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "5820376beb804de9acf07debaaff1ac84728b708",
+        "rev": "fb928abb67bd4df99040721ed48c3b42e24b1d08",
         "type": "github"
       },
       "original": {
@@ -82,11 +82,11 @@
         "wrapper-manager": "wrapper-manager"
       },
       "locked": {
-        "lastModified": 1757992027,
-        "narHash": "sha256-rknT/Swc5xGErTv5Zl4uNuwCFrgYc/t54aZQcq8QmqY=",
+        "lastModified": 1758061579,
+        "narHash": "sha256-vI1DKpK/usSX/inbV05RMVUB5njEiR/iYwlU/zSwOjE=",
         "ref": "refs/heads/main",
-        "rev": "1966a518bb4dfd623c8b17c5c6fd74154c3fa32f",
-        "revCount": 44,
+        "rev": "e3e3882e278ba8910ab5aa9649c4de14ee4d23a6",
+        "revCount": 45,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/Alb-O/kakkle"

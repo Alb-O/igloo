@@ -13,8 +13,8 @@ let
     cargoBin = "${homeDir}/.local/share/cargo/bin";
   };
   prefs = {
-    editor = "nvim";
-    terminal = "kitty";
+    editor = "kak";
+    terminal = "wezterm";
     browser = "firefox";
   };
 in
