@@ -1,5 +1,6 @@
 # SillyTavern LLM frontend configuration
-{ pkgs, dirs, ... }: {
+{ pkgs, lib, host, dirs, ... }: 
+lib.mkIf host.isGraphical {
   # Package installation
   home.packages = with pkgs.unstable; [
     sillytavern

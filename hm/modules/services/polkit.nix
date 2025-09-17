@@ -1,5 +1,6 @@
 # Polkit GNOME authentication agent for user session
-{pkgs, ...}: {
+{pkgs, lib, host, ...}: 
+lib.mkIf host.isGraphical {
   # Polkit authentication agent service
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
     Unit = {

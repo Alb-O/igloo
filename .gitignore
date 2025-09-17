@@ -2,3 +2,4 @@
 /tmp
 sys/hosts/local.nix
 overrides/personal.nix
+result

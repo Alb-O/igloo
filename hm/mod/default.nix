@@ -31,18 +31,11 @@ in
   imports = [
     ./xdg.nix
     ../lib/fonts.nix
-    ./bash
-    ./mako.nix
-    ./yazi
-    ./fish
   ]
   ++ (
     if host.isGraphical then
       [
         inputs.www.homeModules.firefox
-        ./sillytavern.nix
-        ./polkit.nix
-        ./clipboard.nix
       ]
     else
       [

@@ -12,6 +12,7 @@ let
       NB_DIR = "nb";
       CODEX_HOME = "codex";
       GOPATH = "go";
+      UNISON = "unison";
     }
     // mkVars "$XDG_CACHE_HOME" {
       CUDA_CACHE_PATH = "nv";
@@ -28,33 +29,32 @@ let
       NPM_CONFIG_TMP = "$XDG_RUNTIME_DIR/npm";
     };
 
-  yaziWrapper =
-    pkgs.writeShellScript "xdg-yazi-wrapper" ''
-      set -eu
+  yaziWrapper = pkgs.writeShellScript "xdg-yazi-wrapper" ''
+    set -eu
 
-      multiple="$1"
-      directory="$2"
-      save="$3"
-      path="$4"
-      out="$5"
+    multiple="$1"
+    directory="$2"
+    save="$3"
+    path="$4"
+    out="$5"
 
-      if [ "$save" = "1" ]; then
-        set -- --chooser-file="$out" "$path"
-      elif [ "$directory" = "1" ]; then
-        set -- --chooser-file="$out" --cwd-file="$out"".1" "$path"
-      elif [ "$multiple" = "1" ]; then
-        set -- --chooser-file="$out" "$path"
-      else
-        set -- --chooser-file="$out" "$path"
-      fi
+    if [ "$save" = "1" ]; then
+      set -- --chooser-file="$out" "$path"
+    elif [ "$directory" = "1" ]; then
+      set -- --chooser-file="$out" --cwd-file="$out"".1" "$path"
+    elif [ "$multiple" = "1" ]; then
+      set -- --chooser-file="$out" "$path"
+    else
+      set -- --chooser-file="$out" "$path"
+    fi
 
-      exec kitty --title 'XDG File Picker' ${pkgs.yazi}/bin/yazi "$@"
+    exec kitty --title 'XDG File Picker' ${pkgs.yazi}/bin/yazi "$@"
 
-      if [ "$directory" = "1" ] && [ ! -s "$out" ] && [ -s "$out"".1" ]; then
-        cat "$out"".1" > "$out"
-        rm "$out"".1"
-      fi
-    '';
+    if [ "$directory" = "1" ] && [ ! -s "$out" ] && [ -s "$out"".1" ]; then
+      cat "$out"".1" > "$out"
+      rm "$out"".1"
+    fi
+  '';
 in
 {
   # XDG Base Directory Specification

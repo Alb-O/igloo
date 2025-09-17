@@ -1,8 +1,11 @@
 {
   pkgs,
+  lib,
+  host,
   fonts,
   ...
-}: {
+}: 
+lib.mkIf host.isGraphical {
   services.mako = {
     enable = true;
 

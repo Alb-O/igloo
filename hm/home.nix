@@ -1,5 +1,3 @@
-# Home Manager configuration
-# Main entry point for user environment configuration
 {
   pkgs,
   lib,
@@ -9,17 +7,11 @@
   ...
 }:
 {
-  # Import modular configuration
   imports = [
     # Custom modules
     ./mod
-
-    # Example external modules (commented out):
-    # outputs.homeManagerModules.example
-    # inputs.nix-colors.homeManagerModules.default
   ];
 
-  # Basic user information
   home = {
     username = user.username;
     homeDirectory = user.homeDirectory;
@@ -61,7 +53,10 @@
   programs.zoxide = {
     enable = true;
     enableBashIntegration = true;
-    options = [ "--cmd" "cd" ];
+    options = [
+      "--cmd"
+      "cd"
+    ];
   };
 
   programs.direnv = {
