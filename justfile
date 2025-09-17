@@ -102,15 +102,11 @@ home-build target=home_default:
     fi
     home-manager build --flake "path:.#${TARGET}" --impure
 
-# Check home-manager flake validity  
+# Check home-manager flake validity
 home-check:
     #!/usr/bin/env bash
     set -euo pipefail
     nix flake check path:.
-
-# List home-manager generations
-home-generations:
-    home-manager generations
 
 # Show home-manager configuration info
 home-info:
@@ -120,17 +116,9 @@ home-info:
     @echo "Available configurations:"
     @nix eval --json path:.#homeConfigurations --apply builtins.attrNames 2>/dev/null | jq -r '.[]' | sed 's/^/  /' || echo "  No configurations found"
 
-# Show home-manager news
-home-news:
-    home-manager news
-
 # Remove a specific home-manager generation
 home-remove-generation gen:
     home-manager remove-generations {{gen}}
-
-# Edit home configuration with your editor
-home-edit:
-    $EDITOR hm/home.nix
 
 # ========================================
 # SHARED - Common Development Tasks
@@ -189,42 +177,6 @@ init:
     @echo "Current directory: $(pwd)"
     @echo "Run 'just system-rebuild' to build the system configuration"
     @echo "Run 'just home-switch' to build the home configuration"
-
-# ========================================
-# SHELLS - Alternative Shell Environments  
-# ========================================
-
-# Launch nixCats-fish (modern Fish shell)  
-fish:
-    #!/usr/bin/env bash
-    # Auto-discover nixCats-fish config location
-    if [ -d "./flakes/nixCats-fish/config" ]; then
-        export NIXCATS_FISH_DIR="$(pwd)/flakes/nixCats-fish/config"
-        nix run ./flakes/nixCats-fish
-    elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-fish/config" ]; then
-        export NIXCATS_FISH_DIR="$FLAKE_ROOT/flakes/nixCats-fish/config"  
-        nix run $FLAKE_ROOT/flakes/nixCats-fish
-    else
-        echo "Error: nixCats-fish config not found!"
-        echo "Make sure you're in the flake root directory or set FLAKE_ROOT"
-        exit 1
-    fi
-
-# Launch nixCats-bash (ble.sh powered Bash)
-bash:
-    #!/usr/bin/env bash
-    # Auto-discover nixCats-bash config location
-    if [ -d "./flakes/nixCats-bash/rc" ]; then
-        export NIXCATS_BASH_DIR="$(pwd)/flakes/nixCats-bash/rc"
-        nix run ./flakes/nixCats-bash
-    elif [ -n "$FLAKE_ROOT" ] && [ -d "$FLAKE_ROOT/flakes/nixCats-bash/rc" ]; then
-        export NIXCATS_BASH_DIR="$FLAKE_ROOT/flakes/nixCats-bash/rc"  
-        nix run $FLAKE_ROOT/flakes/nixCats-bash  
-    else
-        echo "Error: nixCats-bash config not found!"
-        echo "Make sure you're in the flake root directory or set FLAKE_ROOT"
-        exit 1
-    fi
 
 # ========================================
 # ALIASES - Shorter Commands
