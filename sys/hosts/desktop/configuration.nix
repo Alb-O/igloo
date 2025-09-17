@@ -1,8 +1,6 @@
 # NixOS system configuration
 {
   pkgs,
-  user,
-  host,
   inputs,
   fonts,
   ...
@@ -14,8 +12,8 @@ in
   imports = [
     ./hardware-configuration.nix
     ./hardware-extra.nix
-    ./nouveau.nix
-    #./nvidia.nix
+    #./nouveau.nix
+    ./nvidia.nix
     ../../mod
   ];
 
