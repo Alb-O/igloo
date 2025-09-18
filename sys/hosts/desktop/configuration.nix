@@ -30,6 +30,7 @@ in
   boot.loader = {
     systemd-boot.enable = false;
     limine.enable = true;
+    limine.extraConfig = "timeout: 0";
     efi.canTouchEfiVariables = true;
   };
 
