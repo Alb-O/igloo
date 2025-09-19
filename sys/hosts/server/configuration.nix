@@ -80,25 +80,19 @@
   security.sudo.wheelNeedsPassword = false;
 
   nix.settings = {
-    experimental-features = lib.mkForce [ "nix-command" "flakes" ];
+    experimental-features = lib.mkForce [
+      "nix-command"
+      "flakes"
+    ];
     max-jobs = lib.mkDefault 1;
     cores = lib.mkDefault 1;
     sandbox = false;
   };
   nix.channel.enable = lib.mkForce false;
 
-  # Disable services that can cause issues on first boot
-  services.openssh.enable = lib.mkForce false;
-  services.keyd.enable = lib.mkForce false;
-
   # Ensure NetworkManager is available but not conflicting
   networking.networkmanager.enable = lib.mkDefault true;
   networking.useDHCP = lib.mkDefault true;
-
-  # Disable graphical services that cause issues in WSL
-  xdg.portal.enable = lib.mkForce false;
-  security.rtkit.enable = lib.mkForce false;
-  services.pipewire.enable = lib.mkForce false;
 
   # Essential system packages for WSL
   environment.systemPackages = with pkgs; [
